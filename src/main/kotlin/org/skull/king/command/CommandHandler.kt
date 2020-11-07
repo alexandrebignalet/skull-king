@@ -170,7 +170,49 @@ private fun execute(c: PlayCard): EsScope = {
     }
 }
 
-// MOCK first fold player always wins
-private fun settleFoldWinner(fold: Map<PlayerId, Card>): PlayerId {
-    return fold.keys.first()
+typealias Fold = List<PlayerCard>
+
+data class PlayerCard(val playerId: PlayerId, val card: Card)
+
+fun settleFoldWinner(foldPlayed: Map<PlayerId, Card>): PlayerId {
+    val fold = foldPlayed.map { PlayerCard(it.key, it.value) }
+
+    val skullKing = fold.skullKing()
+    val pirates = fold.pirates()
+    val mermaids = fold.mermaids()
+    val highestBlackCard = fold.highestOf(CardColor.BLACK)
+
+    val winningCard: PlayerCard = when {
+        skullKing.isNotEmpty() -> when {
+            mermaids.isNotEmpty() -> mermaids.first()
+            else -> skullKing.first()
+        }
+        pirates.isNotEmpty() -> pirates.first()
+        mermaids.isNotEmpty() -> mermaids.first()
+        highestBlackCard != null -> highestBlackCard
+        fold.onlyEscapes() -> fold.first()
+        else -> requireNotNull(
+            fold.highestOf(requireNotNull(fold.colorAsked()))
+        )
+    }
+
+    return winningCard.playerId
 }
+
+private fun Fold.skullKing() = filter { it.card is SpecialCard && it.card.type == SpecialCardType.SKULL_KING }
+private fun Fold.mermaids() = filter { it.card is SpecialCard && it.card.type == SpecialCardType.MERMAID }
+private fun Fold.pirates() = filter {
+    (it.card is SpecialCard && it.card.type == SpecialCardType.PIRATE)
+            || (it.card is ScaryMary && it.card.usage == ScaryMaryUsage.PIRATE)
+}
+
+private fun Fold.onlyEscapes() = all {
+    (it.card is SpecialCard && it.card.type == SpecialCardType.ESCAPE)
+            || (it.card is ScaryMary && it.card.usage == ScaryMaryUsage.ESCAPE)
+}
+
+private fun Fold.highestOf(colorAsked: CardColor) =
+    filter { it.card is ColoredCard && it.card.color == colorAsked }.maxBy { (it.card as ColoredCard).value }
+
+private fun Fold.colorAsked() =
+    firstOrNull { it.card is ColoredCard }?.let { (_, card) -> (card as ColoredCard).color }

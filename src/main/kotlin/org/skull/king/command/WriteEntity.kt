@@ -8,7 +8,7 @@ import org.skull.king.eventStore.NewRoundStarted
 import org.skull.king.eventStore.PlayerAnnounced
 import org.skull.king.eventStore.SkullKingEvent
 import org.skull.king.eventStore.Started
-import java.util.Stack
+import java.util.*
 
 interface EventComposable<T : Event> {
     fun compose(e: T): EventComposable<T>
@@ -32,7 +32,7 @@ sealed class SkullKing(val id: String) : EventComposable<SkullKingEvent> {
             *(0..5).map { SpecialCard(SpecialCardType.ESCAPE) }.toTypedArray(),
             *(0..2).map { SpecialCard(SpecialCardType.MERMAID) }.toTypedArray(),
             SpecialCard(SpecialCardType.SKULL_KING),
-            SpecialCard(SpecialCardType.SCARY_MARY)
+            ScaryMary(ScaryMaryUsage.NOT_SET)
         )
     }
 
@@ -170,8 +170,10 @@ data class Deck(val cards: List<Card> = SkullKing.CARDS) {
 abstract class Card
 data class ColoredCard(val value: Int, val color: CardColor) : Card()
 enum class CardColor { RED, BLUE, YELLOW, BLACK }
-data class SpecialCard(val type: SpecialCardType) : Card()
-enum class SpecialCardType { PIRATE, SKULL_KING, MERMAID, SCARY_MARY, ESCAPE }
+enum class ScaryMaryUsage { ESCAPE, PIRATE, NOT_SET }
+data class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card()
+open class SpecialCard(val type: SpecialCardType) : Card()
+enum class SpecialCardType { PIRATE, SKULL_KING, MERMAID, ESCAPE }
 
 /**
  * Fold might be ordered as players order
