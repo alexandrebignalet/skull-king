@@ -32,11 +32,10 @@ class FullGameTest {
         application.start()
 
         mockkConstructor(Deck::class)
-        every { anyConstructed<Deck>().pop() } returnsMany (mockedCard)
+        every { anyConstructed<Deck>().pop() } returnsMany (fullDeckMocked)
     }
 
     @Test
-//    @Disabled("Disabled until CustomerService is up!")
     fun `Should end the game at the end of the 10th round`() {
         application.apply {
             lateinit var firstPlayer: Player
@@ -54,7 +53,7 @@ class FullGameTest {
 
             repeat((1..10).count()) { currentRound ->
 
-                println("CURRENT ROUND ${currentRound + 1}")
+                println("--- ROUND ${currentRound + 1}")
 
                 repeat((0..currentRound).count()) { currentFold ->
                     println("--- FOLD ${currentFold + 1}")
@@ -66,9 +65,9 @@ class FullGameTest {
 
                     await atMost Duration.ofSeconds(2) untilAsserted {
                         val f = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
-                        println("F${firstPlayer.id}: ${f.cards}; CARD: $firstPlayerCard")
+                        println("F${firstPlayer.id}: ${f.cards}; CARD: ${fullDeckMocked[firstPlayerCard]}: $firstPlayerCard")
                         val s = GetPlayer(gameId, secondPlayer.id).process().first() as ReadPlayer
-                        println("S${secondPlayer.id}: ${s.cards}; CARD: $secondPlayerCard")
+                        println("S${secondPlayer.id}: ${s.cards}; CARD: ${fullDeckMocked[secondPlayerCard]}: $secondPlayerCard")
 
                         Assertions.assertThat(f.cards).contains(fullDeckMocked[firstPlayerCard])
                         Assertions.assertThat(s.cards).contains(fullDeckMocked[secondPlayerCard])
@@ -94,9 +93,8 @@ class FullGameTest {
                         Assertions.assertThat(s.cards).doesNotContain(fullDeckMocked[secondPlayerCard])
                     }
 
-                    val tmpCard = firstPlayerCard
-                    firstPlayerCard = secondPlayerCard + 2
-                    secondPlayerCard = tmpCard + 2
+                    firstPlayerCard += 2
+                    secondPlayerCard += 2
                 }
 
                 val tmpPlayer = firstPlayer
@@ -108,21 +106,13 @@ class FullGameTest {
     }
 
     private val application = Application()
-    private val mockedCard = listOf(
-        SpecialCard(SpecialCardType.MERMAID), SpecialCard(SpecialCardType.SKULL_KING),
-
-        ColoredCard(1, CardColor.BLUE),
-        ColoredCard(2, CardColor.BLUE),
-        ColoredCard(3, CardColor.RED),
-        ColoredCard(2, CardColor.RED)
-    )
     private val fullDeckMocked = listOf(
         SpecialCard(SpecialCardType.MERMAID),
         SpecialCard(SpecialCardType.SKULL_KING),
 
         ColoredCard(2, CardColor.RED),
-        ColoredCard(3, CardColor.RED),
         ColoredCard(1, CardColor.BLUE),
+        ColoredCard(3, CardColor.RED),
         ColoredCard(2, CardColor.BLUE),
 
         ColoredCard(1, CardColor.RED),

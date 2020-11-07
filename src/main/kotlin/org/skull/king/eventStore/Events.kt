@@ -30,3 +30,5 @@ data class FoldWinnerSettled(override val gameId: String, val winner: PlayerId) 
 
 data class NewRoundStarted(override val gameId: String, val nextRoundNb: Int, val players: List<NewPlayer>) :
     SkullKingEvent()
+
+data class GameFinished(override val gameId: String) : SkullKingEvent()

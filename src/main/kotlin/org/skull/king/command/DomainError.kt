@@ -9,6 +9,7 @@ data class SkullKingNotStartedError(val e: String, val c: Command) : DomainError
 data class PlayerNotInGameError(val e: String, val c: Command) : DomainError(e)
 data class PlayerAlreadyAnnouncedError(val e: String, val c: AnnounceWinningCardsFoldCount) : DomainError(e)
 data class SkullKingAlreadyReadyError(val e: String, val c: AnnounceWinningCardsFoldCount) : DomainError(e)
+data class SkullKingOverError(val c: Command, val e: String = "SkullKing game is over") : DomainError(e)
 data class SkullKingNotReadyError(val e: String, val c: PlayCard) : DomainError(e)
 data class PlayerDoNotHaveCardError(val e: String, val c: PlayCard) : DomainError(e)
 data class CardNotAllowedError(val c: PlayCard) : DomainError("${c.card} is not allowed to be played.")

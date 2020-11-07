@@ -11,6 +11,7 @@ import org.skull.king.eventStore.CardPlayed
 import org.skull.king.eventStore.Event
 import org.skull.king.eventStore.EventStore
 import org.skull.king.eventStore.FoldWinnerSettled
+import org.skull.king.eventStore.GameFinished
 import org.skull.king.eventStore.NewRoundStarted
 import org.skull.king.eventStore.PlayerAnnounced
 import org.skull.king.eventStore.SkullKingEvent
@@ -74,7 +75,7 @@ private fun List<SkullKingEvent>.fold(): SkullKing {
 private fun execute(c: StartSkullKing): EsScope = lambda@{
     if (c.players.size !in MIN_PLAYERS..MAX_PLAYERS)
         return@lambda Invalid(
-            SkullKingConfigurationError("SkullKing game must be played at least with 2 or at most with 5 people! $c", c)
+            SkullKingConfigurationError("SkullKing game must be played at least with 2 or at most with 6 people! $c", c)
         )
 
     val game = getEvents<SkullKingEvent>(c.gameId).fold()
@@ -98,17 +99,12 @@ private fun execute(c: AnnounceWinningCardsFoldCount): EsScope = {
             else -> Invalid(PlayerNotInGameError("Player ${c.playerId} not in game", c))
         }
         is ReadySkullKing -> Invalid(SkullKingAlreadyReadyError("Game ${c.gameId} already ready !", c))
+        is skullKingOver -> Invalid(SkullKingOverError(c))
     }
 }
 
 private fun execute(c: PlayCard): EsScope = {
-    val game = getEvents<SkullKingEvent>(c.gameId).fold()
-    (c.card as? ColoredCard)?.let {
-        if (it.color == CardColor.BLUE && it.value == 2) {
-            print("stop")
-        }
-    }
-    when (game) {
+    when (val game = getEvents<SkullKingEvent>(c.gameId).fold()) {
         is NewRound -> Invalid(
             SkullKingNotReadyError(
                 "All players must announce before starting to play cards",
@@ -138,19 +134,23 @@ private fun execute(c: PlayCard): EsScope = {
                         )
 
                         when {
-                            game.isLastFoldOfRound() -> {
+                            game.isNextFoldLastFoldOfRound() -> {
                                 val nextRoundNb = game.roundNb + 1
-                                Valid(
-                                    events + NewRoundStarted(
-                                        game.id,
-                                        nextRoundNb,
-                                        game.distributeCards(
-                                            game.players.map { it.id },
-                                            foldCount = nextRoundNb,
-                                            firstPlayerIndex = NEXT_FIRST_PLAYER_INDEX
+
+                                when {
+                                    game.isOver() -> Valid(events + GameFinished(game.id))
+                                    else -> Valid(
+                                        events + NewRoundStarted(
+                                            game.id,
+                                            nextRoundNb,
+                                            game.distributeCards(
+                                                game.players.map { it.id },
+                                                nextRoundNb,
+                                                firstPlayerIndex = NEXT_FIRST_PLAYER_INDEX
+                                            )
                                         )
                                     )
-                                )
+                                }
                             }
                             else -> Valid(events)
                         }
@@ -165,7 +165,8 @@ private fun execute(c: PlayCard): EsScope = {
                 )
             )
         }
-        else -> Invalid(SkullKingNotStartedError("Game ${c.gameId} not STARTED !", c))
+        emptySkullKing -> Invalid(SkullKingNotStartedError("Game ${c.gameId} not STARTED !", c))
+        skullKingOver -> Invalid(SkullKingOverError(c))
     }
 }
 

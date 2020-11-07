@@ -3,6 +3,7 @@ package org.skull.king.command
 import org.skull.king.eventStore.CardPlayed
 import org.skull.king.eventStore.Event
 import org.skull.king.eventStore.FoldWinnerSettled
+import org.skull.king.eventStore.GameFinished
 import org.skull.king.eventStore.NewRoundStarted
 import org.skull.king.eventStore.PlayerAnnounced
 import org.skull.king.eventStore.SkullKingEvent
@@ -20,6 +21,7 @@ sealed class SkullKing(val id: String) : EventComposable<SkullKingEvent> {
         const val MAX_PLAYERS = 6
         const val FIRST_ROUND_NB = 1
         const val NEXT_FIRST_PLAYER_INDEX = 1
+        const val MAX_ROUND = 10
 
         val CARDS: List<Card> = listOf(
             *(1..13).map { ColoredCard(it, CardColor.YELLOW) }.toTypedArray(),
@@ -97,7 +99,7 @@ data class ReadySkullKing(
     val players: List<ReadyPlayer>,
     val roundNb: Int,
     val currentFold: Map<PlayerId, Card> = mapOf(),
-    val foldNb: Int = 1
+    val foldPlayedNb: Int = 0
 ) : SkullKing(gameId) {
 
     override fun compose(e: SkullKingEvent) = when (e) {
@@ -106,11 +108,13 @@ data class ReadySkullKing(
                 gameId,
                 removeCardFromPlayerHand(e),
                 roundNb,
-                addCardInFold(e)
+                addCardInFold(e),
+                foldPlayedNb
             )
         }
-        is FoldWinnerSettled -> ReadySkullKing(gameId, players, roundNb, foldNb = foldNb + 1)
+        is FoldWinnerSettled -> ReadySkullKing(gameId, players, roundNb, foldPlayedNb = foldPlayedNb + 1)
         is NewRoundStarted -> NewRound(gameId, e.players, roundNb + 1)
+        is GameFinished -> skullKingOver
         else -> this
     }
 
@@ -133,10 +137,16 @@ data class ReadySkullKing(
 
     fun isLastFoldPlay() = players.size == currentFold.size + 1
 
-    fun isLastFoldOfRound() = foldNb == roundNb
     fun isCardPlayNotAllowed(playerId: PlayerId, card: Card) = players.find { it.id == playerId }?.let {
         !isCardPlayAllowed(currentFold.values.toList(), it.cards, card)
     } ?: false
+
+    fun isNextFoldLastFoldOfRound() = foldPlayedNb + 1 == roundNb
+    fun isOver() = roundNb + 1 > MAX_ROUND
+}
+
+object skullKingOver : SkullKing("") {
+    override fun compose(e: SkullKingEvent) = this
 }
 
 sealed class Player(val id: String, val skullId: String)

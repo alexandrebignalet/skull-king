@@ -8,7 +8,8 @@ data class ReadSkullKing(
     val id: String,
     val players: List<String>,
     val roundNb: Int,
-    val fold: Map<String, Card> = mapOf()
+    val fold: Map<String, Card> = mapOf(),
+    val isEnded: Boolean = false
 ) : ReadEntity()
 
 data class ReadPlayer(

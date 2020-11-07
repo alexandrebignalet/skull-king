@@ -7,6 +7,7 @@ import org.skull.king.command.NewPlayer
 import org.skull.king.eventStore.CardPlayed
 import org.skull.king.eventStore.Event
 import org.skull.king.eventStore.FoldWinnerSettled
+import org.skull.king.eventStore.GameFinished
 import org.skull.king.eventStore.NewRoundStarted
 import org.skull.king.eventStore.PlayerAnnounced
 import org.skull.king.eventStore.SkullKingEvent
@@ -57,8 +58,10 @@ class QueryHandler {
                     }
                 }
                 is FoldWinnerSettled -> {
-                    players
+                    val gamePlayers = players
                         .filter { it.value.gameId == e.gameId }
+
+                    gamePlayers
                         .forEach { (readPlayerId, player) ->
                             if (e.winner != player.id) Unit
                             else {
@@ -89,6 +92,9 @@ class QueryHandler {
                             }
                         }
                     }
+                }
+                is GameFinished -> skullKingGames[e.gameId]?.let { game ->
+                    skullKingGames[e.gameId] = game.copy(isEnded = true)
                 }
             }
         }
