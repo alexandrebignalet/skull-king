@@ -1,6 +1,6 @@
 package org.skull.king.command.domain
 
-import java.util.*
+import java.util.Stack
 
 abstract class Card
 
@@ -8,7 +8,17 @@ data class ColoredCard(val value: Int, val color: CardColor) : Card()
 enum class CardColor { RED, BLUE, YELLOW, BLACK }
 
 enum class ScaryMaryUsage { ESCAPE, PIRATE, NOT_SET }
-data class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card()
+data class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card() {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ScaryMary) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
+}
 
 enum class SpecialCardType { PIRATE, SKULL_KING, MERMAID, ESCAPE }
 open class SpecialCard(val type: SpecialCardType) : Card() {

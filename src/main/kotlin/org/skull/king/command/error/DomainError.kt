@@ -20,3 +20,4 @@ data class SkullKingNotReadyError(val e: String, val c: Command) : DomainError(e
 data class PlayerDoNotHaveCardError(val e: String, val c: PlayCard) : DomainError(e)
 data class CardNotAllowedError(val c: PlayCard) : DomainError("${c.card} is not allowed to be played.")
 data class NotYourTurnError(val c: PlayCard) : DomainError("It is not your turn to play. $c")
+data class ScaryMaryUsageError(val c: PlayCard) : DomainError("You must announce Scary Mary usage. $c")
