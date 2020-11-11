@@ -64,7 +64,7 @@ class FullGameTest {
                         AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, 0).process().await()
                     }
 
-                    await atMost Duration.ofSeconds(2) untilAsserted {
+                    await atMost Duration.ofSeconds(5) untilAsserted {
                         val f = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
                         println("F${firstPlayer.id}: ${f.cards}; CARD: ${fullDeckMocked[firstPlayerCard]}: $firstPlayerCard")
                         val s = GetPlayer(gameId, secondPlayer.id).process().first() as ReadPlayer
@@ -78,7 +78,7 @@ class FullGameTest {
                         PlayCard(gameId, firstPlayer.id, fullDeckMocked[firstPlayerCard]).process().await()
                     }
 
-                    await atMost Duration.ofSeconds(2) untilAsserted {
+                    await atMost Duration.ofSeconds(5) untilAsserted {
                         val f = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
 
                         Assertions.assertThat(f.cards).doesNotContain(fullDeckMocked[firstPlayerCard])
@@ -88,7 +88,7 @@ class FullGameTest {
                         PlayCard(gameId, secondPlayer.id, fullDeckMocked[secondPlayerCard]).process().await()
                     }
 
-                    await atMost Duration.ofSeconds(2) untilAsserted {
+                    await atMost Duration.ofSeconds(5) untilAsserted {
                         val s = GetPlayer(gameId, secondPlayer.id).process().first() as ReadPlayer
 
                         Assertions.assertThat(s.cards).doesNotContain(fullDeckMocked[secondPlayerCard])

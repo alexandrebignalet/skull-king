@@ -24,7 +24,6 @@ import org.skull.king.functional.Valid
 import org.skull.king.query.GetPlayer
 import org.skull.king.query.ReadPlayer
 import java.time.Duration
-import java.time.temporal.ChronoUnit
 
 class ScoreBonusTest {
 
@@ -78,7 +77,7 @@ class ScoreBonusTest {
             }
 
             // Then
-            await atMost (Duration.of(1, ChronoUnit.SECONDS)) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val firstFoldWinner = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
                 Assertions.assertThat(firstFoldWinner.scorePerRound[firstRoundNb]?.announced)
                     .isEqualTo(firstFoldWinnerAnnounce)
@@ -125,7 +124,7 @@ class ScoreBonusTest {
             }
 
             // The winner gains a potential bonus
-            await atMost Duration.ofSeconds(1) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val secondFoldWinner = GetPlayer(gameId, newThirdPlayer).process().first() as ReadPlayer
                 Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.announced)
                     .isEqualTo(futureWinnerAnnounce)
@@ -156,7 +155,7 @@ class ScoreBonusTest {
             }
 
             // At the end of the round the bonus is kept
-            await atMost Duration.ofSeconds(1) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val secondFoldWinner = GetPlayer(gameId, newThirdPlayer).process().first() as ReadPlayer
                 Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.announced)
                     .isEqualTo(futureWinnerAnnounce)
@@ -202,7 +201,7 @@ class ScoreBonusTest {
             }
 
             // The winner gains a potential bonus
-            await atMost Duration.ofSeconds(1) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val secondFoldWinner = GetPlayer(gameId, newThirdPlayer).process().first() as ReadPlayer
                 Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.announced)
                     .isEqualTo(futureWinnerAnnounce)
@@ -233,7 +232,7 @@ class ScoreBonusTest {
             }
 
             // At the end of the round the bonus is kept
-            await atMost Duration.ofSeconds(1) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val secondFoldWinner = GetPlayer(gameId, newThirdPlayer).process().first() as ReadPlayer
                 Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.announced)
                     .isEqualTo(futureWinnerAnnounce)

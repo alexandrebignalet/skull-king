@@ -21,7 +21,6 @@ import org.skull.king.functional.Valid
 import org.skull.king.query.GetGame
 import org.skull.king.query.ReadSkullKing
 import java.time.Duration
-import java.time.temporal.ChronoUnit
 
 class ReadySkullKingTest {
 
@@ -55,7 +54,7 @@ class ReadySkullKingTest {
                 PlayCard(gameId, secondPlayer.id, mockedCard.last()).process().await()
             }
 
-            await atMost Duration.of(2, ChronoUnit.SECONDS) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val game = GetGame(gameId).process().first() as ReadSkullKing
                 Assertions.assertThat(game.roundNb).isEqualTo(2)
             }

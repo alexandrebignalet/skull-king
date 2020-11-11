@@ -29,7 +29,6 @@ import org.skull.king.query.GetPlayer
 import org.skull.king.query.ReadPlayer
 import org.skull.king.query.ReadSkullKing
 import java.time.Duration
-import java.time.temporal.ChronoUnit
 
 class MultiFoldPlayCardTest {
 
@@ -76,7 +75,7 @@ class MultiFoldPlayCardTest {
             }
 
             // Then
-            await atMost (Duration.of(2, ChronoUnit.SECONDS)) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val firstFoldWinner = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
                 Assertions.assertThat(firstFoldWinner.scorePerRound[firstRoundNb]?.announced)
                     .isEqualTo(firstFoldWinnerAnnounce)
@@ -111,7 +110,7 @@ class MultiFoldPlayCardTest {
 
 
             // Then
-            await atMost Duration.ofSeconds(1) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val secondFoldWinner = GetPlayer(gameId, newSecondPlayer).process().first() as ReadPlayer
                 Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.announced)
                     .isEqualTo(futureWinnerAnnounce)
@@ -162,7 +161,7 @@ class MultiFoldPlayCardTest {
                 PlayCard(gameId, newSecondPlayer, mockedCard[3]).process().await()
             }
 
-            await atMost Duration.ofSeconds(1) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val game = GetGame(gameId).process().first() as ReadSkullKing
                 Assertions.assertThat(game.fold.size).isEqualTo(2)
             }
@@ -178,7 +177,7 @@ class MultiFoldPlayCardTest {
                 Assertions.assertThat(ok).isInstanceOf(Valid::class.java)
             }
 
-            await atMost Duration.ofSeconds(1) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val game = GetGame(gameId).process().first() as ReadSkullKing
                 Assertions.assertThat(game.firstPlayerId).isEqualTo(newFirstPlayer)
             }

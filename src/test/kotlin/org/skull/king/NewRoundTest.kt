@@ -78,7 +78,7 @@ class NewRoundTest {
             }
 
             // Then
-            await atMost Duration.ofSeconds(1) untilAsserted {
+            await atMost Duration.ofSeconds(5) untilAsserted {
                 val game = GetGame(startedEvent.gameId).process().first() as ReadSkullKing
                 Assertions.assertThat(game.roundNb).isEqualTo(2)
 

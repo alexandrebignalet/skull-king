@@ -37,7 +37,6 @@ import org.skull.king.query.GetPlayer
 import org.skull.king.query.ReadPlayer
 import org.skull.king.query.ReadSkullKing
 import java.time.Duration
-import java.time.temporal.ChronoUnit
 
 class BasePlayCardTest {
 
@@ -143,7 +142,7 @@ class BasePlayCardTest {
                     Assertions.assertThat((error as Invalid).err).isInstanceOf(NotYourTurnError::class.java)
                 }
 
-                await atMost Duration.ofSeconds(1) untilAsserted {
+                await atMost Duration.ofSeconds(5) untilAsserted {
                     val game = GetGame(startedEvent.gameId).process().first() as ReadSkullKing
                     Assertions.assertThat(game.firstPlayerId).isEqualTo(currentPlayer.id)
                 }
@@ -269,7 +268,7 @@ class BasePlayCardTest {
                 }
 
                 // Then
-                await atMost (Duration.of(2, ChronoUnit.SECONDS)) untilAsserted {
+                await atMost Duration.ofSeconds(5) untilAsserted {
                     val winner = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
                     Assertions.assertThat(winner.scorePerRound[roundNb]?.announced).isEqualTo(futureWinnerAnnounce)
                     Assertions.assertThat(winner.scorePerRound[roundNb]?.done).isEqualTo(1)
