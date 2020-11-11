@@ -1,13 +1,13 @@
 package org.skull.king.command
 
-import org.skull.king.eventStore.CardPlayed
-import org.skull.king.eventStore.Event
-import org.skull.king.eventStore.FoldWinnerSettled
-import org.skull.king.eventStore.GameFinished
-import org.skull.king.eventStore.NewRoundStarted
-import org.skull.king.eventStore.PlayerAnnounced
-import org.skull.king.eventStore.SkullKingEvent
-import org.skull.king.eventStore.Started
+import org.skull.king.event.CardPlayed
+import org.skull.king.event.Event
+import org.skull.king.event.FoldWinnerSettled
+import org.skull.king.event.GameFinished
+import org.skull.king.event.NewRoundStarted
+import org.skull.king.event.PlayerAnnounced
+import org.skull.king.event.SkullKingEvent
+import org.skull.king.event.Started
 import java.util.*
 
 interface EventComposable<T : Event> {
@@ -38,15 +38,13 @@ sealed class SkullKing(val id: String) : EventComposable<SkullKingEvent> {
 
     abstract override fun compose(e: SkullKingEvent): SkullKing
 
-    // players are ordered since player at index NEXT_FIRST_PLAYER_INDEX is always the next dealer
-    open fun distributeCards(
-        players: List<String>,
-        foldCount: Int,
-        gameId: String = id,
-        firstPlayerIndex: Int = players.indexOf(players.random())
-    ): List<NewPlayer> {
+    open fun nextFirstPlayerIndex() = 0
+
+    fun distributeCards(players: List<String>, foldCount: Int, gameId: String = id): List<NewPlayer> {
+        val nextFirstPlayerIndex = nextFirstPlayerIndex()
         val deck = Deck()
-        val distributionOrder = players.subList(firstPlayerIndex, players.size) + players.subList(0, firstPlayerIndex)
+        val distributionOrder =
+            players.subList(nextFirstPlayerIndex, players.size) + players.subList(0, nextFirstPlayerIndex)
 
         val cardsByPlayer: MutableMap<String, List<Card>> =
             distributionOrder.associateWith { listOf<Card>() }.toMutableMap()
@@ -79,7 +77,12 @@ data class NewRound(val gameId: String, val players: List<Player>, val roundNb: 
             }
 
             val allPlayersAnnounced = updatedPlayers.all { it is ReadyPlayer }
-            if (allPlayersAnnounced) ReadySkullKing(gameId, updatedPlayers as List<ReadyPlayer>, roundNb)
+            if (allPlayersAnnounced) ReadySkullKing(
+                gameId,
+                updatedPlayers as List<ReadyPlayer>,
+                roundNb,
+                firstPlayerIndex = 0
+            )
             else NewRound(gameId, updatedPlayers, roundNb)
         }
         else -> this
@@ -99,24 +102,52 @@ data class ReadySkullKing(
     val players: List<ReadyPlayer>,
     val roundNb: Int,
     val currentFold: Map<PlayerId, Card> = mapOf(),
-    val foldPlayedNb: Int = 0
+    val foldPlayedNb: Int = 0,
+    val firstPlayerIndex: Int
 ) : SkullKing(gameId) {
 
     override fun compose(e: SkullKingEvent) = when (e) {
-        is CardPlayed -> {
-            ReadySkullKing(
-                gameId,
-                removeCardFromPlayerHand(e),
-                roundNb,
-                addCardInFold(e),
-                foldPlayedNb
-            )
-        }
-        is FoldWinnerSettled -> ReadySkullKing(gameId, players, roundNb, foldPlayedNb = foldPlayedNb + 1)
+        is CardPlayed -> ReadySkullKing(
+            gameId,
+            removeCardFromPlayerHand(e),
+            roundNb,
+            addCardInFold(e),
+            foldPlayedNb,
+            firstPlayerIndex
+        )
+        is FoldWinnerSettled -> ReadySkullKing(
+            gameId,
+            setWinnerFirst(e.winner),
+            roundNb,
+            foldPlayedNb = foldPlayedNb + 1,
+            firstPlayerIndex = firstPlayerIndex
+        )
         is NewRoundStarted -> NewRound(gameId, e.players, roundNb + 1)
         is GameFinished -> skullKingOver
         else -> this
     }
+
+    fun doesPlayerHaveCard(playerId: String, card: Card): Boolean =
+        players.find { it.id == playerId }?.cards?.any { it == card } ?: false
+
+    fun has(playerId: String) = players.any { it.id == playerId }
+
+    fun isLastFoldPlay() = players.size == currentFold.size
+
+    fun isCardPlayNotAllowed(playerId: PlayerId, card: Card) = players.find { it.id == playerId }?.let {
+        !isCardPlayAllowed(currentFold.values.toList(), it.cards, card)
+    } ?: false
+
+    fun isNextFoldLastFoldOfRound() = foldPlayedNb + 1 == roundNb
+
+    fun isOver() = roundNb + 1 > MAX_ROUND
+
+    fun isPlayerTurn(playerId: PlayerId): Boolean {
+        val firstDidNotPlay: PlayerId? = players.firstOrNull { it.cards.size == (roundNb - foldPlayedNb) }?.id
+        return firstDidNotPlay?.let { it == playerId } ?: false
+    }
+
+    override fun nextFirstPlayerIndex(): Int = (firstPlayerIndex + 1).let { if (it > players.size) 0 else it }
 
     private fun removeCardFromPlayerHand(event: CardPlayed) = players.map {
         if (it.id == event.playerId)
@@ -130,19 +161,10 @@ data class ReadySkullKing(
         return updateFold.toMap()
     }
 
-    fun doesPlayerHaveCard(playerId: String, card: Card): Boolean =
-        players.find { it.id == playerId }?.cards?.any { it == card } ?: false
-
-    fun has(playerId: String) = players.any { it.id == playerId }
-
-    fun isLastFoldPlay() = players.size == currentFold.size + 1
-
-    fun isCardPlayNotAllowed(playerId: PlayerId, card: Card) = players.find { it.id == playerId }?.let {
-        !isCardPlayAllowed(currentFold.values.toList(), it.cards, card)
-    } ?: false
-
-    fun isNextFoldLastFoldOfRound() = foldPlayedNb + 1 == roundNb
-    fun isOver() = roundNb + 1 > MAX_ROUND
+    private fun setWinnerFirst(winner: PlayerId): List<ReadyPlayer> {
+        val winnerIndex = players.map { it.id }.indexOf(winner)
+        return players.subList(winnerIndex, players.size) + players.subList(0, winnerIndex)
+    }
 }
 
 object skullKingOver : SkullKing("") {
@@ -172,7 +194,25 @@ data class ColoredCard(val value: Int, val color: CardColor) : Card()
 enum class CardColor { RED, BLUE, YELLOW, BLACK }
 enum class ScaryMaryUsage { ESCAPE, PIRATE, NOT_SET }
 data class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card()
-open class SpecialCard(val type: SpecialCardType) : Card()
+open class SpecialCard(val type: SpecialCardType) : Card() {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SpecialCard) return false
+
+        if (type != other.type) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return type.hashCode()
+    }
+
+    override fun toString(): String {
+        return "SpecialCard(type=$type)"
+    }
+}
+
 enum class SpecialCardType { PIRATE, SKULL_KING, MERMAID, ESCAPE }
 
 /**

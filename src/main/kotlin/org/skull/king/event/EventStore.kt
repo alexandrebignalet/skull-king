@@ -1,4 +1,4 @@
-package org.skull.king.eventStore
+package org.skull.king.event
 
 import kotlinx.coroutines.channels.SendChannel
 

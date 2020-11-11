@@ -1,4 +1,4 @@
-package org.skull.king.eventStore
+package org.skull.king.event
 
 import org.skull.king.command.Card
 import org.skull.king.command.NewPlayer
@@ -26,7 +26,8 @@ data class PlayerAnnounced(override val gameId: String, val playerId: String, va
 
 data class CardPlayed(override val gameId: String, val playerId: String, val card: Card) : SkullKingEvent()
 
-data class FoldWinnerSettled(override val gameId: String, val winner: PlayerId) : SkullKingEvent()
+data class FoldWinnerSettled(override val gameId: String, val winner: PlayerId, val potentialBonus: Int) :
+    SkullKingEvent()
 
 data class NewRoundStarted(override val gameId: String, val nextRoundNb: Int, val players: List<NewPlayer>) :
     SkullKingEvent()

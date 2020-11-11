@@ -1,25 +1,33 @@
 package org.skull.king.application
 
-import org.skull.king.query.Query
-import org.skull.king.eventStore.EventStoreInMemory
-import org.skull.king.functional.Invalid
-import org.skull.king.query.ReadEntity
-import org.skull.king.query.QueryHandler
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import org.skull.king.command.CmdResult
 import org.skull.king.command.Command
 import org.skull.king.command.CommandHandler
 import org.skull.king.command.DomainError
+import org.skull.king.event.EventHandler
+import org.skull.king.event.EventStoreInMemory
+import org.skull.king.functional.Invalid
+import org.skull.king.query.Query
+import org.skull.king.query.QueryHandler
+import org.skull.king.query.ReadEntity
 
 
 class Application {
 
     private val eventStore = EventStoreInMemory()
     private val commandHandler = CommandHandler(eventStore)
+    private val eventHandler = EventHandler(commandHandler, eventStore)
     private val queryHandler = QueryHandler()
 
     fun start() {
         eventStore.addListener(queryHandler.eventChannel)
+        eventStore.addListener(eventHandler.eventChannel)
         eventStore.loadAllEvents()
     }
 
@@ -33,8 +41,8 @@ class Application {
                 it.process().await()
                 yield()
             }
-            .filterIsInstance<Invalid<DomainError>>()
-            .map { it.err }
+                .filterIsInstance<Invalid<DomainError>>()
+                .map { it.err }
         }
 
     fun List<Command>.processAllAsync(): Deferred<List<CmdResult>> =

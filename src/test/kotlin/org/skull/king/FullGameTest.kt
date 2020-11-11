@@ -19,7 +19,7 @@ import org.skull.king.command.Player
 import org.skull.king.command.SpecialCard
 import org.skull.king.command.SpecialCardType
 import org.skull.king.command.StartSkullKing
-import org.skull.king.eventStore.Started
+import org.skull.king.event.Started
 import org.skull.king.functional.Valid
 import org.skull.king.query.GetPlayer
 import org.skull.king.query.ReadPlayer
@@ -36,6 +36,7 @@ class FullGameTest {
     }
 
     @Test
+//    @Disabled
     fun `Should end the game at the end of the 10th round`() {
         application.apply {
             lateinit var firstPlayer: Player
@@ -115,45 +116,45 @@ class FullGameTest {
         ColoredCard(3, CardColor.RED),
         ColoredCard(2, CardColor.BLUE),
 
-        ColoredCard(1, CardColor.RED),
         ColoredCard(2, CardColor.RED),
-        ColoredCard(3, CardColor.RED),
+        ColoredCard(1, CardColor.RED),
         ColoredCard(4, CardColor.RED),
-        ColoredCard(5, CardColor.RED),
+        ColoredCard(3, CardColor.RED),
         ColoredCard(6, CardColor.RED),
+        ColoredCard(5, CardColor.RED),
 
-        ColoredCard(1, CardColor.RED),
         ColoredCard(2, CardColor.RED),
-        ColoredCard(3, CardColor.RED),
+        ColoredCard(1, CardColor.RED),
         ColoredCard(4, CardColor.RED),
-        ColoredCard(5, CardColor.RED),
+        ColoredCard(3, CardColor.RED),
         ColoredCard(6, CardColor.RED),
-        ColoredCard(7, CardColor.RED),
+        ColoredCard(5, CardColor.RED),
         ColoredCard(8, CardColor.RED),
+        ColoredCard(7, CardColor.RED),
 
-        ColoredCard(1, CardColor.RED),
         ColoredCard(2, CardColor.RED),
-        ColoredCard(3, CardColor.RED),
+        ColoredCard(1, CardColor.RED),
         ColoredCard(4, CardColor.RED),
-        ColoredCard(5, CardColor.RED),
+        ColoredCard(3, CardColor.RED),
         ColoredCard(6, CardColor.RED),
-        ColoredCard(7, CardColor.RED),
+        ColoredCard(5, CardColor.RED),
         ColoredCard(8, CardColor.RED),
-        ColoredCard(9, CardColor.RED),
+        ColoredCard(7, CardColor.RED),
         ColoredCard(10, CardColor.RED),
-
-        ColoredCard(1, CardColor.RED),
-        ColoredCard(2, CardColor.RED),
-        ColoredCard(3, CardColor.RED),
-        ColoredCard(4, CardColor.RED),
-        ColoredCard(5, CardColor.RED),
-        ColoredCard(6, CardColor.RED),
-        ColoredCard(7, CardColor.RED),
-        ColoredCard(8, CardColor.RED),
         ColoredCard(9, CardColor.RED),
+
+        ColoredCard(2, CardColor.RED),
+        ColoredCard(1, CardColor.RED),
+        ColoredCard(4, CardColor.RED),
+        ColoredCard(3, CardColor.RED),
+        ColoredCard(6, CardColor.RED),
+        ColoredCard(5, CardColor.RED),
+        ColoredCard(8, CardColor.RED),
+        ColoredCard(7, CardColor.RED),
         ColoredCard(10, CardColor.RED),
-        ColoredCard(11, CardColor.RED),
+        ColoredCard(9, CardColor.RED),
         ColoredCard(12, CardColor.RED),
+        ColoredCard(11, CardColor.RED),
 
         ColoredCard(1, CardColor.RED),
         ColoredCard(1, CardColor.BLUE),

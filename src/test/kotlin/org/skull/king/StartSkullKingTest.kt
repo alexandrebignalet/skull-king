@@ -16,7 +16,7 @@ import org.skull.king.command.Player
 import org.skull.king.command.SkullKing
 import org.skull.king.command.SkullKingConfigurationError
 import org.skull.king.command.StartSkullKing
-import org.skull.king.eventStore.Started
+import org.skull.king.event.Started
 import org.skull.king.functional.Invalid
 import org.skull.king.functional.Valid
 

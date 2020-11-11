@@ -11,15 +11,14 @@ import org.skull.king.command.PlayerNotInGameError
 import org.skull.king.command.SkullKingAlreadyReadyError
 import org.skull.king.command.SkullKingNotStartedError
 import org.skull.king.command.StartSkullKing
-import org.skull.king.eventStore.PlayerAnnounced
-import org.skull.king.eventStore.Started
+import org.skull.king.event.PlayerAnnounced
+import org.skull.king.event.Started
 import org.skull.king.functional.Invalid
 import org.skull.king.functional.Valid
 import org.skull.king.query.GetGame
 import org.skull.king.query.GetPlayer
 import org.skull.king.query.ReadPlayer
 import org.skull.king.query.ReadSkullKing
-import org.skull.king.query.announced
 
 class AnnounceWinningCardsFoldCountTest {
 
@@ -87,7 +86,7 @@ class AnnounceWinningCardsFoldCountTest {
 
                 val player = (GetPlayer(gameId, announcingPlayerId).process() as List<ReadPlayer>).first()
                 Assertions.assertThat(player.id).isEqualTo(announcingPlayerId)
-                Assertions.assertThat(player.score[roundNb]?.announced).isEqualTo(firstPlayerAnnounce)
+                Assertions.assertThat(player.scorePerRound[roundNb]?.announced).isEqualTo(firstPlayerAnnounce)
             }
         }
     }

@@ -16,7 +16,7 @@ import org.skull.king.command.PlayCard
 import org.skull.king.command.SpecialCard
 import org.skull.king.command.SpecialCardType
 import org.skull.king.command.StartSkullKing
-import org.skull.king.eventStore.Started
+import org.skull.king.event.Started
 import org.skull.king.functional.Valid
 import org.skull.king.query.GetGame
 import org.skull.king.query.ReadSkullKing

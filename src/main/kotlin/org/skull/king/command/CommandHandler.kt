@@ -6,16 +6,15 @@ import org.skull.king.application.createActor
 import org.skull.king.command.SkullKing.Companion.FIRST_ROUND_NB
 import org.skull.king.command.SkullKing.Companion.MAX_PLAYERS
 import org.skull.king.command.SkullKing.Companion.MIN_PLAYERS
-import org.skull.king.command.SkullKing.Companion.NEXT_FIRST_PLAYER_INDEX
-import org.skull.king.eventStore.CardPlayed
-import org.skull.king.eventStore.Event
-import org.skull.king.eventStore.EventStore
-import org.skull.king.eventStore.FoldWinnerSettled
-import org.skull.king.eventStore.GameFinished
-import org.skull.king.eventStore.NewRoundStarted
-import org.skull.king.eventStore.PlayerAnnounced
-import org.skull.king.eventStore.SkullKingEvent
-import org.skull.king.eventStore.Started
+import org.skull.king.event.CardPlayed
+import org.skull.king.event.Event
+import org.skull.king.event.EventStore
+import org.skull.king.event.FoldWinnerSettled
+import org.skull.king.event.GameFinished
+import org.skull.king.event.NewRoundStarted
+import org.skull.king.event.PlayerAnnounced
+import org.skull.king.event.SkullKingEvent
+import org.skull.king.event.Started
 import org.skull.king.functional.Invalid
 import org.skull.king.functional.Valid
 import org.skull.king.functional.Validated
@@ -52,6 +51,7 @@ class CommandHandler(val eventStore: EventStore) {
             is StartSkullKing -> execute(c)
             is AnnounceWinningCardsFoldCount -> execute(c)
             is PlayCard -> execute(c)
+            is SettleFoldWinner -> execute(c)
         }
     }
 
@@ -103,6 +103,50 @@ private fun execute(c: AnnounceWinningCardsFoldCount): EsScope = {
     }
 }
 
+private fun execute(c: SettleFoldWinner): EsScope = {
+    when (val game = getEvents<SkullKingEvent>(c.gameId).fold()) {
+        is ReadySkullKing -> when {
+            game.isLastFoldPlay() -> {
+                val (winner, potentialBonus) = settleFoldWinner(game.currentFold)
+                val events = listOf(FoldWinnerSettled(game.id, winner, potentialBonus))
+
+                when {
+                    game.isNextFoldLastFoldOfRound() -> {
+                        val nextRoundNb = game.roundNb + 1
+
+                        when {
+                            game.isOver() -> Valid(events + GameFinished(game.id))
+                            else -> Valid(
+                                events + NewRoundStarted(
+                                    game.id,
+                                    nextRoundNb,
+                                    game.distributeCards(
+                                        game.players.map { it.id },
+                                        nextRoundNb
+                                    )
+                                )
+                            )
+                        }
+                    }
+                    else -> Valid(events)
+                }
+            }
+            else -> Invalid(
+                SkullKingNotReadyError(
+                    "Cannot settle a fold if fold not finished",
+                    c
+                )
+            )
+        }
+        else -> Invalid(
+            SkullKingNotReadyError(
+                "Cannot settle a fold if skullking not ready",
+                c
+            )
+        )
+    }
+}
+
 private fun execute(c: PlayCard): EsScope = {
     when (val game = getEvents<SkullKingEvent>(c.gameId).fold()) {
         is NewRound -> Invalid(
@@ -118,6 +162,7 @@ private fun execute(c: PlayCard): EsScope = {
                     c
                 )
             )
+            !game.isPlayerTurn(c.playerId) -> Invalid(NotYourTurnError(c))
             game.doesPlayerHaveCard(c.playerId, c.card) -> {
                 val cardPlayed = CardPlayed(
                     game.id,
@@ -127,34 +172,6 @@ private fun execute(c: PlayCard): EsScope = {
 
                 when {
                     game.isCardPlayNotAllowed(c.playerId, c.card) -> Invalid(CardNotAllowedError(c))
-                    game.isLastFoldPlay() -> {
-                        val events = listOf(
-                            cardPlayed,
-                            FoldWinnerSettled(game.id, settleFoldWinner(game.currentFold))
-                        )
-
-                        when {
-                            game.isNextFoldLastFoldOfRound() -> {
-                                val nextRoundNb = game.roundNb + 1
-
-                                when {
-                                    game.isOver() -> Valid(events + GameFinished(game.id))
-                                    else -> Valid(
-                                        events + NewRoundStarted(
-                                            game.id,
-                                            nextRoundNb,
-                                            game.distributeCards(
-                                                game.players.map { it.id },
-                                                nextRoundNb,
-                                                firstPlayerIndex = NEXT_FIRST_PLAYER_INDEX
-                                            )
-                                        )
-                                    )
-                                }
-                            }
-                            else -> Valid(events)
-                        }
-                    }
                     else -> Valid(listOf(cardPlayed))
                 }
             }
@@ -173,8 +190,12 @@ private fun execute(c: PlayCard): EsScope = {
 typealias Fold = List<PlayerCard>
 
 data class PlayerCard(val playerId: PlayerId, val card: Card)
+data class FoldSettlement(val winner: PlayerId, val potentialBonus: Int = 0)
 
-fun settleFoldWinner(foldPlayed: Map<PlayerId, Card>): PlayerId {
+const val MERMAID_SKULLKING_BONUS = 50
+const val SKULLKING_BONUS_PER_PIRATE = 30
+
+fun settleFoldWinner(foldPlayed: Map<PlayerId, Card>): FoldSettlement {
     val fold = foldPlayed.map { PlayerCard(it.key, it.value) }
 
     val skullKing = fold.skullKing()
@@ -182,21 +203,17 @@ fun settleFoldWinner(foldPlayed: Map<PlayerId, Card>): PlayerId {
     val mermaids = fold.mermaids()
     val highestBlackCard = fold.highestOf(CardColor.BLACK)
 
-    val winningCard: PlayerCard = when {
+    return when {
         skullKing.isNotEmpty() -> when {
-            mermaids.isNotEmpty() -> mermaids.first()
-            else -> skullKing.first()
+            mermaids.isNotEmpty() -> FoldSettlement(mermaids.first().playerId, MERMAID_SKULLKING_BONUS)
+            else -> FoldSettlement(skullKing.first().playerId, pirates.size * SKULLKING_BONUS_PER_PIRATE)
         }
-        pirates.isNotEmpty() -> pirates.first()
-        mermaids.isNotEmpty() -> mermaids.first()
-        highestBlackCard != null -> highestBlackCard
-        fold.onlyEscapes() -> fold.first()
-        else -> requireNotNull(
-            fold.highestOf(requireNotNull(fold.colorAsked()))
-        )
+        pirates.isNotEmpty() -> FoldSettlement(pirates.first().playerId)
+        mermaids.isNotEmpty() -> FoldSettlement(mermaids.first().playerId)
+        highestBlackCard != null -> FoldSettlement(highestBlackCard.playerId)
+        fold.onlyEscapes() -> FoldSettlement(fold.first().playerId)
+        else -> FoldSettlement(requireNotNull(fold.highestOf(requireNotNull(fold.colorAsked()))).playerId)
     }
-
-    return winningCard.playerId
 }
 
 private fun Fold.skullKing() = filter { it.card is SpecialCard && it.card.type == SpecialCardType.SKULL_KING }

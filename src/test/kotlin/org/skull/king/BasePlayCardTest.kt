@@ -17,6 +17,7 @@ import org.skull.king.command.CardColor
 import org.skull.king.command.ColoredCard
 import org.skull.king.command.Deck
 import org.skull.king.command.NewPlayer
+import org.skull.king.command.NotYourTurnError
 import org.skull.king.command.PlayCard
 import org.skull.king.command.Player
 import org.skull.king.command.PlayerDoNotHaveCardError
@@ -27,16 +28,14 @@ import org.skull.king.command.SkullKingNotStartedError
 import org.skull.king.command.SpecialCard
 import org.skull.king.command.SpecialCardType
 import org.skull.king.command.StartSkullKing
-import org.skull.king.eventStore.CardPlayed
-import org.skull.king.eventStore.Started
+import org.skull.king.event.CardPlayed
+import org.skull.king.event.Started
 import org.skull.king.functional.Invalid
 import org.skull.king.functional.Valid
 import org.skull.king.query.GetGame
 import org.skull.king.query.GetPlayer
 import org.skull.king.query.ReadPlayer
 import org.skull.king.query.ReadSkullKing
-import org.skull.king.query.announced
-import org.skull.king.query.done
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
@@ -118,6 +117,44 @@ class BasePlayCardTest {
                     Assertions.assertThat(event.playerId).isEqualTo(currentPlayer.id)
                     Assertions.assertThat(event.gameId).isEqualTo(gameId)
                     Assertions.assertThat(event.card).isEqualTo(cardPlayed)
+                }
+            }
+        }
+
+        @Test
+        fun `Should return error if not player turn`() {
+            application.apply {
+                // Second instead of first
+                lateinit var startedEvent: Started
+                lateinit var currentPlayer: Player
+                lateinit var otherPlayer: Player
+
+                runBlocking {
+                    startedEvent =
+                        (StartSkullKing(gameId, players).process().await() as Valid).value.single() as Started
+                    currentPlayer = startedEvent.players.first()
+                    otherPlayer = startedEvent.players.last()
+                    AnnounceWinningCardsFoldCount(gameId, currentPlayer.id, 1).process().await()
+                    AnnounceWinningCardsFoldCount(gameId, otherPlayer.id, 1).process().await()
+
+                    val cardPlayed = (otherPlayer as NewPlayer).cards.first()
+                    val error = PlayCard(gameId, otherPlayer.id, cardPlayed).process().await()
+
+                    Assertions.assertThat((error as Invalid).err).isInstanceOf(NotYourTurnError::class.java)
+                }
+
+                await atMost Duration.ofSeconds(1) untilAsserted {
+                    val game = GetGame(startedEvent.gameId).process().first() as ReadSkullKing
+                    Assertions.assertThat(game.firstPlayerId).isEqualTo(currentPlayer.id)
+                }
+
+                // First two times in a row
+                runBlocking {
+                    val cardPlayed = (currentPlayer as NewPlayer).cards.first()
+                    PlayCard(gameId, currentPlayer.id, cardPlayed).process().await()
+                    val error = PlayCard(gameId, currentPlayer.id, cardPlayed).process().await()
+
+                    Assertions.assertThat((error as Invalid).err).isInstanceOf(NotYourTurnError::class.java)
                 }
             }
         }
@@ -234,12 +271,16 @@ class BasePlayCardTest {
                 // Then
                 await atMost (Duration.of(2, ChronoUnit.SECONDS)) untilAsserted {
                     val winner = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
-                    Assertions.assertThat(winner.score[roundNb]?.announced).isEqualTo(futureWinnerAnnounce)
-                    Assertions.assertThat(winner.score[roundNb]?.done).isEqualTo(1)
+                    Assertions.assertThat(winner.scorePerRound[roundNb]?.announced).isEqualTo(futureWinnerAnnounce)
+                    Assertions.assertThat(winner.scorePerRound[roundNb]?.done).isEqualTo(1)
+                    Assertions.assertThat(winner.scorePerRound[roundNb]?.bonus).isEqualTo(50)
+                    Assertions.assertThat(winner.scorePerRound[roundNb]?.potentialBonus).isEqualTo(50)
 
                     val loser = GetPlayer(gameId, secondPlayer.id).process().first() as ReadPlayer
-                    Assertions.assertThat(loser.score[roundNb]?.announced).isEqualTo(futureLoserAnnounce)
-                    Assertions.assertThat(loser.score[roundNb]?.done).isEqualTo(0)
+                    Assertions.assertThat(loser.scorePerRound[roundNb]?.announced).isEqualTo(futureLoserAnnounce)
+                    Assertions.assertThat(loser.scorePerRound[roundNb]?.done).isEqualTo(0)
+                    Assertions.assertThat(loser.scorePerRound[roundNb]?.bonus).isEqualTo(0)
+                    Assertions.assertThat(loser.scorePerRound[roundNb]?.potentialBonus).isEqualTo(0)
                 }
             }
         }
