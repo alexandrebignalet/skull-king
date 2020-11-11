@@ -57,7 +57,7 @@ object FoldSettlementService {
     }
 
     private fun Fold.highestOf(colorAsked: CardColor) =
-        filter { it.card is ColoredCard && it.card.color == colorAsked }.maxBy { (it.card as ColoredCard).value }
+        filter { it.card is ColoredCard && it.card.color == colorAsked }.maxByOrNull { (it.card as ColoredCard).value }
 
     private fun Fold.colorAsked() =
         firstOrNull { it.card is ColoredCard }?.let { (_, card) -> (card as ColoredCard).color }
