@@ -22,7 +22,7 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 mainClassName = 'org.skull.king.SkullKingApplication'
 project.ext {
     configPath = "$rootProject.projectDir/src/main/resources/"
@@ -50,14 +50,6 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-shadowJar {
-    mergeServiceFiles()
-    exclude 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.SF'
-    manifest {
-        attributes 'Main-Class': mainClassName
-    }
-}
-
 // TEST
 test {
     useJUnitPlatform()
@@ -75,7 +67,27 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
+// FAT JAR
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.SF'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
 // RUN
 run {
     args 'server', configPath + 'dev.yml'
+}
+
+// STAGE for Heroku
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(stage)) {
+        test.enabled = false
+    }
+}
+
+task stage {
+    dependsOn build
 }
