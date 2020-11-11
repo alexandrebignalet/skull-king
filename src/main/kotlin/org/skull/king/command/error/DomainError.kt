@@ -1,4 +1,10 @@
-package org.skull.king.command
+package org.skull.king.command.error
+
+import org.skull.king.command.AnnounceWinningCardsFoldCount
+import org.skull.king.command.Command
+import org.skull.king.command.PlayCard
+import org.skull.king.command.StartSkullKing
+import org.skull.king.command.domain.SkullKing
 
 sealed class DomainError(val msg: String)
 

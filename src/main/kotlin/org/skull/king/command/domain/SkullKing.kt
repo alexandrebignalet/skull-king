@@ -1,19 +1,13 @@
-package org.skull.king.command
+package org.skull.king.command.domain
 
+import org.skull.king.command.service.CardService.isCardPlayAllowed
 import org.skull.king.event.CardPlayed
-import org.skull.king.event.Event
 import org.skull.king.event.FoldWinnerSettled
 import org.skull.king.event.GameFinished
 import org.skull.king.event.NewRoundStarted
 import org.skull.king.event.PlayerAnnounced
 import org.skull.king.event.SkullKingEvent
 import org.skull.king.event.Started
-import java.util.*
-
-interface EventComposable<T : Event> {
-    fun compose(e: T): EventComposable<T>
-}
-
 
 sealed class SkullKing(val id: String) : EventComposable<SkullKingEvent> {
     companion object {
@@ -67,35 +61,9 @@ object emptySkullKing : SkullKing("") {
     }
 }
 
-data class NewRound(val gameId: String, val players: List<Player>, val roundNb: Int) : SkullKing(gameId) {
-
-    override fun compose(e: SkullKingEvent) = when (e) {
-        is PlayerAnnounced -> {
-            val updatedPlayers = players.map {
-                if (it.id == e.playerId) ReadyPlayer(it.id, gameId, (it as NewPlayer).cards, e.count)
-                else it
-            }
-
-            val allPlayersAnnounced = updatedPlayers.all { it is ReadyPlayer }
-            if (allPlayersAnnounced) ReadySkullKing(
-                gameId,
-                updatedPlayers as List<ReadyPlayer>,
-                roundNb,
-                firstPlayerIndex = 0
-            )
-            else NewRound(gameId, updatedPlayers, roundNb)
-        }
-        else -> this
-    }
-
-    fun hasAlreadyAnnounced(playerId: String) = players.any {
-        it.id == playerId && it is ReadyPlayer
-    }
-
-    fun has(playerId: String) = players.any { it.id == playerId }
+object skullKingOver : SkullKing("") {
+    override fun compose(e: SkullKingEvent) = this
 }
-
-typealias PlayerId = String
 
 data class ReadySkullKing(
     val gameId: String,
@@ -167,66 +135,32 @@ data class ReadySkullKing(
     }
 }
 
-object skullKingOver : SkullKing("") {
-    override fun compose(e: SkullKingEvent) = this
-}
 
-sealed class Player(val id: String, val skullId: String)
+data class NewRound(val gameId: String, val players: List<Player>, val roundNb: Int) : SkullKing(gameId) {
 
-data class NewPlayer(val playerId: String, val gameId: String, val cards: List<Card>) : Player(playerId, gameId)
+    override fun compose(e: SkullKingEvent) = when (e) {
+        is PlayerAnnounced -> {
+            val updatedPlayers = players.map {
+                if (it.id == e.playerId) ReadyPlayer(it.id, gameId, (it as NewPlayer).cards, e.count)
+                else it
+            }
 
-data class ReadyPlayer(
-    val playerId: String,
-    val gameId: String,
-    val cards: List<Card>,
-    val count: Int
-) : Player(playerId, gameId)
-
-
-data class Deck(val cards: List<Card> = SkullKing.CARDS) {
-    private val deck = cards.shuffled().fold(Stack<Card>(), { acc, s -> acc.push(s); acc })
-
-    fun pop(): Card = deck.pop()
-}
-
-abstract class Card
-data class ColoredCard(val value: Int, val color: CardColor) : Card()
-enum class CardColor { RED, BLUE, YELLOW, BLACK }
-enum class ScaryMaryUsage { ESCAPE, PIRATE, NOT_SET }
-data class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card()
-open class SpecialCard(val type: SpecialCardType) : Card() {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is SpecialCard) return false
-
-        if (type != other.type) return false
-
-        return true
+            val allPlayersAnnounced = updatedPlayers.all { it is ReadyPlayer }
+            if (allPlayersAnnounced) ReadySkullKing(
+                gameId,
+                updatedPlayers as List<ReadyPlayer>,
+                roundNb,
+                firstPlayerIndex = 0
+            )
+            else NewRound(gameId, updatedPlayers, roundNb)
+        }
+        else -> this
     }
 
-    override fun hashCode(): Int {
-        return type.hashCode()
+    fun hasAlreadyAnnounced(playerId: String) = players.any {
+        it.id == playerId && it is ReadyPlayer
     }
 
-    override fun toString(): String {
-        return "SpecialCard(type=$type)"
-    }
+    fun has(playerId: String) = players.any { it.id == playerId }
 }
 
-enum class SpecialCardType { PIRATE, SKULL_KING, MERMAID, ESCAPE }
-
-/**
- * Fold might be ordered as players order
- */
-fun isCardPlayAllowed(aFold: List<Card>, cardsInHand: List<Card>, target: Card): Boolean {
-    if (!cardsInHand.contains(target)) return false
-
-    val colorAsked: ColoredCard? = aFold.firstOrNull { it is ColoredCard } as ColoredCard?
-
-    colorAsked?.let { (_, color): ColoredCard ->
-        if (cardsInHand.filterIsInstance<ColoredCard>().none { it.color == color }) return true
-        if (target is ColoredCard && target.color != color) return false
-    }
-
-    return true
-}

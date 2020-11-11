@@ -11,11 +11,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skull.king.application.Application
 import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.Deck
 import org.skull.king.command.PlayCard
-import org.skull.king.command.SpecialCard
-import org.skull.king.command.SpecialCardType
 import org.skull.king.command.StartSkullKing
+import org.skull.king.command.domain.Deck
+import org.skull.king.command.domain.SpecialCard
+import org.skull.king.command.domain.SpecialCardType
 import org.skull.king.event.Started
 import org.skull.king.functional.Valid
 import org.skull.king.query.GetGame

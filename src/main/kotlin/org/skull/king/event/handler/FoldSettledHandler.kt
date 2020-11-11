@@ -1,24 +1,23 @@
-package org.skull.king.event
+package org.skull.king.event.handler
 
 import org.skull.king.application.createActor
 import org.skull.king.command.CommandHandler
-import org.skull.king.command.ReadySkullKing
 import org.skull.king.command.SettleFoldWinner
-import org.skull.king.command.SkullKing
-import org.skull.king.command.emptySkullKing
+import org.skull.king.command.domain.ReadySkullKing
+import org.skull.king.event.CardPlayed
+import org.skull.king.event.Event
+import org.skull.king.event.EventStoreInMemory
+import org.skull.king.event.SkullKingEvent
+import org.skull.king.event.fold
 
-class EventHandler(
+class FoldSettledHandler(
     private val commandHandler: CommandHandler,
     private val eventStore: EventStoreInMemory
 ) {
 
     val eventChannel = createActor { e: Event -> processEvent(e) }
 
-    private fun List<SkullKingEvent>.fold(): SkullKing {
-        return this.fold(emptySkullKing) { i: SkullKing, e: SkullKingEvent -> i.compose(e) }
-    }
-
-    fun processEvent(e: Event) = when (e) {
+    private fun processEvent(e: Event) = when (e) {
         is CardPlayed -> {
             when (val game = eventStore.getEvents<SkullKingEvent>(e.gameId).fold()) {
                 is ReadySkullKing -> when {

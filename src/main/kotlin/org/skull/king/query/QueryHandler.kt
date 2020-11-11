@@ -3,7 +3,7 @@ package org.skull.king.query
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import org.skull.king.application.createActor
-import org.skull.king.command.NewPlayer
+import org.skull.king.command.domain.NewPlayer
 import org.skull.king.event.CardPlayed
 import org.skull.king.event.Event
 import org.skull.king.event.FoldWinnerSettled

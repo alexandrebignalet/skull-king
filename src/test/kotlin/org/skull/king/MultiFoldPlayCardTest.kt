@@ -11,16 +11,16 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skull.king.application.Application
 import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.CardColor
-import org.skull.king.command.CardNotAllowedError
-import org.skull.king.command.ColoredCard
-import org.skull.king.command.Deck
-import org.skull.king.command.NotYourTurnError
 import org.skull.king.command.PlayCard
-import org.skull.king.command.Player
-import org.skull.king.command.SpecialCard
-import org.skull.king.command.SpecialCardType
 import org.skull.king.command.StartSkullKing
+import org.skull.king.command.domain.CardColor
+import org.skull.king.command.domain.ColoredCard
+import org.skull.king.command.domain.Deck
+import org.skull.king.command.domain.Player
+import org.skull.king.command.domain.SpecialCard
+import org.skull.king.command.domain.SpecialCardType
+import org.skull.king.command.error.CardNotAllowedError
+import org.skull.king.command.error.NotYourTurnError
 import org.skull.king.event.Started
 import org.skull.king.functional.Invalid
 import org.skull.king.functional.Valid
@@ -160,6 +160,11 @@ class MultiFoldPlayCardTest {
 
                 PlayCard(gameId, newFirstPlayer, mockedCard[2]).process().await()
                 PlayCard(gameId, newSecondPlayer, mockedCard[3]).process().await()
+            }
+
+            await atMost Duration.ofSeconds(1) untilAsserted {
+                val game = GetGame(gameId).process().first() as ReadSkullKing
+                Assertions.assertThat(game.fold.size).isEqualTo(2)
             }
 
             newFirstPlayer = firstPlayer.id

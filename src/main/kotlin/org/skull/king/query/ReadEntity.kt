@@ -1,6 +1,6 @@
 package org.skull.king.query
 
-import org.skull.king.command.Card
+import org.skull.king.command.domain.Card
 
 sealed class ReadEntity
 

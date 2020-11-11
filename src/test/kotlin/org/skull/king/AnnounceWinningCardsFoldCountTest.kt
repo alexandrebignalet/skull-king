@@ -6,11 +6,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skull.king.application.Application
 import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.PlayerAlreadyAnnouncedError
-import org.skull.king.command.PlayerNotInGameError
-import org.skull.king.command.SkullKingAlreadyReadyError
-import org.skull.king.command.SkullKingNotStartedError
 import org.skull.king.command.StartSkullKing
+import org.skull.king.command.error.PlayerAlreadyAnnouncedError
+import org.skull.king.command.error.PlayerNotInGameError
+import org.skull.king.command.error.SkullKingAlreadyReadyError
+import org.skull.king.command.error.SkullKingNotStartedError
 import org.skull.king.event.PlayerAnnounced
 import org.skull.king.event.Started
 import org.skull.king.functional.Invalid

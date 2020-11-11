@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.skull.king.application.Application
 import org.skull.king.command.CmdResult
-import org.skull.king.command.Deck
-import org.skull.king.command.NewPlayer
-import org.skull.king.command.Player
-import org.skull.king.command.SkullKing
-import org.skull.king.command.SkullKingConfigurationError
 import org.skull.king.command.StartSkullKing
+import org.skull.king.command.domain.Deck
+import org.skull.king.command.domain.NewPlayer
+import org.skull.king.command.domain.Player
+import org.skull.king.command.domain.SkullKing
+import org.skull.king.command.error.SkullKingConfigurationError
 import org.skull.king.event.Started
 import org.skull.king.functional.Invalid
 import org.skull.king.functional.Valid

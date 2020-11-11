@@ -6,16 +6,16 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
-import org.skull.king.command.Card
-import org.skull.king.command.CardColor
-import org.skull.king.command.ColoredCard
-import org.skull.king.command.FoldSettlement
-import org.skull.king.command.PlayerId
-import org.skull.king.command.ScaryMary
-import org.skull.king.command.ScaryMaryUsage
-import org.skull.king.command.SpecialCard
-import org.skull.king.command.SpecialCardType
-import org.skull.king.command.settleFoldWinner
+import org.skull.king.command.domain.Card
+import org.skull.king.command.domain.CardColor
+import org.skull.king.command.domain.ColoredCard
+import org.skull.king.command.domain.PlayerId
+import org.skull.king.command.domain.ScaryMary
+import org.skull.king.command.domain.ScaryMaryUsage
+import org.skull.king.command.domain.SpecialCard
+import org.skull.king.command.domain.SpecialCardType
+import org.skull.king.command.service.FoldSettlementService.FoldSettlement
+import org.skull.king.command.service.FoldSettlementService.settleFoldWinner
 import java.util.stream.Stream
 
 class ResolveFoldWinnerTest {

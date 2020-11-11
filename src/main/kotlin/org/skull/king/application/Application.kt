@@ -9,9 +9,9 @@ import kotlinx.coroutines.yield
 import org.skull.king.command.CmdResult
 import org.skull.king.command.Command
 import org.skull.king.command.CommandHandler
-import org.skull.king.command.DomainError
-import org.skull.king.event.EventHandler
+import org.skull.king.command.error.DomainError
 import org.skull.king.event.EventStoreInMemory
+import org.skull.king.event.handler.FoldSettledHandler
 import org.skull.king.functional.Invalid
 import org.skull.king.query.Query
 import org.skull.king.query.QueryHandler
@@ -22,12 +22,12 @@ class Application {
 
     private val eventStore = EventStoreInMemory()
     private val commandHandler = CommandHandler(eventStore)
-    private val eventHandler = EventHandler(commandHandler, eventStore)
+    private val foldSettledHandler = FoldSettledHandler(commandHandler, eventStore)
     private val queryHandler = QueryHandler()
 
     fun start() {
         eventStore.addListener(queryHandler.eventChannel)
-        eventStore.addListener(eventHandler.eventChannel)
+        eventStore.addListener(foldSettledHandler.eventChannel)
         eventStore.loadAllEvents()
     }
 

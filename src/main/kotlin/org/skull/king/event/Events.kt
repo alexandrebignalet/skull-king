@@ -1,9 +1,9 @@
 package org.skull.king.event
 
-import org.skull.king.command.Card
-import org.skull.king.command.NewPlayer
-import org.skull.king.command.Player
-import org.skull.king.command.PlayerId
+import org.skull.king.command.domain.Card
+import org.skull.king.command.domain.NewPlayer
+import org.skull.king.command.domain.Player
+import org.skull.king.command.domain.PlayerId
 import java.time.Instant
 
 
