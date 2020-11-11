@@ -1,8 +1,11 @@
 version: 2.1
 
-# Define the jobs we want to run for this project
 jobs:
   build:
+    parallelism: 2
+    environment:
+      _JAVA_OPTIONS: "-Xmx100m"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
     docker:
       - image: circleci/openjdk:11.0.3-jdk-stretch
         auth:
@@ -10,19 +13,26 @@ jobs:
           password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
-      - run: ./gradlew build
-  test:
-    docker:
-      - image: circleci/openjdk:11.0.3-jdk-stretch
-        auth:
-          username: ab64320
-          password: $DOCKERHUB_PASSWORD
-    steps:
-      - checkout
-      - run: ./gradlew test
+      - restore_cache:
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+      - run:
+          name: "Run build & tests"
+          command: ./gradlew clean test
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+      - store_test_results:
+          path: build/test-results/test
 
 workflows:
-  build_and_test:
+  version: 2
+  workflow:
     jobs:
       - build
-      - test
