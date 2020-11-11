@@ -47,6 +47,8 @@ compileTestKotlin {
 // TEST
 test {
     useJUnitPlatform()
+    maxParallelForks 2
+    maxHeapSize = "16m"
 }
 
 dependencies {

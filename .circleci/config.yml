@@ -1,0 +1,28 @@
+version: 2.1
+
+# Define the jobs we want to run for this project
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:11.0.3-jdk-stretch
+        auth:
+          username: ab64320
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run: ./gradlew build
+  test:
+    docker:
+      - image: circleci/openjdk:11.0.3-jdk-stretch
+        auth:
+          username: ab64320
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run: ./gradlew test
+
+workflows:
+  build_and_test:
+    jobs:
+      - build
+      - test
