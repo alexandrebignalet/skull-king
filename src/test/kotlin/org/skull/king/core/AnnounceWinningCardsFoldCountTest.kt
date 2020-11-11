@@ -1,4 +1,4 @@
-package org.skull.king
+package org.skull.king.core
 
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions

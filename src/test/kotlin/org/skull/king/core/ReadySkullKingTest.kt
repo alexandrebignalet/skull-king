@@ -1,4 +1,4 @@
-package org.skull.king
+package org.skull.king.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor

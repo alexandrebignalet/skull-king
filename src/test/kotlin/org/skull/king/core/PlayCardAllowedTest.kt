@@ -1,4 +1,4 @@
-package org.skull.king
+package org.skull.king.core
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
