@@ -4,6 +4,11 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.4.10'
+    ext.dagger_version = '2.13'
+    ext.configPath = "$rootProject.projectDir/src/main/resources/"
+    ext.dropwizard_version = '2.0.15'
+    ext.kotlinx_version = "1.4.1"
+    ext.jackson_kotlin = "2.11.3"
 
     repositories {
         jcenter()
@@ -20,15 +25,11 @@ buildscript {
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'application'
 
 sourceCompatibility = 11
 mainClassName = 'org.skull.king.SkullKingApplication'
-project.ext {
-    configPath = "$rootProject.projectDir/src/main/resources/"
-    dropwizard_version = '2.0.15'
-    kotlinx_version = "1.4.1"
-}
 
 repositories {
     mavenCentral()
@@ -39,15 +40,28 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_version"
 
-    compile 'io.dropwizard:dropwizard-core:2.0.15'
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin"
 
+    compile "io.dropwizard:dropwizard-core:$dropwizard_version"
+
+    api "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
+
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "${buildDir}/generated/source/kapt2/main"
+        }
+    }
 }
 
 // TEST
@@ -58,10 +72,10 @@ test {
 dependencies {
     testCompile 'org.assertj:assertj-core:3.11.1'
 
-    testImplementation 'io.mockk:mockk:1.10.2'
-    testImplementation 'org.awaitility:awaitility-kotlin:4.0.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testImplementation "io.mockk:mockk:1.10.2"
+    testImplementation "org.awaitility:awaitility-kotlin:4.0.3"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.1"
+    testImplementation "org.junit.jupiter:junit-jupiter-params"
     testImplementation "io.dropwizard:dropwizard-testing:$dropwizard_version"
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
