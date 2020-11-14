@@ -1,0 +1,58 @@
+[debug] [2020-11-13T17:24:44.679Z] ----------------------------------------------------------------------
+[debug] [2020-11-13T17:24:44.681Z] Command:       /Users/alexandrebignalet/.nvm/versions/node/v10.19.0/bin/node /Users/alexandrebignalet/.nvm/versions/node/v10.19.0/bin/firebase --project=skullking emulators:start
+[debug] [2020-11-13T17:24:44.681Z] CLI Version:   8.16.1
+[debug] [2020-11-13T17:24:44.682Z] Platform:      darwin
+[debug] [2020-11-13T17:24:44.682Z] Node Version:  v10.19.0
+[debug] [2020-11-13T17:24:44.682Z] Time:          Fri Nov 13 2020 18:24:44 GMT+0100 (Central European Standard Time)
+[debug] [2020-11-13T17:24:44.682Z] ----------------------------------------------------------------------
+[debug] [2020-11-13T17:24:44.683Z] 
+[debug] [2020-11-13T17:24:44.691Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-11-13T17:24:44.692Z] > authorizing via signed-in user
+[info] i  emulators: Starting emulators: database {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: database"}}
+[debug] [2020-11-13T17:24:44.713Z] [hub] writing locator at /var/folders/vx/68nyjy7558q3g5r2xl1rfqlh0000gn/T/hub-skullking.json
+[debug] [2020-11-13T17:24:44.721Z] database rules config:  [{"instance":"skullking","rules":"/Users/alexandrebignalet/Documents/code/skull-king/database.rules.json"}]
+[debug] [2020-11-13T17:24:44.724Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2020-11-13T17:24:44.725Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2020-11-13T17:24:44.725Z] Ignoring unsupported arg: rules {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: rules"}}
+[debug] [2020-11-13T17:24:44.725Z] Starting Database Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","/Users/alexandrebignalet/.cache/firebase/emulators/firebase-database-emulator-v4.7.1.jar","--host","localhost","--port",9000],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host"],"joinArgs":false} {"metadata":{"emulator":{"name":"database"},"message":"Starting Database Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"/Users/alexandrebignalet/.cache/firebase/emulators/firebase-database-emulator-v4.7.1.jar\",\"--host\",\"localhost\",\"--port\",9000],\"optionalArgs\":[\"port\",\"host\",\"functions_emulator_port\",\"functions_emulator_host\"],\"joinArgs\":false}"}}
+[info] i  database: Database Emulator logging to database-debug.log {"metadata":{"emulator":{"name":"database"},"message":"Database Emulator logging to \u001b[1mdatabase-debug.log\u001b[22m"}}
+[debug] [2020-11-13T17:24:45.544Z] WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/Users/alexandrebignalet/.cache/firebase/emulators/firebase-database-emulator-v4.7.1.jar) to field sun.nio.ch.SelectorImpl.selectedKeys
+WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+ {"metadata":{"emulator":{"name":"database"},"message":"WARNING: An illegal reflective access operation has occurred\nWARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/Users/alexandrebignalet/.cache/firebase/emulators/firebase-database-emulator-v4.7.1.jar) to field sun.nio.ch.SelectorImpl.selectedKeys\nWARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil\nWARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations\nWARNING: All illegal access operations will be denied in a future release\n"}}
+[debug] [2020-11-13T17:24:46.420Z] 18:24:46.418 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+ {"metadata":{"emulator":{"name":"database"},"message":"18:24:46.418 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started\n"}}
+[debug] [2020-11-13T17:24:46.543Z] 18:24:46.543 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+ {"metadata":{"emulator":{"name":"database"},"message":"18:24:46.543 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000\n"}}
+[debug] [2020-11-13T17:24:46.761Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2020-11-13T17:24:46.762Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2020-11-13T17:24:46.762Z] Starting Emulator UI with command {"binary":"node","args":["/Users/alexandrebignalet/.cache/firebase/emulators/ui-v1.2.2/server.bundle.js"],"optionalArgs":[],"joinArgs":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"/Users/alexandrebignalet/.cache/firebase/emulators/ui-v1.2.2/server.bundle.js\"],\"optionalArgs\":[],\"joinArgs\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2020-11-13T17:24:46.948Z] Web / API server started at http://localhost:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at http://localhost:4000\n"}}
+[debug] [2020-11-13T17:24:47.023Z] >>> HTTP REQUEST PUT http://localhost:9000/.settings/rules.json?ns=skullking  
+ {
+  /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
+  "rules": {
+    ".read": false,
+    ".write": false
+  }
+}
+[debug] [2020-11-13T17:24:47.370Z] <<< HTTP RESPONSE 200 {"content-length":"15","content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","cache-control":"no-cache","x-firebase-project-id":"skullking","x-firebase-project-number":"123456789","x-firebase-uuid":"7e04e547-bee3-4ac4-b33e-70e8aa5a2c5a"}
+[info] 
+┌───────────────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! View status and logs at http://localhost:4000 │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌──────────┬────────────────┬────────────────────────────────┐
+│ Emulator │ Host:Port      │ View in Emulator UI            │
+├──────────┼────────────────┼────────────────────────────────┤
+│ Database │ localhost:9000 │ http://localhost:4000/database │
+└──────────┴────────────────┴────────────────────────────────┘
+  Other reserved ports: 4400, 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2020-11-14T01:06:11.525Z] Received signal SIGHUP 1

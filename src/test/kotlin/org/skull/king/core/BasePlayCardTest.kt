@@ -34,6 +34,7 @@ import org.skull.king.functional.Invalid
 import org.skull.king.functional.Valid
 import org.skull.king.query.GetGame
 import org.skull.king.query.GetPlayer
+import org.skull.king.query.ReadCard
 import org.skull.king.query.ReadPlayer
 import org.skull.king.query.ReadSkullKing
 import java.time.Duration
@@ -238,8 +239,8 @@ class BasePlayCardTest {
                     val game = GetGame(startedEvent.gameId).process().first() as ReadSkullKing
                     val player = GetPlayer(game.id, firstPlayer.id).process().first() as ReadPlayer
 
-                    Assertions.assertThat(player.cards).doesNotContain(playedCard.card)
-                    Assertions.assertThat(game.fold[player.id]).isEqualTo(playedCard.card)
+                    Assertions.assertThat(player.cards).doesNotContain(ReadCard.of(playedCard.card))
+                    Assertions.assertThat(game.fold[player.id]).isEqualTo(ReadCard.of(playedCard.card))
                 }
             }
         }

@@ -9,6 +9,7 @@ buildscript {
     ext.dropwizard_version = '2.0.15'
     ext.kotlinx_version = "1.4.1"
     ext.jackson_kotlin = "2.11.3"
+    ext.firebase_version = '7.0.1'
 
     repositories {
         jcenter()
@@ -46,6 +47,8 @@ dependencies {
 
     api "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+    implementation "com.google.firebase:firebase-admin:$firebase_version"
 }
 
 compileKotlin {

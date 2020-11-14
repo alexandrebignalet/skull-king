@@ -7,3 +7,6 @@ server:
   adminConnectors:
     - type: http
       port: 8081
+
+firebase:
+  credentials_path: $GOOGLE_APPLICATION_CREDENTIALS

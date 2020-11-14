@@ -8,3 +8,5 @@ server:
     - type: http
       port: 8081
 
+firebase:
+  credentials_path: "./service-account-file.json"

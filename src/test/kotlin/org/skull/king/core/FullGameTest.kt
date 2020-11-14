@@ -22,6 +22,7 @@ import org.skull.king.command.domain.SpecialCardType
 import org.skull.king.event.Started
 import org.skull.king.functional.Valid
 import org.skull.king.query.GetPlayer
+import org.skull.king.query.ReadCard
 import org.skull.king.query.ReadPlayer
 import java.time.Duration
 
@@ -36,7 +37,6 @@ class FullGameTest {
     }
 
     @Test
-//    @Disabled
     fun `Should end the game at the end of the 10th round`() {
         application.apply {
             lateinit var firstPlayer: Player
@@ -70,8 +70,8 @@ class FullGameTest {
                         val s = GetPlayer(gameId, secondPlayer.id).process().first() as ReadPlayer
                         println("S${secondPlayer.id}: ${s.cards}; CARD: ${fullDeckMocked[secondPlayerCard]}: $secondPlayerCard")
 
-                        Assertions.assertThat(f.cards).contains(fullDeckMocked[firstPlayerCard])
-                        Assertions.assertThat(s.cards).contains(fullDeckMocked[secondPlayerCard])
+                        Assertions.assertThat(f.cards).contains(ReadCard.of(fullDeckMocked[firstPlayerCard]))
+                        Assertions.assertThat(s.cards).contains(ReadCard.of(fullDeckMocked[secondPlayerCard]))
                     }
 
                     runBlocking {
@@ -81,7 +81,7 @@ class FullGameTest {
                     await atMost Duration.ofSeconds(5) untilAsserted {
                         val f = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
 
-                        Assertions.assertThat(f.cards).doesNotContain(fullDeckMocked[firstPlayerCard])
+                        Assertions.assertThat(f.cards).doesNotContain(ReadCard.of(fullDeckMocked[firstPlayerCard]))
                     }
 
                     runBlocking {
@@ -91,7 +91,7 @@ class FullGameTest {
                     await atMost Duration.ofSeconds(5) untilAsserted {
                         val s = GetPlayer(gameId, secondPlayer.id).process().first() as ReadPlayer
 
-                        Assertions.assertThat(s.cards).doesNotContain(fullDeckMocked[secondPlayerCard])
+                        Assertions.assertThat(s.cards).doesNotContain(ReadCard.of(fullDeckMocked[secondPlayerCard]))
                     }
 
                     firstPlayerCard += 2

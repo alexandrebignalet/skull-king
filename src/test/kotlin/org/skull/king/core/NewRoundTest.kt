@@ -23,6 +23,7 @@ import org.skull.king.event.Started
 import org.skull.king.functional.Valid
 import org.skull.king.query.GetGame
 import org.skull.king.query.GetPlayer
+import org.skull.king.query.ReadCard
 import org.skull.king.query.ReadPlayer
 import org.skull.king.query.ReadSkullKing
 import java.time.Duration
@@ -86,9 +87,9 @@ class NewRoundTest {
                 val newSecondPlayer = GetPlayer(game.id, firstPlayer.id).process().first() as ReadPlayer
 
                 Assertions.assertThat(newFirstPlayer.cards)
-                    .contains(ColoredCard(1, CardColor.RED), ColoredCard(2, CardColor.RED))
+                    .contains(ReadCard.of(ColoredCard(1, CardColor.RED)), ReadCard.of(ColoredCard(2, CardColor.RED)))
                 Assertions.assertThat(newSecondPlayer.cards)
-                    .contains(ColoredCard(1, CardColor.BLUE), ColoredCard(2, CardColor.BLUE))
+                    .contains(ReadCard.of(ColoredCard(1, CardColor.BLUE)), ReadCard.of(ColoredCard(2, CardColor.BLUE)))
             }
         }
     }

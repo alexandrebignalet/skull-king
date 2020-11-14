@@ -33,7 +33,8 @@ class QueryHandler {
 
                     for (player in e.players) {
                         player as NewPlayer
-                        players[buildPlayerId(e.gameId, player.id)] = ReadPlayer(player.id, e.gameId, player.cards)
+                        players[buildPlayerId(e.gameId, player.id)] =
+                            ReadPlayer(player.id, e.gameId, player.cards.map { ReadCard.of(it) })
                     }
                 }
                 is PlayerAnnounced -> {
@@ -46,13 +47,13 @@ class QueryHandler {
                     skullKingGames[e.gameId]?.let { game ->
                         val readPlayerId = buildPlayerId(game.id, e.playerId)
                         players[readPlayerId]?.let { player ->
-                            val cardsUpdate = player.cards.filterNot { it == e.card }
+                            val cardsUpdate = player.cards.filterNot { it.isSameAs(e.card) }
                             players[readPlayerId] = ReadPlayer(e.playerId, game.id, cardsUpdate, player.scorePerRound)
                         }
 
                         val foldUpdate = game.fold.let {
                             val fold = it.toMutableMap()
-                            fold[e.playerId] = e.card
+                            fold[e.playerId] = ReadCard.of(e.card)
                             fold
                         }
                         skullKingGames[e.gameId] = game.copy(fold = foldUpdate)
@@ -96,7 +97,7 @@ class QueryHandler {
                                 players[buildPlayerId(game.id, player.id)] = ReadPlayer(
                                     player.id,
                                     game.id,
-                                    player.cards,
+                                    player.cards.map { ReadCard.of(it) },
                                     it.scorePerRound
                                 )
                             }
