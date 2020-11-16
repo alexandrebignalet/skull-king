@@ -84,6 +84,23 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
+task startMockFirestore {
+    doFirst {
+        ext.process = new ProcessBuilder()
+                .directory(projectDir)
+                .inheritIO()
+                .command("bin/start-firebase-emulator")
+                .start()
+                .waitFor()
+    }
+}
+tasks.test.dependsOn(startMockFirestore)
+
+task stopMockFirestore(type: Exec) {
+    executable "bin/stop-firebase-emulator"
+}
+test.finalizedBy(stopMockFirestore)
+
 // FAT JAR
 shadowJar {
     mergeServiceFiles()

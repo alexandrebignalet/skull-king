@@ -3,3 +3,8 @@
 build/
 out/
 .DS_Store
+database-debug.log
+nohup.out
+firebase-debug.log
+tmp/
+ui-debug.log

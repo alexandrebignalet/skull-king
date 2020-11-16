@@ -14,11 +14,16 @@ import org.skull.king.query.ReadSkullKing
 import org.skull.king.utils.JsonObjectMapper
 import kotlin.coroutines.suspendCoroutine
 
-class LocalFirebase(firebaseConfig: FirebaseConfig) {
+open class LocalFirebase {
 
     companion object {
         private val objectMapper = JsonObjectMapper.getObjectMapper()
         private const val GAME_PATH = "games"
+    }
+
+    private val firebaseConfig = FirebaseConfig().apply {
+        credentialsPath = "/service-account-file.json"
+        databaseURL = "http://localhost:9000/?ns=skullking"
     }
 
     private val serviceAccount = LocalFirebase::class.java.getResourceAsStream(firebaseConfig.credentialsPath)

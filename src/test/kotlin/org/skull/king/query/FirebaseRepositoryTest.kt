@@ -5,16 +5,11 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.skull.king.command.domain.SpecialCard
 import org.skull.king.command.domain.SpecialCardType
-import org.skull.king.config.FirebaseConfig
 import org.skull.king.helpers.LocalFirebase
 
-class FirebaseRepositoryTest {
-    private val firebaseConfig = FirebaseConfig().apply {
-        credentialsPath = "/service-account-file.json"
-        databaseURL = "http://localhost:9000/?ns=skullking"
-    }
-    private val localFirebase = LocalFirebase(firebaseConfig)
-    private val repository = FirebaseRepository(localFirebase.database)
+class FirebaseRepositoryTest : LocalFirebase() {
+
+    private val repository = FirebaseRepository(database)
 
     @Test
     fun `Should correctly save a game`() {
@@ -30,7 +25,7 @@ class FirebaseRepositoryTest {
 
         // Then
         runBlocking {
-            val createdGame = localFirebase.getGame(game.id)
+            val createdGame = getGame(game.id)
 
             Assertions.assertThat(createdGame).isEqualTo(game)
         }
