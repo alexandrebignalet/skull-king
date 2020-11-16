@@ -2,9 +2,7 @@ package org.skull.king.core
 
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.skull.king.application.Application
 import org.skull.king.command.AnnounceWinningCardsFoldCount
 import org.skull.king.command.StartSkullKing
 import org.skull.king.command.error.PlayerAlreadyAnnouncedError
@@ -13,34 +11,22 @@ import org.skull.king.command.error.SkullKingAlreadyReadyError
 import org.skull.king.command.error.SkullKingNotStartedError
 import org.skull.king.event.PlayerAnnounced
 import org.skull.king.event.Started
-import org.skull.king.functional.Invalid
-import org.skull.king.functional.Valid
-import org.skull.king.query.GetGame
-import org.skull.king.query.GetPlayer
+import org.skull.king.helpers.LocalBus
 import org.skull.king.query.ReadPlayer
-import org.skull.king.query.ReadSkullKing
+import org.skull.king.query.handler.GetGame
+import org.skull.king.query.handler.GetPlayer
 
-class AnnounceWinningCardsFoldCountTest {
-
-    private lateinit var application: Application
-
-    @BeforeEach
-    fun setUp() {
-        application = Application()
-        application.start()
-    }
+class AnnounceWinningCardsFoldCountTest : LocalBus() {
 
     @Test
     fun `Should return an error if gameId not started`() {
         val gameId = "101"
         val playerId = "1"
 
-        application.apply {
-            runBlocking {
-                val error = AnnounceWinningCardsFoldCount(gameId, playerId, 5).process().await()
-                Assertions.assertThat((error as Invalid).err).isInstanceOf(SkullKingNotStartedError::class.java)
-            }
-        }
+        val command = AnnounceWinningCardsFoldCount(gameId, playerId, 5)
+
+        Assertions.assertThatThrownBy { commandBus.send(command) }
+            .isInstanceOf(SkullKingNotStartedError::class.java)
     }
 
     @Test
@@ -49,14 +35,13 @@ class AnnounceWinningCardsFoldCountTest {
         val players = listOf("1", "2")
         val announcingPlayerId = "3"
 
-        application.apply {
-            runBlocking {
-                StartSkullKing(gameId, players).process().await()
-                val error = AnnounceWinningCardsFoldCount(gameId, announcingPlayerId, 5).process().await()
+        val startCommand = StartSkullKing(gameId, players)
+        val announce = AnnounceWinningCardsFoldCount(gameId, announcingPlayerId, 5)
 
-                Assertions.assertThat((error as Invalid).err).isInstanceOf(PlayerNotInGameError::class.java)
-            }
-        }
+        commandBus.send(startCommand)
+
+        Assertions.assertThatThrownBy { commandBus.send(announce) }
+            .isInstanceOf(PlayerNotInGameError::class.java)
     }
 
     @Test
@@ -67,27 +52,29 @@ class AnnounceWinningCardsFoldCountTest {
         val firstPlayerAnnounce = 5
         val roundNb = 1
 
-        application.apply {
-            runBlocking {
-                // COMMAND
-                StartSkullKing(gameId, players).process().await()
+        runBlocking {
+            // COMMAND
+            val start = StartSkullKing(gameId, players)
+            val announce = AnnounceWinningCardsFoldCount(gameId, announcingPlayerId, firstPlayerAnnounce)
 
-                val announce = AnnounceWinningCardsFoldCount(gameId, announcingPlayerId, firstPlayerAnnounce).process()
+            commandBus.send(start)
+            val result = commandBus.send(announce)
 
-                val announced = (announce.await() as Valid).value.single() as PlayerAnnounced
-                Assertions.assertThat(announced.count).isEqualTo(firstPlayerAnnounce)
-                Assertions.assertThat(announced.playerId).isEqualTo(announcingPlayerId)
-                Assertions.assertThat(announced.gameId).isEqualTo(gameId)
-                Assertions.assertThat(announced.roundNb).isEqualTo(1)
+            val announced = result.second.first() as PlayerAnnounced
+            Assertions.assertThat(announced.count).isEqualTo(firstPlayerAnnounce)
+            Assertions.assertThat(announced.playerId).isEqualTo(announcingPlayerId)
+            Assertions.assertThat(announced.gameId).isEqualTo(gameId)
+            Assertions.assertThat(announced.roundNb).isEqualTo(1)
 
-                // QUERY
-                val game = (GetGame(gameId).process() as List<ReadSkullKing>).first()
-                Assertions.assertThat(game.id).isEqualTo(gameId)
+            // QUERY
+            val query = GetGame(gameId)
+            val game = queryBus.send(query)
+            Assertions.assertThat(game.id).isEqualTo(gameId)
 
-                val player = (GetPlayer(gameId, announcingPlayerId).process() as List<ReadPlayer>).first()
-                Assertions.assertThat(player.id).isEqualTo(announcingPlayerId)
-                Assertions.assertThat(player.scorePerRound[roundNb]?.announced).isEqualTo(firstPlayerAnnounce)
-            }
+            val getPlayer = GetPlayer(gameId, announcingPlayerId)
+            val player = queryBus.send(getPlayer) as ReadPlayer
+            Assertions.assertThat(player.id).isEqualTo(announcingPlayerId)
+            Assertions.assertThat(player.scorePerRound[roundNb]?.announced).isEqualTo(firstPlayerAnnounce)
         }
     }
 
@@ -97,15 +84,15 @@ class AnnounceWinningCardsFoldCountTest {
         val players = listOf("1", "2")
         val announcingPlayerId = "1"
 
-        application.apply {
-            runBlocking {
-                StartSkullKing(gameId, players).process().await()
-                AnnounceWinningCardsFoldCount(gameId, announcingPlayerId, 5).process().await()
+        val start = StartSkullKing(gameId, players)
+        val announce = AnnounceWinningCardsFoldCount(gameId, announcingPlayerId, 5)
+        val announceError = AnnounceWinningCardsFoldCount(gameId, announcingPlayerId, 2)
 
-                val error = AnnounceWinningCardsFoldCount(gameId, announcingPlayerId, 2).process().await()
-                Assertions.assertThat((error as Invalid).err).isInstanceOf(PlayerAlreadyAnnouncedError::class.java)
-            }
-        }
+        commandBus.send(start)
+        commandBus.send(announce)
+
+        Assertions.assertThatThrownBy { commandBus.send(announceError) }
+            .isInstanceOf(PlayerAlreadyAnnouncedError::class.java)
     }
 
     @Test
@@ -113,18 +100,21 @@ class AnnounceWinningCardsFoldCountTest {
         val gameId = "101"
         val players = listOf("1", "2")
 
-        application.apply {
-            runBlocking {
-                val started = (StartSkullKing(gameId, players).process().await() as Valid).value.first() as Started
-                val firstPlayer = started.players.first()
-                val secondPlayer = started.players.last()
-                AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, 5).process().await()
-                AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, 2).process().await()
+        runBlocking {
+            val start = StartSkullKing(gameId, players)
+            val started = commandBus.send(start).second.first() as Started
+            val firstPlayer = started.players.first()
+            val secondPlayer = started.players.last()
 
-                val error = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, 2).process().await() as Invalid
+            val firstAnnounce = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, 5)
+            val secondAnnounce = AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, 2)
+            val errorAnnounce = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, 2)
 
-                Assertions.assertThat((error as Invalid).err).isInstanceOf(SkullKingAlreadyReadyError::class.java)
-            }
+            commandBus.send(firstAnnounce)
+            commandBus.send(secondAnnounce)
+
+            Assertions.assertThatThrownBy { commandBus.send(errorAnnounce) }
+                .isInstanceOf(SkullKingAlreadyReadyError::class.java)
         }
     }
 }

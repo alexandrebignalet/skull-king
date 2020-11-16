@@ -6,5 +6,8 @@ import io.dropwizard.Configuration;
 class SkullKingConfig : Configuration() {
 
     @JsonProperty("app_name")
-    var appName: String = "Toto"
+    lateinit var appName: String
+
+    @JsonProperty("firebase")
+    lateinit var firebase: FirebaseConfig
 }

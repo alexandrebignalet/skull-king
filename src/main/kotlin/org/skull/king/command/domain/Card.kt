@@ -2,7 +2,7 @@ package org.skull.king.command.domain
 
 import java.util.Stack
 
-abstract class Card
+sealed class Card
 
 data class ColoredCard(val value: Int, val color: CardColor) : Card()
 enum class CardColor { RED, BLUE, YELLOW, BLACK }
@@ -21,7 +21,7 @@ data class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card(
 }
 
 enum class SpecialCardType { PIRATE, SKULL_KING, MERMAID, ESCAPE }
-open class SpecialCard(val type: SpecialCardType) : Card() {
+data class SpecialCard(val type: SpecialCardType) : Card() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SpecialCard) return false

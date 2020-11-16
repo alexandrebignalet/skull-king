@@ -2,16 +2,13 @@ package org.skull.king.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.skull.king.application.Application
 import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.PlayCard
 import org.skull.king.command.StartSkullKing
 import org.skull.king.command.domain.CardColor
 import org.skull.king.command.domain.ColoredCard
@@ -22,17 +19,14 @@ import org.skull.king.command.domain.SpecialCardType
 import org.skull.king.command.error.CardNotAllowedError
 import org.skull.king.command.error.NotYourTurnError
 import org.skull.king.event.Started
-import org.skull.king.functional.Invalid
-import org.skull.king.functional.Valid
-import org.skull.king.query.GetGame
-import org.skull.king.query.GetPlayer
-import org.skull.king.query.ReadPlayer
-import org.skull.king.query.ReadSkullKing
+import org.skull.king.helpers.LocalBus
+import org.skull.king.query.handler.GetGame
+import org.skull.king.query.handler.GetPlayer
+import org.skull.king.saga.PlayCardSaga
 import java.time.Duration
 
-class MultiFoldPlayCardTest {
+class MultiFoldPlayCardTest : LocalBus() {
 
-    private val application = Application()
     private val mockedCard = listOf(
         SpecialCard(SpecialCardType.MERMAID),
         SpecialCard(SpecialCardType.SKULL_KING),
@@ -49,7 +43,6 @@ class MultiFoldPlayCardTest {
 
     @BeforeEach
     fun setUp() {
-        application.start()
 
         mockkConstructor(Deck::class)
         every { anyConstructed<Deck>().pop() } returnsMany (mockedCard)
@@ -59,128 +52,140 @@ class MultiFoldPlayCardTest {
         val firstFoldLoserAnnounce = 1
         val firstRoundNb = 1
 
-        application.apply {
-            runBlocking {
-                val startedEvent =
-                    (StartSkullKing(gameId, players).process().await() as Valid).value.single() as Started
+        val start = StartSkullKing(gameId, players)
+        val startedEvent = commandBus.send(start).second.single() as Started
 
-                firstPlayer = startedEvent.players.first()
-                secondPlayer = startedEvent.players.last()
-                AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, firstFoldWinnerAnnounce).process().await()
-                AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, firstFoldLoserAnnounce).process().await()
+        firstPlayer = startedEvent.players.first()
+        secondPlayer = startedEvent.players.last()
 
-                // Players play first fold
-                PlayCard(gameId, firstPlayer.id, mockedCard[0]).process().await()
-                PlayCard(gameId, secondPlayer.id, mockedCard[1]).process().await()
-            }
+        val firstAnnounce = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, firstFoldWinnerAnnounce)
+        val secondAnnounce = AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, firstFoldLoserAnnounce)
 
-            // Then
-            await atMost Duration.ofSeconds(5) untilAsserted {
-                val firstFoldWinner = GetPlayer(gameId, firstPlayer.id).process().first() as ReadPlayer
-                Assertions.assertThat(firstFoldWinner.scorePerRound[firstRoundNb]?.announced)
-                    .isEqualTo(firstFoldWinnerAnnounce)
-                Assertions.assertThat(firstFoldWinner.scorePerRound[firstRoundNb]?.done).isEqualTo(1)
+        commandBus.send(firstAnnounce)
+        commandBus.send(secondAnnounce)
 
-                val firstFoldLoser = GetPlayer(gameId, secondPlayer.id).process().first() as ReadPlayer
-                Assertions.assertThat(firstFoldLoser.scorePerRound[firstRoundNb]?.announced)
-                    .isEqualTo(firstFoldLoserAnnounce)
-                Assertions.assertThat(firstFoldLoser.scorePerRound[firstRoundNb]?.done).isEqualTo(0)
-            }
+        // Players play first fold
+        val firstPlayCard = PlayCardSaga(gameId, firstPlayer.id, mockedCard[0])
+        val secondPlayCard = PlayCardSaga(gameId, secondPlayer.id, mockedCard[1])
+
+        commandBus.send(firstPlayCard)
+        commandBus.send(secondPlayCard)
+
+        // Then
+        await atMost Duration.ofSeconds(5) untilAsserted {
+            val getFirstPlayer = GetPlayer(gameId, firstPlayer.id)
+            val firstFoldWinner = queryBus.send(getFirstPlayer)
+            Assertions.assertThat(firstFoldWinner.scorePerRound[firstRoundNb]?.announced)
+                .isEqualTo(firstFoldWinnerAnnounce)
+            Assertions.assertThat(firstFoldWinner.scorePerRound[firstRoundNb]?.done).isEqualTo(1)
+
+            val getSecondPlayer = GetPlayer(gameId, secondPlayer.id)
+            val firstFoldLoser = queryBus.send(getSecondPlayer)
+            Assertions.assertThat(firstFoldLoser.scorePerRound[firstRoundNb]?.announced)
+                .isEqualTo(firstFoldLoserAnnounce)
+            Assertions.assertThat(firstFoldLoser.scorePerRound[firstRoundNb]?.done).isEqualTo(0)
         }
     }
 
 
     @Test
     fun `Should begin new round after previous round last fold winner settlement`() {
-        application.apply {
-            val secondRoundNb = 2
-            val newFirstPlayer = secondPlayer.id
-            val newSecondPlayer = firstPlayer.id
+        val secondRoundNb = 2
+        val newFirstPlayer = secondPlayer.id
+        val newSecondPlayer = firstPlayer.id
 
-            val futureWinnerAnnounce = 2
-            val futureLoserAnnounce = 0
+        val futureWinnerAnnounce = 2
+        val futureLoserAnnounce = 0
 
-            runBlocking {
-                AnnounceWinningCardsFoldCount(gameId, newFirstPlayer, futureLoserAnnounce).process().await()
-                AnnounceWinningCardsFoldCount(gameId, newSecondPlayer, futureWinnerAnnounce).process().await()
+        val firstAnnounce = AnnounceWinningCardsFoldCount(gameId, newFirstPlayer, futureLoserAnnounce)
+        val secondAnnounce = AnnounceWinningCardsFoldCount(gameId, newSecondPlayer, futureWinnerAnnounce)
+        val firstPlayCard = PlayCardSaga(gameId, newFirstPlayer, mockedCard[2])
+        val secondPlayCard = PlayCardSaga(gameId, newSecondPlayer, mockedCard[3])
 
-                PlayCard(gameId, newFirstPlayer, mockedCard[2]).process().await()
-                PlayCard(gameId, newSecondPlayer, mockedCard[3]).process().await()
-            }
+        commandBus.send(firstAnnounce)
+        commandBus.send(secondAnnounce)
+        commandBus.send(firstPlayCard)
+        commandBus.send(secondPlayCard)
 
 
-            // Then
-            await atMost Duration.ofSeconds(5) untilAsserted {
-                val secondFoldWinner = GetPlayer(gameId, newSecondPlayer).process().first() as ReadPlayer
-                Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.announced)
-                    .isEqualTo(futureWinnerAnnounce)
-                Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.done).isEqualTo(1)
+        // Then
+        await atMost Duration.ofSeconds(5) untilAsserted {
+            val getFirstPlayer = GetPlayer(gameId, newSecondPlayer)
+            val secondFoldWinner = queryBus.send(getFirstPlayer)
+            Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.announced)
+                .isEqualTo(futureWinnerAnnounce)
+            Assertions.assertThat(secondFoldWinner.scorePerRound[secondRoundNb]?.done).isEqualTo(1)
 
-                val secondFoldLoser = GetPlayer(gameId, newFirstPlayer).process().first() as ReadPlayer
-                Assertions.assertThat(secondFoldLoser.scorePerRound[secondRoundNb]?.announced)
-                    .isEqualTo(futureLoserAnnounce)
-                Assertions.assertThat(secondFoldLoser.scorePerRound[secondRoundNb]?.done).isEqualTo(0)
-            }
+            val getSecondPlayer = GetPlayer(gameId, newFirstPlayer)
+            val secondFoldLoser = queryBus.send(getSecondPlayer)
+            Assertions.assertThat(secondFoldLoser.scorePerRound[secondRoundNb]?.announced)
+                .isEqualTo(futureLoserAnnounce)
+            Assertions.assertThat(secondFoldLoser.scorePerRound[secondRoundNb]?.done).isEqualTo(0)
         }
     }
 
     @Test
     fun `Should return an error when a card that is not allowed to be play is played`() {
-        application.apply {
-            runBlocking {
-                val newFirstPlayer = secondPlayer.id
-                val newSecondPlayer = firstPlayer.id
+        val newFirstPlayer = secondPlayer.id
+        val newSecondPlayer = firstPlayer.id
 
-                val futureWinnerAnnounce = 2
-                val futureLoserAnnounce = 0
-                AnnounceWinningCardsFoldCount(gameId, newFirstPlayer, futureWinnerAnnounce).process().await()
-                AnnounceWinningCardsFoldCount(gameId, newSecondPlayer, futureLoserAnnounce).process().await()
+        val futureWinnerAnnounce = 2
+        val futureLoserAnnounce = 0
+        val firstAnnounce = AnnounceWinningCardsFoldCount(gameId, newFirstPlayer, futureWinnerAnnounce)
+        val secondAnnounce = AnnounceWinningCardsFoldCount(gameId, newSecondPlayer, futureLoserAnnounce)
 
-                PlayCard(gameId, newFirstPlayer, mockedCard[4]).process().await()
-                val error = PlayCard(gameId, newSecondPlayer, mockedCard[5]).process().await()
+        commandBus.send(secondAnnounce)
+        commandBus.send(firstAnnounce)
 
-                Assertions.assertThat((error as Invalid).err).isInstanceOf(CardNotAllowedError::class.java)
-            }
-        }
+        val playCard = PlayCardSaga(gameId, newFirstPlayer, mockedCard[4])
+        val errorPlayCard = PlayCardSaga(gameId, newSecondPlayer, mockedCard[5])
+
+        commandBus.send(playCard)
+
+        Assertions.assertThatThrownBy { commandBus.send(errorPlayCard) }
+            .isInstanceOf(CardNotAllowedError::class.java)
     }
 
     @Test
     fun `Should set previous fold winner first player of the next fold`() {
-        application.apply {
-            var newFirstPlayer = secondPlayer.id
-            var newSecondPlayer = firstPlayer.id
+        var newFirstPlayer = secondPlayer.id
+        var newSecondPlayer = firstPlayer.id
 
-            val futureWinnerAnnounce = 2
-            val futureLoserAnnounce = 0
+        val futureWinnerAnnounce = 2
+        val futureLoserAnnounce = 0
 
-            runBlocking {
-                AnnounceWinningCardsFoldCount(gameId, newFirstPlayer, futureWinnerAnnounce).process().await()
-                AnnounceWinningCardsFoldCount(gameId, newSecondPlayer, futureLoserAnnounce).process().await()
+        val winnerAnnounce = AnnounceWinningCardsFoldCount(gameId, newFirstPlayer, futureWinnerAnnounce)
+        val loserAnnounce = AnnounceWinningCardsFoldCount(gameId, newSecondPlayer, futureLoserAnnounce)
 
-                PlayCard(gameId, newFirstPlayer, mockedCard[2]).process().await()
-                PlayCard(gameId, newSecondPlayer, mockedCard[3]).process().await()
-            }
+        commandBus.send(winnerAnnounce)
+        commandBus.send(loserAnnounce)
 
-            await atMost Duration.ofSeconds(5) untilAsserted {
-                val game = GetGame(gameId).process().first() as ReadSkullKing
-                Assertions.assertThat(game.fold.size).isEqualTo(2)
-            }
+        val winnerPlayCard = PlayCardSaga(gameId, newFirstPlayer, mockedCard[2])
+        val loserPlayCard = PlayCardSaga(gameId, newSecondPlayer, mockedCard[3])
 
-            newFirstPlayer = firstPlayer.id
-            newSecondPlayer = secondPlayer.id
+        commandBus.send(winnerPlayCard)
+        commandBus.send(loserPlayCard)
 
-            runBlocking {
-                val error = PlayCard(gameId, newSecondPlayer, mockedCard[4]).process().await()
-                val ok = PlayCard(gameId, newFirstPlayer, mockedCard[5]).process().await()
+        val getGame = GetGame(gameId)
+        await atMost Duration.ofSeconds(5) untilAsserted {
+            val game = queryBus.send(getGame)
+            Assertions.assertThat(game.fold.size).isEqualTo(2)
+        }
 
-                Assertions.assertThat((error as Invalid).err).isInstanceOf(NotYourTurnError::class.java)
-                Assertions.assertThat(ok).isInstanceOf(Valid::class.java)
-            }
+        newFirstPlayer = firstPlayer.id
+        newSecondPlayer = secondPlayer.id
 
-            await atMost Duration.ofSeconds(5) untilAsserted {
-                val game = GetGame(gameId).process().first() as ReadSkullKing
-                Assertions.assertThat(game.firstPlayerId).isEqualTo(newFirstPlayer)
-            }
+        val errorPlayCard = PlayCardSaga(gameId, newSecondPlayer, mockedCard[4])
+        val okPlayCard = PlayCardSaga(gameId, newFirstPlayer, mockedCard[5])
+
+        Assertions.assertThatThrownBy { commandBus.send(errorPlayCard) }.isInstanceOf(NotYourTurnError::class.java)
+        
+        val ok = commandBus.send(okPlayCard)
+        Assertions.assertThat(ok).isInstanceOf(Pair::class.java)
+
+        await atMost Duration.ofSeconds(5) untilAsserted {
+            val game = queryBus.send(getGame)
+            Assertions.assertThat(game.firstPlayerId).isEqualTo(newFirstPlayer)
         }
     }
 }

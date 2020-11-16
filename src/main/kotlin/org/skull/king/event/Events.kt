@@ -4,19 +4,11 @@ import org.skull.king.command.domain.Card
 import org.skull.king.command.domain.NewPlayer
 import org.skull.king.command.domain.Player
 import org.skull.king.command.domain.PlayerId
-import java.time.Instant
-
-
-sealed class Event() {
-    abstract fun key(): String
-
-    val created = Instant.now()
-    val version = 0
-}
+import org.skull.king.cqrs.ddd.event.Event
 
 sealed class SkullKingEvent : Event() {
     abstract val gameId: String
-    override fun key(): String = gameId
+    override fun targetId(): String = gameId
 }
 
 data class Started(override val gameId: String, val players: List<Player>) : SkullKingEvent()
@@ -24,7 +16,12 @@ data class Started(override val gameId: String, val players: List<Player>) : Sku
 data class PlayerAnnounced(override val gameId: String, val playerId: String, val count: Int, val roundNb: Int) :
     SkullKingEvent()
 
-data class CardPlayed(override val gameId: String, val playerId: String, val card: Card) : SkullKingEvent()
+data class CardPlayed(
+    override val gameId: String,
+    val playerId: String,
+    val card: Card,
+    val isLastFoldPlay: Boolean = false
+) : SkullKingEvent()
 
 data class FoldWinnerSettled(override val gameId: String, val winner: PlayerId, val potentialBonus: Int) :
     SkullKingEvent()

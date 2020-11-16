@@ -4,3 +4,6 @@ server:
   applicationConnectors:
     - type: http
       port: 8080
+
+firebase:
+  credentials_path: "./service-account-file.json"
