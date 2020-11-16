@@ -1,6 +1,7 @@
 package org.skull.king.command.domain
 
 import org.skull.king.command.service.CardService.isCardPlayAllowed
+import org.skull.king.cqrs.ddd.AggregateRoot
 import org.skull.king.event.CardPlayed
 import org.skull.king.event.FoldWinnerSettled
 import org.skull.king.event.GameFinished
@@ -9,7 +10,7 @@ import org.skull.king.event.PlayerAnnounced
 import org.skull.king.event.SkullKingEvent
 import org.skull.king.event.Started
 
-sealed class SkullKing(val id: String) : EventComposable<SkullKingEvent> {
+sealed class SkullKing(private val id: String) : AggregateRoot<String, SkullKingEvent> {
     companion object {
         const val MIN_PLAYERS = 2
         const val MAX_PLAYERS = 6
@@ -29,6 +30,8 @@ sealed class SkullKing(val id: String) : EventComposable<SkullKingEvent> {
             ScaryMary(ScaryMaryUsage.NOT_SET)
         )
     }
+
+    override fun getId(): String = id
 
     abstract override fun compose(e: SkullKingEvent): SkullKing
 
@@ -100,7 +103,8 @@ data class ReadySkullKing(
 
     fun has(playerId: String) = players.any { it.id == playerId }
 
-    fun isLastFoldPlay() = players.size == currentFold.size
+    fun isFoldComplete() = players.size == currentFold.size
+    fun isLastFoldPlay() = players.size - 1 == currentFold.size
 
     fun isCardPlayNotAllowed(playerId: PlayerId, card: Card) = players.find { it.id == playerId }?.let {
         !isCardPlayAllowed(currentFold.values.toList(), it.cards, card)

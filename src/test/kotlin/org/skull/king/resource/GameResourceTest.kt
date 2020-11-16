@@ -46,11 +46,9 @@ class GameResourceTest {
             .post(Entity.json(startRequest))
             .readEntity(StartResponse::class.java)
 
-
-        Assertions.assertThat(commandResponse).isEqualTo(StartResponse(uuid.toString()))
-
+        
         val readSkullKing = EXTENSION.client()
-            .target("http://localhost:${EXTENSION.localPort}/skullking/games/$uuid")
+            .target("http://localhost:${EXTENSION.localPort}/skullking/games/${commandResponse.gameId}")
             .request()
             .get()
             .readEntity(ReadSkullKing::class.java)

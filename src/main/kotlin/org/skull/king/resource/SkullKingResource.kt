@@ -1,16 +1,11 @@
 package org.skull.king.resource;
 
-import kotlinx.coroutines.runBlocking
-import org.skull.king.application.Application
 import org.skull.king.command.StartSkullKing
-import org.skull.king.event.Started
-import org.skull.king.functional.Invalid
-import org.skull.king.functional.Valid
+import org.skull.king.cqrs.command.CommandBus
 import org.skull.king.resource.dto.start.StartRequest
 import org.skull.king.resource.dto.start.StartResponse
 import java.util.UUID
 import javax.inject.Inject
-import javax.ws.rs.BadRequestException
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -20,7 +15,7 @@ import javax.ws.rs.core.Response
 import javax.validation.Valid as JavaxValid
 
 @Path("/skullking")
-class SkullKingResource @Inject constructor(private val skullKingCore: Application) {
+class SkullKingResource @Inject constructor(private val commandBus: CommandBus) {
 
     @POST
     @Path("/start")
@@ -28,20 +23,13 @@ class SkullKingResource @Inject constructor(private val skullKingCore: Applicati
     @Produces(MediaType.APPLICATION_JSON)
     fun startGame(@JavaxValid request: StartRequest): Response? {
 
-        val event: Started = runBlocking {
-            skullKingCore.run {
-                val gameId = UUID.randomUUID().toString()
+        val gameId = UUID.randomUUID().toString()
 
-                val started = StartSkullKing(gameId, request.playerIds.toList()).process().await()
+        val command = StartSkullKing(gameId, request.playerIds.toList())
 
-                if (started is Invalid) {
-                    throw BadRequestException(started.err.toString())
-                }
+        commandBus.send(command)
 
-                (started as Valid).value.first() as Started
-            }
-        }
 
-        return Response.ok(StartResponse(event.gameId)).build()
+        return Response.ok(StartResponse(gameId)).build()
     }
 }

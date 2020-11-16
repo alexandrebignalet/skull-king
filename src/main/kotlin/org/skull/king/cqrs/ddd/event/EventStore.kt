@@ -1,0 +1,7 @@
+package org.skull.king.cqrs.ddd.event
+
+interface EventStore {
+    fun save(events: Sequence<Event>)
+
+    fun <T> allOf(id: Any, type: Class<T>): Cursor
+}

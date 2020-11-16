@@ -1,7 +1,6 @@
 package org.skull.king.command.handler
 
 import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.EsScope
 import org.skull.king.command.domain.NewRound
 import org.skull.king.command.domain.ReadySkullKing
 import org.skull.king.command.domain.emptySkullKing
@@ -11,26 +10,30 @@ import org.skull.king.command.error.PlayerNotInGameError
 import org.skull.king.command.error.SkullKingAlreadyReadyError
 import org.skull.king.command.error.SkullKingNotStartedError
 import org.skull.king.command.error.SkullKingOverError
+import org.skull.king.cqrs.command.CommandHandler
+import org.skull.king.cqrs.ddd.event.Event
 import org.skull.king.event.PlayerAnnounced
-import org.skull.king.event.SkullKingEvent
-import org.skull.king.event.fold
-import org.skull.king.functional.Invalid
-import org.skull.king.functional.Valid
+import org.skull.king.repository.SkullkingEventSourcedRepositoryInMemory
 
-object AnnounceHandler {
-    fun execute(c: AnnounceWinningCardsFoldCount): EsScope = {
+class AnnounceHandler(private val repository: SkullkingEventSourcedRepositoryInMemory) :
+    CommandHandler<AnnounceWinningCardsFoldCount, String> {
 
-        when (val game = getEvents<SkullKingEvent>(c.gameId).fold()) {
-            is emptySkullKing -> Invalid(SkullKingNotStartedError("Game ${c.gameId} not STARTED !", c))
+    override fun execute(command: AnnounceWinningCardsFoldCount): Pair<String, Sequence<Event>> {
+        return when (val game = repository[command.gameId]) {
+            is emptySkullKing -> throw SkullKingNotStartedError("Game ${command.gameId} not STARTED !", command)
             is NewRound -> when {
-                game.hasAlreadyAnnounced(c.playerId) -> Invalid(
-                    PlayerAlreadyAnnouncedError("Player ${c.playerId} already announced", c)
+                game.hasAlreadyAnnounced(command.playerId) -> throw PlayerAlreadyAnnouncedError(
+                    "Player ${command.playerId} already announced",
+                    command
                 )
-                game.has(c.playerId) -> Valid(listOf(PlayerAnnounced(c.gameId, c.playerId, c.count, game.roundNb)))
-                else -> Invalid(PlayerNotInGameError("Player ${c.playerId} not in game", c))
+                game.has(command.playerId) -> Pair(
+                    game.getId(),
+                    sequenceOf(PlayerAnnounced(command.gameId, command.playerId, command.count, game.roundNb))
+                )
+                else -> throw PlayerNotInGameError("Player ${command.playerId} not in game", command)
             }
-            is ReadySkullKing -> Invalid(SkullKingAlreadyReadyError("Game ${c.gameId} already ready !", c))
-            is skullKingOver -> Invalid(SkullKingOverError(c))
+            is ReadySkullKing -> throw SkullKingAlreadyReadyError("Game ${command.gameId} already ready !", command)
+            is skullKingOver -> throw SkullKingOverError(command)
         }
     }
 }
