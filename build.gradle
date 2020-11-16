@@ -84,7 +84,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-task startMockFirestore {
+task startMockFirebase {
     doFirst {
         ext.process = new ProcessBuilder()
                 .directory(projectDir)
@@ -94,12 +94,12 @@ task startMockFirestore {
                 .waitFor()
     }
 }
-tasks.test.dependsOn(startMockFirestore)
+tasks.test.dependsOn(startMockFirebase)
 
-task stopMockFirestore(type: Exec) {
+task stopMockFirebase(type: Exec) {
     executable "bin/stop-firebase-emulator"
 }
-test.finalizedBy(stopMockFirestore)
+test.finalizedBy(stopMockFirebase)
 
 // FAT JAR
 shadowJar {
@@ -118,6 +118,8 @@ run {
 // STAGE for Heroku
 gradle.taskGraph.whenReady { graph ->
     if (graph.hasTask(stage)) {
+        startMockFirebase.enabled = false
+        stopMockFirebase.enabled = false
         test.enabled = false
     }
 }
