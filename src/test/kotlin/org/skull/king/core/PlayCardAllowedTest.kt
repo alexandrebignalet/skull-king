@@ -2,12 +2,12 @@ package org.skull.king.core
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.command.domain.Card
-import org.skull.king.command.domain.CardColor
-import org.skull.king.command.domain.ColoredCard
-import org.skull.king.command.domain.SpecialCard
-import org.skull.king.command.domain.SpecialCardType
-import org.skull.king.command.service.CardService.isCardPlayAllowed
+import org.skull.king.core.command.domain.Card
+import org.skull.king.core.command.domain.CardColor
+import org.skull.king.core.command.domain.ColoredCard
+import org.skull.king.core.command.domain.SpecialCard
+import org.skull.king.core.command.domain.SpecialCardType
+import org.skull.king.core.command.service.CardService.isCardPlayAllowed
 
 class PlayCardAllowedTest {
 

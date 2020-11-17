@@ -10,7 +10,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import org.skull.king.config.FirebaseConfig
-import org.skull.king.query.ReadSkullKing
+import org.skull.king.core.query.ReadSkullKing
 import org.skull.king.utils.JsonObjectMapper
 import kotlin.coroutines.suspendCoroutine
 

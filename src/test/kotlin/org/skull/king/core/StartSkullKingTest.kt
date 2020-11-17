@@ -7,14 +7,14 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.skull.king.command.StartSkullKing
-import org.skull.king.command.domain.Deck
-import org.skull.king.command.domain.NewPlayer
-import org.skull.king.command.domain.Player
-import org.skull.king.command.domain.SkullKing
-import org.skull.king.command.error.SkullKingConfigurationError
+import org.skull.king.core.command.StartSkullKing
+import org.skull.king.core.command.domain.Deck
+import org.skull.king.core.command.domain.NewPlayer
+import org.skull.king.core.command.domain.Player
+import org.skull.king.core.command.domain.SkullKing
+import org.skull.king.core.command.error.SkullKingConfigurationError
+import org.skull.king.core.event.Started
 import org.skull.king.cqrs.ddd.event.Event
-import org.skull.king.event.Started
 import org.skull.king.helpers.LocalBus
 
 class StartSkullKingTest : LocalBus() {

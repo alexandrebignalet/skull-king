@@ -1,9 +1,19 @@
 package org.skull.king.helpers
 
-import org.skull.king.command.handler.AnnounceHandler
-import org.skull.king.command.handler.PlayCardHandler
-import org.skull.king.command.handler.SettleFoldHandler
-import org.skull.king.command.handler.StartHandler
+import org.skull.king.core.command.handler.AnnounceHandler
+import org.skull.king.core.command.handler.PlayCardHandler
+import org.skull.king.core.command.handler.SettleFoldHandler
+import org.skull.king.core.command.handler.StartHandler
+import org.skull.king.core.event.EventStoreInMemory
+import org.skull.king.core.query.handler.GetGameHandler
+import org.skull.king.core.query.handler.GetPlayerHandler
+import org.skull.king.core.query.sync.OnCardPlayed
+import org.skull.king.core.query.sync.OnFoldWinnerSettled
+import org.skull.king.core.query.sync.OnGameFinished
+import org.skull.king.core.query.sync.OnGameStarted
+import org.skull.king.core.query.sync.OnNewRoundStarted
+import org.skull.king.core.query.sync.OnPlayerAnnounced
+import org.skull.king.core.saga.PlayCardSagaHandler
 import org.skull.king.cqrs.command.Command
 import org.skull.king.cqrs.command.CommandBus
 import org.skull.king.cqrs.command.CommandMiddleware
@@ -19,18 +29,8 @@ import org.skull.king.cqrs.query.QueryBus
 import org.skull.king.cqrs.saga.Saga
 import org.skull.king.cqrs.saga.SagaHandler
 import org.skull.king.cqrs.saga.SagaMiddleware
-import org.skull.king.event.EventStoreInMemory
-import org.skull.king.query.handler.GetGameHandler
-import org.skull.king.query.handler.GetPlayerHandler
-import org.skull.king.query.sync.OnCardPlayed
-import org.skull.king.query.sync.OnFoldWinnerSettled
-import org.skull.king.query.sync.OnGameFinished
-import org.skull.king.query.sync.OnGameStarted
-import org.skull.king.query.sync.OnNewRoundStarted
-import org.skull.king.query.sync.OnPlayerAnnounced
-import org.skull.king.repository.QueryRepositoryInMemory
-import org.skull.king.repository.SkullkingEventSourcedRepositoryInMemory
-import org.skull.king.saga.PlayCardSagaHandler
+import org.skull.king.infrastructure.event.SkullkingEventSourcedRepositoryInMemory
+import org.skull.king.infrastructure.repository.QueryRepositoryInMemory
 import org.slf4j.LoggerFactory
 import java.util.function.Supplier
 

@@ -9,19 +9,19 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.StartSkullKing
-import org.skull.king.command.domain.CardColor
-import org.skull.king.command.domain.ColoredCard
-import org.skull.king.command.domain.Deck
-import org.skull.king.command.domain.Player
-import org.skull.king.command.domain.SpecialCard
-import org.skull.king.command.domain.SpecialCardType
-import org.skull.king.event.Started
+import org.skull.king.core.command.AnnounceWinningCardsFoldCount
+import org.skull.king.core.command.StartSkullKing
+import org.skull.king.core.command.domain.CardColor
+import org.skull.king.core.command.domain.ColoredCard
+import org.skull.king.core.command.domain.Deck
+import org.skull.king.core.command.domain.Player
+import org.skull.king.core.command.domain.SpecialCard
+import org.skull.king.core.command.domain.SpecialCardType
+import org.skull.king.core.event.Started
+import org.skull.king.core.query.ReadCard
+import org.skull.king.core.query.handler.GetPlayer
+import org.skull.king.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
-import org.skull.king.query.ReadCard
-import org.skull.king.query.handler.GetPlayer
-import org.skull.king.saga.PlayCardSaga
 import java.time.Duration
 
 class FullGameTest : LocalBus() {
@@ -70,7 +70,7 @@ class FullGameTest : LocalBus() {
                 Assertions.assertThat(f.cards).contains(ReadCard.of(fullDeckMocked[firstPlayerCard]))
                 Assertions.assertThat(s.cards).contains(ReadCard.of(fullDeckMocked[secondPlayerCard]))
             }
-            
+
             repeat((0..currentRound).count()) { currentFold ->
                 println("--- FOLD ${currentFold + 1}")
 

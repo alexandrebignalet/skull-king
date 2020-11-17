@@ -7,7 +7,8 @@ import org.skull.king.component.DaggerSkullKingComponent
 import org.skull.king.component.SkullKingComponent
 import org.skull.king.config.SkullKingConfig
 import org.skull.king.module.ConfigurationModule
-import org.skull.king.resource.healthcheck.BaseHealthCheck
+import org.skull.king.web.controller.healthcheck.BaseHealthCheck
+import org.skull.king.web.exception.DomainErrorExceptionMapper
 
 
 class SkullKingApplication : Application<SkullKingConfig>() {
@@ -29,8 +30,10 @@ class SkullKingApplication : Application<SkullKingConfig>() {
                 .configurationModule(ConfigurationModule(configuration))
                 .build()
 
-            jersey().register(skullKingComponent.provideHelloWorldResource())
-            jersey().register(skullKingComponent.provideGameResource())
+            // exception mapper
+            jersey().register(DomainErrorExceptionMapper())
+
+            // controllers
             jersey().register(skullKingComponent.provideSkullKingResource())
         }
     }
