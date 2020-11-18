@@ -6,7 +6,7 @@ import org.skull.king.core.event.SkullKingEvent
 import org.skull.king.cqrs.ddd.event.EventStore
 import org.skull.king.cqrs.infrastructure.persistence.EventSourcedRepository
 
-class SkullkingEventSourcedRepositoryInMemory(
+class SkullkingEventSourcedRepository(
     eventStore: EventStore
 ) : EventSourcedRepository<String, SkullKingEvent, SkullKing>(eventStore) {
 

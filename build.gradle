@@ -53,10 +53,12 @@ dependencies {
 
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
+    kotlinOptions.freeCompilerArgs = ["-Xallow-result-return-type"]
 }
 
 compileTestKotlin {
     kotlinOptions.jvmTarget = "11"
+    kotlinOptions.freeCompilerArgs = ["-Xallow-result-return-type"]
 }
 
 sourceSets {

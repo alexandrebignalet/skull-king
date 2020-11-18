@@ -9,9 +9,9 @@ import org.skull.king.core.event.GameFinished
 import org.skull.king.core.event.NewRoundStarted
 import org.skull.king.cqrs.command.CommandHandler
 import org.skull.king.cqrs.ddd.event.Event
-import org.skull.king.infrastructure.event.SkullkingEventSourcedRepositoryInMemory
+import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 
-class SettleFoldHandler(private val repository: SkullkingEventSourcedRepositoryInMemory) :
+class SettleFoldHandler(private val repository: SkullkingEventSourcedRepository) :
     CommandHandler<SettleFoldWinner, String> {
 
     override fun execute(command: SettleFoldWinner): Pair<String, Sequence<Event>> =

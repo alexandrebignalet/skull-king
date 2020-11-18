@@ -13,9 +13,9 @@ import org.skull.king.core.command.error.SkullKingOverError
 import org.skull.king.core.event.PlayerAnnounced
 import org.skull.king.cqrs.command.CommandHandler
 import org.skull.king.cqrs.ddd.event.Event
-import org.skull.king.infrastructure.event.SkullkingEventSourcedRepositoryInMemory
+import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 
-class AnnounceHandler(private val repository: SkullkingEventSourcedRepositoryInMemory) :
+class AnnounceHandler(private val repository: SkullkingEventSourcedRepository) :
     CommandHandler<AnnounceWinningCardsFoldCount, String> {
 
     override fun execute(command: AnnounceWinningCardsFoldCount): Pair<String, Sequence<Event>> {

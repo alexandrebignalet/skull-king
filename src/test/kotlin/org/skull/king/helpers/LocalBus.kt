@@ -1,10 +1,10 @@
 package org.skull.king.helpers
 
+import org.junit.jupiter.api.AfterEach
 import org.skull.king.core.command.handler.AnnounceHandler
 import org.skull.king.core.command.handler.PlayCardHandler
 import org.skull.king.core.command.handler.SettleFoldHandler
 import org.skull.king.core.command.handler.StartHandler
-import org.skull.king.infrastructure.event.EventStoreInMemory
 import org.skull.king.core.query.handler.GetGameHandler
 import org.skull.king.core.query.handler.GetPlayerHandler
 import org.skull.king.core.query.sync.OnCardPlayed
@@ -20,6 +20,7 @@ import org.skull.king.cqrs.command.CommandMiddleware
 import org.skull.king.cqrs.ddd.event.Event
 import org.skull.king.cqrs.ddd.event.EventBus
 import org.skull.king.cqrs.ddd.event.EventCaptor
+import org.skull.king.cqrs.ddd.event.EventStore
 import org.skull.king.cqrs.infrastructure.bus.command.CommandBusSynchronous
 import org.skull.king.cqrs.infrastructure.bus.event.EventBusSynchronous
 import org.skull.king.cqrs.infrastructure.bus.event.EventDispatcherMiddleware
@@ -29,52 +30,82 @@ import org.skull.king.cqrs.query.QueryBus
 import org.skull.king.cqrs.saga.Saga
 import org.skull.king.cqrs.saga.SagaHandler
 import org.skull.king.cqrs.saga.SagaMiddleware
-import org.skull.king.infrastructure.event.SkullkingEventSourcedRepositoryInMemory
+import org.skull.king.infrastructure.event.EventStoreInMemory
+import org.skull.king.infrastructure.event.FirebaseEventStore
+import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 import org.skull.king.infrastructure.repository.QueryRepositoryInMemory
+import org.skull.king.utils.JsonObjectMapper
 import org.slf4j.LoggerFactory
 import java.util.function.Supplier
 
-open class LocalBus {
+open class LocalBus : LocalFirebase() {
 
-    private val queryRepository = QueryRepositoryInMemory()
-    private val eventStore = EventStoreInMemory()
-    private val commandRepository = SkullkingEventSourcedRepositoryInMemory(eventStore)
+    companion object {
+        private val mapper = JsonObjectMapper.getObjectMapper()
+    }
 
-    val queryBus: QueryBus = QueryBusSynchronous(
-        setOf(),
-        setOf(GetGameHandler(queryRepository), GetPlayerHandler(queryRepository))
+    @AfterEach
+    fun tearDown() {
+        clearFirebaseData()
+    }
+
+    private val eventStoreInMemory = EventStoreInMemory()
+    private val firebaseEventStore = FirebaseEventStore(database, mapper)
+    private val inMemoryBuses = Builder(
+        eventStoreInMemory,
+        SkullkingEventSourcedRepository(eventStoreInMemory),
+        QueryRepositoryInMemory()
+    )
+    val firebaseBuses = Builder(
+        firebaseEventStore,
+        SkullkingEventSourcedRepository(firebaseEventStore),
+        QueryRepositoryInMemory()
     )
 
-    val eventBus: EventBus = EventBusSynchronous(
-        setOf(),
-        setOf(
-            OnCardPlayed(queryRepository),
-            OnFoldWinnerSettled(queryRepository),
-            OnGameFinished(queryRepository),
-            OnGameStarted(queryRepository),
-            OnNewRoundStarted(queryRepository),
-            OnPlayerAnnounced(queryRepository)
-        ) as Set<EventCaptor<Event>>
-    )
+    val queryBus = firebaseBuses.queryBus
+    val commandBus = firebaseBuses.commandBus
 
-    val commandBus: CommandBus = CommandBusSynchronous(
-        setOf(
-            EventStoreMiddleware(eventStore),
-            EventDispatcherMiddleware(eventBus),
-            BusContextLoggerMiddleware(),
-            SagaMiddleware(
-                setOf(PlayCardSagaHandler(commandRepository)) as Set<SagaHandler<*, Saga<*>>>
-            )
-        ),
-        setOf(
-            AnnounceHandler(commandRepository),
-            PlayCardHandler(commandRepository),
-            SettleFoldHandler(commandRepository),
-            StartHandler(commandRepository)
+    class Builder(
+        val eventStore: EventStore,
+        val eventSourcedRepository: SkullkingEventSourcedRepository,
+        val queryRepository: QueryRepositoryInMemory
+    ) {
+        val queryBus: QueryBus = QueryBusSynchronous(
+            setOf(),
+            setOf(GetGameHandler(queryRepository), GetPlayerHandler(queryRepository))
         )
-    )
 
-    class BusContextLoggerMiddleware : CommandMiddleware {
+        val eventBus: EventBus = EventBusSynchronous(
+            setOf(),
+            setOf(
+                OnCardPlayed(queryRepository),
+                OnFoldWinnerSettled(queryRepository),
+                OnGameFinished(queryRepository),
+                OnGameStarted(queryRepository),
+                OnNewRoundStarted(queryRepository),
+                OnPlayerAnnounced(queryRepository)
+            ) as Set<EventCaptor<Event>>
+        )
+
+        val commandBus: CommandBus = CommandBusSynchronous(
+            setOf(
+                EventStoreMiddleware(eventStore),
+                EventDispatcherMiddleware(eventBus),
+                BusContextLoggerMiddleware(),
+                SagaMiddleware(
+                    setOf(PlayCardSagaHandler(eventSourcedRepository)) as Set<SagaHandler<*, Saga<*>>>
+                )
+            ),
+            setOf(
+                AnnounceHandler(eventSourcedRepository),
+                PlayCardHandler(eventSourcedRepository),
+                SettleFoldHandler(eventSourcedRepository),
+                StartHandler(eventSourcedRepository)
+            )
+        )
+    }
+
+    private class BusContextLoggerMiddleware : CommandMiddleware {
         companion object {
             private val LOGGER = LoggerFactory.getLogger(BusContextLoggerMiddleware::class.java)
         }

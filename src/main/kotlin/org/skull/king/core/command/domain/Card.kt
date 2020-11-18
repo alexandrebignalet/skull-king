@@ -1,7 +1,9 @@
 package org.skull.king.core.command.domain
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.Stack
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY)
 sealed class Card
 
 data class ColoredCard(val value: Int, val color: CardColor) : Card()

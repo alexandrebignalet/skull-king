@@ -8,6 +8,7 @@ import org.skull.king.cqrs.ddd.event.EventStore
 import java.util.function.Supplier
 
 class EventStoreMiddleware(private val eventStore: EventStore) : CommandMiddleware {
+
     override fun <T> intercept(
         bus: CommandBus,
         message: Command<T>,

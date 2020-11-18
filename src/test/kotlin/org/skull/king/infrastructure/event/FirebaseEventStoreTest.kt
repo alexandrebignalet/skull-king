@@ -2,7 +2,13 @@ package org.skull.king.infrastructure.event
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.skull.king.core.command.domain.CardColor
+import org.skull.king.core.command.domain.ColoredCard
 import org.skull.king.core.command.domain.NewPlayer
+import org.skull.king.core.command.domain.ScaryMary
+import org.skull.king.core.command.domain.ScaryMaryUsage
+import org.skull.king.core.command.domain.SpecialCard
+import org.skull.king.core.command.domain.SpecialCardType
 import org.skull.king.core.event.SkullKingEvent
 import org.skull.king.core.event.Started
 import org.skull.king.helpers.LocalFirebase
@@ -17,18 +23,21 @@ class FirebaseEventStoreTest : LocalFirebase() {
         // Given
         val firstGameId = "game_one"
 
-        val playerOne = NewPlayer("1", firstGameId, cards = listOf())
-        val playerTwo = NewPlayer("2", firstGameId, cards = listOf())
-
-        val aStarted = Started(firstGameId, listOf(playerOne, playerTwo))
+        val playerOne = NewPlayer("1", firstGameId, cards = listOf(SpecialCard(SpecialCardType.MERMAID)))
+        val playerTwo = NewPlayer("2", firstGameId, cards = listOf(ScaryMary(ScaryMaryUsage.ESCAPE)))
+        val playerThree = NewPlayer("3", firstGameId, cards = listOf(ColoredCard(1, CardColor.BLACK)))
 
         // When
-        eventStore.save(sequenceOf(aStarted))
+        val orderedEvents = (0..30).map {
+            Started(firstGameId, listOf(playerOne, playerTwo, playerThree)).also {
+                eventStore.save(sequenceOf(it))
+            }
+        }.sortedBy { it.timestamp }
 
         // Then
         val cursor = eventStore.allOf(firstGameId, SkullKingEvent::class.java)
         cursor.consume {
-            Assertions.assertThat(it.toList()).contains(aStarted)
+            Assertions.assertThat(it.toList()).isEqualTo(orderedEvents)
         }
     }
 }

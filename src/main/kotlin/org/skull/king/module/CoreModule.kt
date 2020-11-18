@@ -6,7 +6,6 @@ import org.skull.king.core.command.handler.AnnounceHandler
 import org.skull.king.core.command.handler.PlayCardHandler
 import org.skull.king.core.command.handler.SettleFoldHandler
 import org.skull.king.core.command.handler.StartHandler
-import org.skull.king.infrastructure.event.EventStoreInMemory
 import org.skull.king.core.query.handler.GetGameHandler
 import org.skull.king.core.query.handler.GetPlayerHandler
 import org.skull.king.core.query.sync.OnCardPlayed
@@ -31,7 +30,8 @@ import org.skull.king.cqrs.infrastructure.persistence.EventStoreMiddleware
 import org.skull.king.cqrs.query.QueryBus
 import org.skull.king.cqrs.query.QueryHandler
 import org.skull.king.cqrs.query.QueryMiddleware
-import org.skull.king.infrastructure.event.SkullkingEventSourcedRepositoryInMemory
+import org.skull.king.infrastructure.event.EventStoreInMemory
+import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 import org.skull.king.infrastructure.repository.QueryRepositoryInMemory
 import javax.inject.Singleton
 
@@ -44,12 +44,12 @@ class CoreModule {
 
     @Singleton
     @Provides
-    fun provideSkullkingRepository(eventStore: EventStore): SkullkingEventSourcedRepositoryInMemory =
-        SkullkingEventSourcedRepositoryInMemory(eventStore)
+    fun provideSkullkingRepository(eventStore: EventStore): SkullkingEventSourcedRepository =
+        SkullkingEventSourcedRepository(eventStore)
 
     @Provides
     @Singleton
-    fun provideCommandHandler(repository: SkullkingEventSourcedRepositoryInMemory): Set<CommandHandler<*, *>> = setOf(
+    fun provideCommandHandler(repository: SkullkingEventSourcedRepository): Set<CommandHandler<*, *>> = setOf(
         AnnounceHandler(repository),
         PlayCardHandler(repository),
         SettleFoldHandler(repository),

@@ -33,6 +33,32 @@ open class SkullKingEvent(
     companion object {
         const val SKULLKING_AGGREGATE_TYPE = "SKULLKING"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SkullKingEvent
+
+        if (aggregateId != other.aggregateId) return false
+        if (type != other.type) return false
+        if (version != other.version) return false
+        if (aggregateType != other.aggregateType) return false
+        if (timestamp != other.timestamp) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = aggregateId.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + version
+        result = 31 * result + aggregateType.hashCode()
+        result = 31 * result + timestamp.hashCode()
+        return result
+    }
+
+
 }
 
 data class Started(val gameId: String, val players: List<Player>) : SkullKingEvent(gameId, EVENT_TYPE) {

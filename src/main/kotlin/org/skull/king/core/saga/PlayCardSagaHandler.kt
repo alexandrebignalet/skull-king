@@ -6,10 +6,10 @@ import org.skull.king.core.event.CardPlayed
 import org.skull.king.cqrs.command.CommandBus
 import org.skull.king.cqrs.ddd.event.Event
 import org.skull.king.cqrs.saga.SagaHandler
-import org.skull.king.infrastructure.event.SkullkingEventSourcedRepositoryInMemory
+import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 
 data class PlayCardSagaHandler(
-    private val repositoryInMemory: SkullkingEventSourcedRepositoryInMemory
+    private val repository: SkullkingEventSourcedRepository
 ) : SagaHandler<String, PlayCardSaga> {
 
     override fun run(bus: CommandBus, saga: PlayCardSaga): Pair<String, Sequence<Event>> {

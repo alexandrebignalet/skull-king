@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.runBlocking
 import org.skull.king.config.FirebaseConfig
 import org.skull.king.core.query.ReadSkullKing
 import org.skull.king.utils.JsonObjectMapper
@@ -19,21 +20,23 @@ open class LocalFirebase {
     companion object {
         private val objectMapper = JsonObjectMapper.getObjectMapper()
         private const val GAME_PATH = "games"
+        private const val EVENTS_PATH = "events"
+
+        private val firebaseConfig = FirebaseConfig().apply {
+            credentialsPath = "/service-account-file.json"
+            databaseURL = "http://localhost:9000/?ns=skullking"
+        }
+
+        private val serviceAccount = LocalFirebase::class.java.getResourceAsStream(firebaseConfig.credentialsPath)
+
+        private val options = FirebaseOptions.builder()
+            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            .setDatabaseUrl(firebaseConfig.databaseURL)
+            .build()
+
+        internal val database: FirebaseDatabase =
+            FirebaseApp.initializeApp(options).let { FirebaseDatabase.getInstance() }
     }
-
-    private val firebaseConfig = FirebaseConfig().apply {
-        credentialsPath = "/service-account-file.json"
-        databaseURL = "http://localhost:9000/?ns=skullking"
-    }
-
-    private val serviceAccount = LocalFirebase::class.java.getResourceAsStream(firebaseConfig.credentialsPath)
-
-    private val options = FirebaseOptions.builder()
-        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-        .setDatabaseUrl(firebaseConfig.databaseURL)
-        .build()
-
-    internal val database: FirebaseDatabase = FirebaseApp.initializeApp(options).let { FirebaseDatabase.getInstance() }
 
     suspend fun getGame(gameId: String): ReadSkullKing = suspendCoroutine { cont ->
         val gamesRef: DatabaseReference = database.reference.child("$GAME_PATH/${gameId}")
@@ -49,5 +52,20 @@ open class LocalFirebase {
                 cont.resumeWith(Result.failure(Error(error.toString())))
             }
         })
+    }
+
+    fun clearFirebaseData() {
+        runBlocking {
+            clearRefData(GAME_PATH)
+            clearRefData(EVENTS_PATH)
+        }
+    }
+
+    private suspend fun clearRefData(path: String): Unit = suspendCoroutine { cont ->
+        database.getReference(path).removeValue { error, ref ->
+            error?.let {
+                cont.resumeWith(Result.failure(Error(error.message)))
+            } ?: cont.resumeWith(Result.success(Unit))
+        }
     }
 }

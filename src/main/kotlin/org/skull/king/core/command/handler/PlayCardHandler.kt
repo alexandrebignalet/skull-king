@@ -18,9 +18,9 @@ import org.skull.king.core.command.error.SkullKingOverError
 import org.skull.king.core.event.CardPlayed
 import org.skull.king.cqrs.command.CommandHandler
 import org.skull.king.cqrs.ddd.event.Event
-import org.skull.king.infrastructure.event.SkullkingEventSourcedRepositoryInMemory
+import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 
-class PlayCardHandler(private val repository: SkullkingEventSourcedRepositoryInMemory) :
+class PlayCardHandler(private val repository: SkullkingEventSourcedRepository) :
     CommandHandler<PlayCard, String> {
 
     override fun execute(command: PlayCard): Pair<String, Sequence<Event>> =

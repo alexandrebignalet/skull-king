@@ -8,9 +8,9 @@ import org.skull.king.core.command.error.SkullKingError
 import org.skull.king.core.event.Started
 import org.skull.king.cqrs.command.CommandHandler
 import org.skull.king.cqrs.ddd.event.Event
-import org.skull.king.infrastructure.event.SkullkingEventSourcedRepositoryInMemory
+import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 
-class StartHandler(private val repository: SkullkingEventSourcedRepositoryInMemory) :
+class StartHandler(private val repository: SkullkingEventSourcedRepository) :
     CommandHandler<StartSkullKing, String> {
 
     override fun execute(command: StartSkullKing): Pair<String, Sequence<Event>> {

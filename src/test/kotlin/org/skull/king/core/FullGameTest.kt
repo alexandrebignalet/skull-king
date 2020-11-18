@@ -2,7 +2,6 @@ package org.skull.king.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
@@ -40,13 +39,11 @@ class FullGameTest : LocalBus() {
         var firstPlayerCard = 0
         var secondPlayerCard = 1
 
-        runBlocking {
-            val start = StartSkullKing(gameId, players)
-            val startedEvent = commandBus.send(start).second.first() as Started
+        val start = StartSkullKing(gameId, players)
+        val startedEvent = commandBus.send(start).second.first() as Started
 
-            firstPlayer = startedEvent.players.first()
-            secondPlayer = startedEvent.players.last()
-        }
+        firstPlayer = startedEvent.players.first()
+        secondPlayer = startedEvent.players.last()
 
         repeat((1..10).count()) { currentRound ->
 
