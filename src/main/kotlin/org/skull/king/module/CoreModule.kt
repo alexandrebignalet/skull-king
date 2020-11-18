@@ -6,7 +6,7 @@ import org.skull.king.core.command.handler.AnnounceHandler
 import org.skull.king.core.command.handler.PlayCardHandler
 import org.skull.king.core.command.handler.SettleFoldHandler
 import org.skull.king.core.command.handler.StartHandler
-import org.skull.king.core.event.EventStoreInMemory
+import org.skull.king.infrastructure.event.EventStoreInMemory
 import org.skull.king.core.query.handler.GetGameHandler
 import org.skull.king.core.query.handler.GetPlayerHandler
 import org.skull.king.core.query.sync.OnCardPlayed

@@ -1,6 +1,5 @@
 package org.skull.king.core.query
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.skull.king.core.command.domain.Card
 import org.skull.king.core.command.domain.ColoredCard
 import org.skull.king.core.command.domain.ScaryMary
@@ -13,12 +12,9 @@ sealed class ReadEntity {
 data class ReadSkullKing(
     val id: String,
     val players: List<String>,
-    @JsonProperty("round_nb")
     val roundNb: RoundNb,
     val fold: List<Play> = listOf(),
-    @JsonProperty("is_ended")
     val isEnded: Boolean = false,
-    @JsonProperty("first_player_id")
     val firstPlayerId: String
 ) : ReadEntity() {
 
@@ -36,10 +32,8 @@ data class ReadSkullKing(
 
 data class ReadPlayer(
     val id: String,
-    @JsonProperty("game_id")
     val gameId: String,
     val cards: List<ReadCard>,
-    @JsonProperty("score_per_round")
     val scorePerRound: ScorePerRound = mutableMapOf() // TODO model as list for firebase
 ) : ReadEntity() {
 
@@ -61,7 +55,6 @@ typealias ScorePerRound = MutableMap<RoundNb, Score>
 data class Score(
     val announced: Int,
     val done: Int = 0,
-    @JsonProperty("potential_bonus")
     val potentialBonus: Int = 0
 ) : ReadEntity() {
     val bonus get() = if (announced == done) potentialBonus else 0
@@ -75,7 +68,6 @@ data class Score(
 }
 
 data class Play(
-    @JsonProperty("player_id")
     val playerId: String,
     val card: ReadCard
 ) : ReadEntity() {
