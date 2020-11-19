@@ -5,7 +5,7 @@ interface QueryRepository {
 
     fun getGame(gameId: String): ReadSkullKing?
 
-    fun gamePlayers(gameId: String): List<ReadPlayer>
+    fun getGamePlayers(gameId: String): List<ReadPlayer>
 
     fun addPlayer(player: ReadPlayer)
 

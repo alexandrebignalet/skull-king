@@ -13,7 +13,8 @@ open class LocalFirebase {
 
     companion object {
         private val objectMapper = JsonObjectMapper.getObjectMapper()
-        private const val GAME_PATH = "games"
+        private const val GAMES_PATH = "games"
+        private const val PLAYERS_PATH = "players"
         private const val EVENTS_PATH = "events"
 
         private val firebaseConfig = FirebaseConfig().apply {
@@ -34,7 +35,8 @@ open class LocalFirebase {
 
     fun clearFirebaseData() {
         runBlocking {
-            clearRefData(GAME_PATH)
+            clearRefData(GAMES_PATH)
+            clearRefData(PLAYERS_PATH)
             clearRefData(EVENTS_PATH)
         }
     }

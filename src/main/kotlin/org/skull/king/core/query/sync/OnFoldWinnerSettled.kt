@@ -1,17 +1,17 @@
 package org.skull.king.core.query.sync
 
 import org.skull.king.core.event.FoldWinnerSettled
+import org.skull.king.core.query.QueryRepository
 import org.skull.king.core.query.RoundScore
 import org.skull.king.core.query.Score
 import org.skull.king.cqrs.ddd.event.EventCaptor
-import org.skull.king.infrastructure.repository.QueryRepositoryInMemory
 
-class OnFoldWinnerSettled(private val repository: QueryRepositoryInMemory) : EventCaptor<FoldWinnerSettled> {
+class OnFoldWinnerSettled(private val repository: QueryRepository) : EventCaptor<FoldWinnerSettled> {
 
     override fun execute(event: FoldWinnerSettled) {
         val game = repository.getGame(event.gameId)
 
-        val gamePlayers = repository.gamePlayers(event.gameId)
+        val gamePlayers = repository.getGamePlayers(event.gameId)
 
         gamePlayers
             .filter { player -> player.id == event.winner }

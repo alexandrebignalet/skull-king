@@ -38,7 +38,6 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_version"
 
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin"
@@ -96,11 +95,11 @@ task startMockFirebase {
                 .waitFor()
     }
 }
-tasks.test.dependsOn(startMockFirebase)
 
 task stopMockFirebase(type: Exec) {
     executable "bin/stop-firebase-emulator"
 }
+tasks.test.dependsOn(startMockFirebase)
 test.finalizedBy(stopMockFirebase)
 
 // FAT JAR

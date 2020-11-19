@@ -60,4 +60,33 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
         val createdPlayer = repository.getPlayer(player.gameId, player.id)
         Assertions.assertThat(createdPlayer).isEqualTo(player)
     }
+
+    @Test
+    fun `Should correctly retrieve game players`() {
+        // Given
+        val gameOneId = "1"
+        val gameTwoId = "2"
+
+        val playerOne = ReadPlayer("1", gameOneId, listOf(ReadCard.of(SpecialCard(SpecialCardType.SKULL_KING))))
+        val playerTwo = ReadPlayer("2", gameOneId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))))
+        val playerThree = ReadPlayer("3", gameTwoId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))))
+        val playerFour = ReadPlayer("4", gameTwoId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))))
+        val gameOne = ReadSkullKing(gameOneId, listOf("1", "2"), 2, listOf(), false, "2")
+        val gameTwo = ReadSkullKing(gameTwoId, listOf("3", "4"), 2, listOf(), false, "3")
+
+        repository.addGame(gameOne)
+        repository.addPlayer(playerOne)
+        repository.addPlayer(playerTwo)
+        repository.addGame(gameTwo)
+        repository.addPlayer(playerThree)
+        repository.addPlayer(playerFour)
+
+        // When
+        val gameOnePlayers = repository.getGamePlayers(gameOneId)
+
+        // Then
+        Assertions.assertThat(gameOnePlayers.isNotEmpty()).isTrue()
+        Assertions.assertThat(gameOnePlayers.all { it.gameId == gameOneId }).isTrue()
+        Assertions.assertThat(gameOnePlayers.all { gameOne.players.contains(it.id) }).isTrue()
+    }
 }

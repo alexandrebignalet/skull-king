@@ -29,8 +29,13 @@ class FirebaseQueryRepository(
         return runBlocking { retrieveGameItem(gameId) }
     }
 
-    override fun gamePlayers(gameId: String): List<ReadPlayer> {
-        return listOf()
+    override fun getGamePlayers(gameId: String): List<ReadPlayer> {
+        return getGame(gameId)?.let {
+            val players = it.players.mapNotNull { playerId -> getPlayer(gameId, playerId) }
+
+            if (players.size != it.players.size) listOf()
+            else players
+        } ?: listOf()
     }
 
     override fun addGame(game: ReadSkullKing) {
@@ -82,7 +87,7 @@ class FirebaseQueryRepository(
     }
 
     private suspend fun persistPlayer(record: ReadPlayer): Unit = suspendCoroutine { cont ->
-        val playersRef = database.reference.child(PLAYERS_PATH)
+        val playersRef = database.reference.child("$PLAYERS_PATH/${record.gameId}_${record.id}")
         playersRef.setValue(record.fireMap()) { databaseError, _ ->
             databaseError?.let {
                 LOGGER.error("Data could not be saved " + databaseError.message)
@@ -92,7 +97,7 @@ class FirebaseQueryRepository(
     }
 
     private suspend fun persistGame(record: ReadSkullKing): Unit = suspendCoroutine { cont ->
-        val gamesRef = database.reference.child(GAME_PATH)
+        val gamesRef = database.reference.child("$GAME_PATH/${record.id}")
         gamesRef.setValue(record.fireMap()) { databaseError, _ ->
             databaseError?.let {
                 LOGGER.error("Data could not be saved " + databaseError.message)

@@ -11,7 +11,7 @@ class QueryRepositoryInMemory : QueryRepository {
 
     override fun getGame(gameId: String) = skullKingGames[gameId]
 
-    override fun gamePlayers(gameId: String) = players.values.filter { it.gameId == gameId }
+    override fun getGamePlayers(gameId: String) = players.values.filter { it.gameId == gameId }
     override fun getPlayer(gameId: String, playerId: String) = players[buildPlayerId(gameId, playerId)]
 
     override fun addPlayer(player: ReadPlayer) {

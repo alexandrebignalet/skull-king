@@ -2,12 +2,12 @@ package org.skull.king.core.query.sync
 
 import org.skull.king.core.event.CardPlayed
 import org.skull.king.core.query.Play
+import org.skull.king.core.query.QueryRepository
 import org.skull.king.core.query.ReadCard
 import org.skull.king.core.query.ReadPlayer
 import org.skull.king.cqrs.ddd.event.EventCaptor
-import org.skull.king.infrastructure.repository.QueryRepositoryInMemory
 
-class OnCardPlayed(private val repository: QueryRepositoryInMemory) : EventCaptor<CardPlayed> {
+class OnCardPlayed(private val repository: QueryRepository) : EventCaptor<CardPlayed> {
 
     override fun execute(event: CardPlayed) {
         val game = repository.getGame(event.gameId)

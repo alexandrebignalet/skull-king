@@ -20,31 +20,27 @@ data class ReadSkullKing(
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
-        id to mapOf(
-            "id" to id,
-            "players" to players,
-            "round_nb" to roundNb,
-            "fold" to fold.map { it.fireMap() },
-            "is_ended" to isEnded,
-            "first_player_id" to firstPlayerId
-        )
+        "id" to id,
+        "players" to players,
+        "round_nb" to roundNb,
+        "fold" to fold.map { it.fireMap() },
+        "is_ended" to isEnded,
+        "first_player_id" to firstPlayerId
     )
 }
 
 data class ReadPlayer(
     val id: String,
     val gameId: String,
-    val cards: List<ReadCard>,
+    val cards: List<ReadCard> = listOf(),
     val scorePerRound: ScorePerRound = mutableListOf()
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
-        "${gameId}_$id" to mapOf(
-            "id" to id,
-            "game_id" to gameId,
-            "cards" to cards,
-            "score_per_round" to scorePerRound.fireMap()
-        )
+        "id" to id,
+        "game_id" to gameId,
+        "cards" to cards,
+        "score_per_round" to scorePerRound.fireMap()
     )
 }
 

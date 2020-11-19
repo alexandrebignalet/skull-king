@@ -5,6 +5,7 @@ import org.skull.king.core.command.handler.AnnounceHandler
 import org.skull.king.core.command.handler.PlayCardHandler
 import org.skull.king.core.command.handler.SettleFoldHandler
 import org.skull.king.core.command.handler.StartHandler
+import org.skull.king.core.query.QueryRepository
 import org.skull.king.core.query.handler.GetGameHandler
 import org.skull.king.core.query.handler.GetPlayerHandler
 import org.skull.king.core.query.sync.OnCardPlayed
@@ -33,6 +34,7 @@ import org.skull.king.cqrs.saga.SagaMiddleware
 import org.skull.king.infrastructure.event.EventStoreInMemory
 import org.skull.king.infrastructure.event.FirebaseEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
+import org.skull.king.infrastructure.repository.FirebaseQueryRepository
 import org.skull.king.infrastructure.repository.QueryRepositoryInMemory
 import org.skull.king.utils.JsonObjectMapper
 import org.slf4j.LoggerFactory
@@ -59,7 +61,7 @@ open class LocalBus : LocalFirebase() {
     val firebaseBuses = Builder(
         firebaseEventStore,
         SkullkingEventSourcedRepository(firebaseEventStore),
-        QueryRepositoryInMemory()
+        FirebaseQueryRepository(database, mapper)
     )
 
     val queryBus = firebaseBuses.queryBus
@@ -68,7 +70,7 @@ open class LocalBus : LocalFirebase() {
     class Builder(
         val eventStore: EventStore,
         val eventSourcedRepository: SkullkingEventSourcedRepository,
-        val queryRepository: QueryRepositoryInMemory
+        val queryRepository: QueryRepository
     ) {
         val queryBus: QueryBus = QueryBusSynchronous(
             setOf(),
