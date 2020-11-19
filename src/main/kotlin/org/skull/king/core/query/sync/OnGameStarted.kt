@@ -11,13 +11,20 @@ import org.skull.king.cqrs.ddd.event.EventCaptor
 class OnGameStarted(private val repository: QueryRepository) : EventCaptor<Started> {
 
     override fun execute(event: Started) {
+        val firstPlayerId = event.players.first().id
         val gameUpdated =
-            ReadSkullKing(event.gameId, event.players.map { it.id }, 1, firstPlayerId = event.players.first().id)
+            ReadSkullKing(event.gameId, event.players.map { it.id }, 1, firstPlayerId = firstPlayerId)
         repository.addGame(gameUpdated)
 
         for (player in event.players) {
             player as NewPlayer
-            val updatedPlayer = ReadPlayer(player.id, event.gameId, player.cards.map { ReadCard.of(it) })
+            val updatedPlayer =
+                ReadPlayer(
+                    player.id,
+                    event.gameId,
+                    player.cards.map { ReadCard.of(it) },
+                    isCurrent = player.id == firstPlayerId
+                )
             repository.addPlayer(updatedPlayer)
         }
     }

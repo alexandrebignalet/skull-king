@@ -2,7 +2,6 @@ package org.skull.king.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -14,6 +13,7 @@ import org.skull.king.core.command.domain.Player
 import org.skull.king.core.command.domain.SkullKing
 import org.skull.king.core.command.error.SkullKingConfigurationError
 import org.skull.king.core.event.Started
+import org.skull.king.core.query.handler.GetPlayer
 import org.skull.king.cqrs.ddd.event.Event
 import org.skull.king.helpers.LocalBus
 
@@ -60,40 +60,48 @@ class StartSkullKingTest : LocalBus() {
 
         @Test
         fun `Should start correctly the game`() {
-            runBlocking {
-                val gameStarted = response.second.first() as Started
-                Assertions.assertThat(gameStarted.gameId).isEqualTo(gameId)
+            val gameStarted = response.second.first() as Started
+            Assertions.assertThat(gameStarted.gameId).isEqualTo(gameId)
 
-                val createdPlayers = gameStarted.players
-                createdPlayers.forEach { Assertions.assertThat(it.skullId).isEqualTo(gameId) }
-                Assertions.assertThat(createdPlayers.map(Player::id)).containsAll(players)
-            }
-
+            val createdPlayers = gameStarted.players
+            createdPlayers.forEach { Assertions.assertThat(it.skullId).isEqualTo(gameId) }
+            Assertions.assertThat(createdPlayers.map(Player::id)).containsAll(players)
         }
 
         @Test
         fun `Should respect player ordering during card distribution`() {
 
-            runBlocking {
-                val gameStarted = response.second.first() as Started
+            val gameStarted = response.second.first() as Started
 
-                val createdPlayers = gameStarted.players
+            val createdPlayers = gameStarted.players
 
-                // Dealer serve himself last
-                val dealer = createdPlayers.last() as NewPlayer
-                Assertions.assertThat(dealer.cards.first()).isEqualTo(mockedCards[4])
+            // Dealer serve himself last
+            val dealer = createdPlayers.last() as NewPlayer
+            Assertions.assertThat(dealer.cards.first()).isEqualTo(mockedCards[4])
 
-                val firstPlayer = createdPlayers[0] as NewPlayer
-                Assertions.assertThat(firstPlayer.cards.first()).isEqualTo(mockedCards[0])
+            val firstPlayer = createdPlayers[0] as NewPlayer
+            Assertions.assertThat(firstPlayer.cards.first()).isEqualTo(mockedCards[0])
 
-                val secondPlayer = createdPlayers[1] as NewPlayer
-                Assertions.assertThat(secondPlayer.cards.first()).isEqualTo(mockedCards[1])
+            val secondPlayer = createdPlayers[1] as NewPlayer
+            Assertions.assertThat(secondPlayer.cards.first()).isEqualTo(mockedCards[1])
 
-                val thirdPlayer = createdPlayers[2] as NewPlayer
-                Assertions.assertThat(thirdPlayer.cards.first()).isEqualTo(mockedCards[2])
+            val thirdPlayer = createdPlayers[2] as NewPlayer
+            Assertions.assertThat(thirdPlayer.cards.first()).isEqualTo(mockedCards[2])
 
-                val forthPlayer = createdPlayers[3] as NewPlayer
-                Assertions.assertThat(forthPlayer.cards.first()).isEqualTo(mockedCards[3])
+            val forthPlayer = createdPlayers[3] as NewPlayer
+            Assertions.assertThat(forthPlayer.cards.first()).isEqualTo(mockedCards[3])
+        }
+
+        @Test
+        fun `Should set the first player as current player before announcement`() {
+            val gameStarted = response.second.first() as Started
+            val futureFirstPlayer = queryBus.send(GetPlayer(gameId, "1"))
+
+            Assertions.assertThat(futureFirstPlayer.isCurrent).isTrue()
+
+            gameStarted.players.filter { it.id != futureFirstPlayer.id }.forEach {
+                val player = queryBus.send(GetPlayer(gameId, it.id))
+                Assertions.assertThat(player.isCurrent).isFalse()
             }
         }
     }

@@ -27,20 +27,28 @@ data class ReadSkullKing(
         "is_ended" to isEnded,
         "first_player_id" to firstPlayerId
     )
+
+    fun nextPlayerAfter(currentPlayerId: String): String {
+        val currentPlayerIndex = players.indexOf(currentPlayerId)
+        return if (currentPlayerIndex == players.size - 1) players.first()
+        else players[currentPlayerIndex + 1]
+    }
 }
 
 data class ReadPlayer(
     val id: String,
     val gameId: String,
     val cards: List<ReadCard> = listOf(),
-    val scorePerRound: ScorePerRound = mutableListOf()
+    val scorePerRound: ScorePerRound = mutableListOf(),
+    val isCurrent: Boolean
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
         "id" to id,
         "game_id" to gameId,
         "cards" to cards,
-        "score_per_round" to scorePerRound.fireMap()
+        "score_per_round" to scorePerRound.fireMap(),
+        "is_current" to isCurrent
     )
 }
 

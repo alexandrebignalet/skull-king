@@ -50,7 +50,8 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
             mutableListOf(
                 RoundScore(1, Score(1, 2, 50)),
                 RoundScore(2, Score(1, 2, 50))
-            )
+            ),
+            false
         )
 
         // When
@@ -67,10 +68,14 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
         val gameOneId = "1"
         val gameTwoId = "2"
 
-        val playerOne = ReadPlayer("1", gameOneId, listOf(ReadCard.of(SpecialCard(SpecialCardType.SKULL_KING))))
-        val playerTwo = ReadPlayer("2", gameOneId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))))
-        val playerThree = ReadPlayer("3", gameTwoId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))))
-        val playerFour = ReadPlayer("4", gameTwoId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))))
+        val playerOne =
+            ReadPlayer("1", gameOneId, listOf(ReadCard.of(SpecialCard(SpecialCardType.SKULL_KING))), isCurrent = false)
+        val playerTwo =
+            ReadPlayer("2", gameOneId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))), isCurrent = true)
+        val playerThree =
+            ReadPlayer("3", gameTwoId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))), isCurrent = true)
+        val playerFour =
+            ReadPlayer("4", gameTwoId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))), isCurrent = false)
         val gameOne = ReadSkullKing(gameOneId, listOf("1", "2"), 2, listOf(), false, "2")
         val gameTwo = ReadSkullKing(gameTwoId, listOf("3", "4"), 2, listOf(), false, "3")
 

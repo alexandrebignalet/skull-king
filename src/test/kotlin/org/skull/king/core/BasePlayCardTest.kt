@@ -267,27 +267,25 @@ class BasePlayCardTest : LocalBus() {
             lateinit var firstPlayer: Player
             lateinit var secondPlayer: Player
 
-            runBlocking {
-                // Given
-                val start = StartSkullKing(gameId, players)
-                val startedEvent = commandBus.send(start).second.first() as Started
+            // Given
+            val start = StartSkullKing(gameId, players)
+            val startedEvent = commandBus.send(start).second.first() as Started
 
-                firstPlayer = startedEvent.players.first()
-                secondPlayer = startedEvent.players.last()
+            firstPlayer = startedEvent.players.first()
+            secondPlayer = startedEvent.players.last()
 
-                val firstAnnounce = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, futureWinnerAnnounce)
-                val secondAnnounce = AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, futureLoserAnnounce)
+            val firstAnnounce = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, futureWinnerAnnounce)
+            val secondAnnounce = AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, futureLoserAnnounce)
 
-                commandBus.send(firstAnnounce)
-                commandBus.send(secondAnnounce)
+            commandBus.send(firstAnnounce)
+            commandBus.send(secondAnnounce)
 
-                // When all played
-                val firstPlayCard = PlayCardSaga(gameId, firstPlayer.id, mockedCard.first())
-                val secondPlayCard = PlayCardSaga(gameId, secondPlayer.id, mockedCard[1])
+            // When all played
+            val firstPlayCard = PlayCardSaga(gameId, firstPlayer.id, mockedCard.first())
+            val secondPlayCard = PlayCardSaga(gameId, secondPlayer.id, mockedCard[1])
 
-                commandBus.send(firstPlayCard)
-                commandBus.send(secondPlayCard)
-            }
+            commandBus.send(firstPlayCard)
+            commandBus.send(secondPlayCard)
 
             // Then
             await atMost Duration.ofSeconds(5) untilAsserted {

@@ -189,4 +189,32 @@ class MultiFoldPlayCardTest : LocalBus() {
             Assertions.assertThat(game.firstPlayerId).isEqualTo(newFirstPlayer)
         }
     }
+
+    @Test
+    fun `Should mark isCurrent on new round and after card played`() {
+        val getNewFirstPlayer = { queryBus.send(GetPlayer(gameId, secondPlayer.id)) }
+        val getNewSecondPlayer = { queryBus.send(GetPlayer(gameId, firstPlayer.id)) }
+
+        Assertions.assertThat(getNewFirstPlayer().isCurrent).isTrue()
+        Assertions.assertThat(getNewSecondPlayer().isCurrent).isFalse()
+
+        val anAnnounce = AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, 0)
+        val anotherAnnounce = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, 0)
+
+        Assertions.assertThat(getNewFirstPlayer().isCurrent).isTrue()
+        Assertions.assertThat(getNewSecondPlayer().isCurrent).isFalse()
+
+        commandBus.send(anAnnounce)
+        commandBus.send(anotherAnnounce)
+
+        commandBus.send(PlayCardSaga(gameId, secondPlayer.id, mockedCard[2]))
+
+        Assertions.assertThat(getNewFirstPlayer().isCurrent).isFalse()
+        Assertions.assertThat(getNewSecondPlayer().isCurrent).isTrue()
+
+        commandBus.send(PlayCardSaga(gameId, firstPlayer.id, mockedCard[3]))
+
+        Assertions.assertThat(getNewFirstPlayer().isCurrent).isTrue()
+        Assertions.assertThat(getNewSecondPlayer().isCurrent).isFalse()
+    }
 }
