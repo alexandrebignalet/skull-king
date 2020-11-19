@@ -13,12 +13,12 @@ class OnGameStarted(private val repository: QueryRepositoryInMemory) : EventCapt
     override fun execute(event: Started) {
         val gameUpdated =
             ReadSkullKing(event.gameId, event.players.map { it.id }, 1, firstPlayerId = event.players.first().id)
-        repository.addGame(gameUpdated.id, gameUpdated)
+        repository.addGame(gameUpdated)
 
         for (player in event.players) {
             player as NewPlayer
             val updatedPlayer = ReadPlayer(player.id, event.gameId, player.cards.map { ReadCard.of(it) })
-            repository.addPlayer(gameUpdated.id, updatedPlayer.id, updatedPlayer)
+            repository.addPlayer(updatedPlayer)
         }
     }
 }

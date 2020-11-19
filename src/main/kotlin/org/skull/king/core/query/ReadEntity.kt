@@ -1,5 +1,6 @@
 package org.skull.king.core.query
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.skull.king.core.command.domain.Card
 import org.skull.king.core.command.domain.ColoredCard
 import org.skull.king.core.command.domain.ScaryMary
@@ -34,15 +35,15 @@ data class ReadPlayer(
     val id: String,
     val gameId: String,
     val cards: List<ReadCard>,
-    val scorePerRound: ScorePerRound = mutableMapOf() // TODO model as list for firebase
+    val scorePerRound: ScorePerRound = mutableListOf()
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
-        id to mapOf(
+        "${gameId}_$id" to mapOf(
             "id" to id,
             "game_id" to gameId,
             "cards" to cards,
-            "score_per_round" to scorePerRound
+            "score_per_round" to scorePerRound.fireMap()
         )
     )
 }
@@ -50,14 +51,26 @@ data class ReadPlayer(
 // TODO create a read model for card which might update according on card allowed or not
 
 typealias RoundNb = Int
-typealias ScorePerRound = MutableMap<RoundNb, Score>
+typealias ScorePerRound = MutableList<RoundScore>
+
+fun ScorePerRound.from(roundNb: RoundNb) = find { it.roundNb == roundNb }?.score
+fun ScorePerRound.fireMap() = map { it.fireMap() }
+
+data class RoundScore(val roundNb: RoundNb, val score: Score) {
+    fun fireMap() = mapOf(
+        "round_nb" to roundNb,
+        "score" to score.fireMap()
+    )
+}
 
 data class Score(
     val announced: Int,
     val done: Int = 0,
     val potentialBonus: Int = 0
 ) : ReadEntity() {
-    val bonus get() = if (announced == done) potentialBonus else 0
+    @get:JsonIgnore
+    val bonus
+        get() = if (announced == done) potentialBonus else 0
 
     override fun fireMap() = mapOf(
         "announced" to announced,

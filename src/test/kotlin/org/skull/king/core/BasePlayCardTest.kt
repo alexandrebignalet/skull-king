@@ -29,8 +29,7 @@ import org.skull.king.core.command.error.SkullKingNotStartedError
 import org.skull.king.core.event.Started
 import org.skull.king.core.query.Play
 import org.skull.king.core.query.ReadCard
-import org.skull.king.core.query.ReadPlayer
-import org.skull.king.core.query.ReadSkullKing
+import org.skull.king.core.query.from
 import org.skull.king.core.query.handler.GetGame
 import org.skull.king.core.query.handler.GetPlayer
 import org.skull.king.core.saga.PlayCardSaga
@@ -249,10 +248,10 @@ class BasePlayCardTest : LocalBus() {
 
             await atMost Duration.ofSeconds(1) untilAsserted {
                 val getGame = GetGame(startedEvent.gameId)
-                val game = queryBus.send(getGame) as ReadSkullKing
+                val game = queryBus.send(getGame)
 
                 val getPlayer = GetPlayer(game.id, firstPlayer.id)
-                val player = queryBus.send(getPlayer) as ReadPlayer
+                val player = queryBus.send(getPlayer)
 
                 Assertions.assertThat(player.cards).doesNotContain(ReadCard.of(playedCard))
                 val play = game.fold.find { it.playerId == player.id }
@@ -293,18 +292,18 @@ class BasePlayCardTest : LocalBus() {
             // Then
             await atMost Duration.ofSeconds(5) untilAsserted {
                 val getFirstPlayer = GetPlayer(gameId, firstPlayer.id)
-                val winner = queryBus.send(getFirstPlayer) as ReadPlayer
-                Assertions.assertThat(winner.scorePerRound[roundNb]?.announced).isEqualTo(futureWinnerAnnounce)
-                Assertions.assertThat(winner.scorePerRound[roundNb]?.done).isEqualTo(1)
-                Assertions.assertThat(winner.scorePerRound[roundNb]?.bonus).isEqualTo(50)
-                Assertions.assertThat(winner.scorePerRound[roundNb]?.potentialBonus).isEqualTo(50)
+                val winner = queryBus.send(getFirstPlayer)
+                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.announced).isEqualTo(futureWinnerAnnounce)
+                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.done).isEqualTo(1)
+                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.bonus).isEqualTo(50)
+                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.potentialBonus).isEqualTo(50)
 
                 val getSecondPlayer = GetPlayer(gameId, secondPlayer.id)
-                val loser = queryBus.send(getSecondPlayer) as ReadPlayer
-                Assertions.assertThat(loser.scorePerRound[roundNb]?.announced).isEqualTo(futureLoserAnnounce)
-                Assertions.assertThat(loser.scorePerRound[roundNb]?.done).isEqualTo(0)
-                Assertions.assertThat(loser.scorePerRound[roundNb]?.bonus).isEqualTo(0)
-                Assertions.assertThat(loser.scorePerRound[roundNb]?.potentialBonus).isEqualTo(0)
+                val loser = queryBus.send(getSecondPlayer)
+                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.announced).isEqualTo(futureLoserAnnounce)
+                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.done).isEqualTo(0)
+                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.bonus).isEqualTo(0)
+                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.potentialBonus).isEqualTo(0)
             }
         }
     }

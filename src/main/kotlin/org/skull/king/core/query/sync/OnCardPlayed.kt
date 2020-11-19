@@ -16,15 +16,11 @@ class OnCardPlayed(private val repository: QueryRepositoryInMemory) : EventCapto
 
             player?.let {
                 val cardsUpdate = player.cards.filterNot { it.isSameAs(event.card) }
-                repository.addPlayer(
-                    game.id,
-                    player.id,
-                    ReadPlayer(player.id, game.id, cardsUpdate, player.scorePerRound)
-                )
+                repository.addPlayer(ReadPlayer(player.id, game.id, cardsUpdate, player.scorePerRound))
             }
 
             val foldUpdate = game.fold + Play(event.playerId, ReadCard.of(event.card))
-            repository.addGame(game.id, game.copy(fold = foldUpdate))
+            repository.addGame(game.copy(fold = foldUpdate))
         }
     }
 }

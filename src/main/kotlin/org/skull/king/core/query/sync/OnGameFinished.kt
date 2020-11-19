@@ -8,7 +8,7 @@ class OnGameFinished(private val repository: QueryRepositoryInMemory) : EventCap
 
     override fun execute(event: GameFinished) {
         repository.getGame(event.gameId)?.let {
-            repository.addGame(it.id, it.copy(isEnded = false))
+            repository.addGame(it.copy(isEnded = false))
         }
     }
 }
