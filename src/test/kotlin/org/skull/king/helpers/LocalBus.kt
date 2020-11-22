@@ -48,6 +48,7 @@ open class LocalBus : LocalFirebase() {
 
     @AfterEach
     fun tearDown() {
+        println("TEAR DOWN CLEANING")
         clearFirebaseData()
     }
 
@@ -68,9 +69,9 @@ open class LocalBus : LocalFirebase() {
     val commandBus = firebaseBuses.commandBus
 
     class Builder(
-        val eventStore: EventStore,
-        val eventSourcedRepository: SkullkingEventSourcedRepository,
-        val queryRepository: QueryRepository
+        eventStore: EventStore,
+        eventSourcedRepository: SkullkingEventSourcedRepository,
+        queryRepository: QueryRepository
     ) {
         val queryBus: QueryBus = QueryBusSynchronous(
             setOf(),

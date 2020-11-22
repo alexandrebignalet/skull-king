@@ -1,11 +1,14 @@
 package org.skull.king.module
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import org.skull.king.core.command.handler.AnnounceHandler
 import org.skull.king.core.command.handler.PlayCardHandler
 import org.skull.king.core.command.handler.SettleFoldHandler
 import org.skull.king.core.command.handler.StartHandler
+import org.skull.king.core.query.QueryRepository
 import org.skull.king.core.query.handler.GetGameHandler
 import org.skull.king.core.query.handler.GetPlayerHandler
 import org.skull.king.core.query.sync.OnCardPlayed
@@ -30,9 +33,9 @@ import org.skull.king.cqrs.infrastructure.persistence.EventStoreMiddleware
 import org.skull.king.cqrs.query.QueryBus
 import org.skull.king.cqrs.query.QueryHandler
 import org.skull.king.cqrs.query.QueryMiddleware
-import org.skull.king.infrastructure.event.EventStoreInMemory
+import org.skull.king.infrastructure.event.FirebaseEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
-import org.skull.king.infrastructure.repository.QueryRepositoryInMemory
+import org.skull.king.infrastructure.repository.FirebaseQueryRepository
 import javax.inject.Singleton
 
 @Module
@@ -40,7 +43,8 @@ class CoreModule {
 
     @Singleton
     @Provides
-    fun provideEventStore(): EventStore = EventStoreInMemory()
+    fun provideEventStore(database: FirebaseDatabase, objectMapper: ObjectMapper): EventStore =
+        FirebaseEventStore(database, objectMapper)
 
     @Singleton
     @Provides
@@ -80,7 +84,8 @@ class CoreModule {
 
     @Singleton
     @Provides
-    fun provideQueryRepository(): QueryRepositoryInMemory = QueryRepositoryInMemory()
+    fun provideQueryRepository(database: FirebaseDatabase, objectMapper: ObjectMapper): QueryRepository =
+        FirebaseQueryRepository(database, objectMapper)
 
     @Singleton
     @Provides
@@ -88,7 +93,7 @@ class CoreModule {
 
     @Singleton
     @Provides
-    fun provideEventCaptors(repository: QueryRepositoryInMemory): Set<EventCaptor<*>> = setOf(
+    fun provideEventCaptors(repository: QueryRepository): Set<EventCaptor<*>> = setOf(
         OnCardPlayed(repository),
         OnFoldWinnerSettled(repository),
         OnGameFinished(repository),
@@ -107,7 +112,7 @@ class CoreModule {
 
     @Singleton
     @Provides
-    fun provideQueryHandlers(repository: QueryRepositoryInMemory): Set<QueryHandler<*, *>> = setOf(
+    fun provideQueryHandlers(repository: QueryRepository): Set<QueryHandler<*, *>> = setOf(
         GetGameHandler(repository),
         GetPlayerHandler(repository)
     )
