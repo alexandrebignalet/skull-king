@@ -1,13 +1,17 @@
 package org.skull.king
 
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.dropwizard.Application
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor
+import io.dropwizard.configuration.SubstitutingSourceProvider
+import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import org.skull.king.component.DaggerSkullKingComponent
 import org.skull.king.component.SkullKingComponent
 import org.skull.king.config.SkullKingConfig
 import org.skull.king.module.ConfigurationModule
-import org.skull.king.resource.healthcheck.BaseHealthCheck
+import org.skull.king.utils.JsonObjectMapper
+import org.skull.king.web.controller.healthcheck.BaseHealthCheck
+import org.skull.king.web.exception.DomainErrorExceptionMapper
 
 
 class SkullKingApplication : Application<SkullKingConfig>() {
@@ -19,20 +23,28 @@ class SkullKingApplication : Application<SkullKingConfig>() {
         }
     }
 
+    override fun initialize(bootstrap: Bootstrap<SkullKingConfig>) {
+        bootstrap.configurationSourceProvider = SubstitutingSourceProvider(
+            bootstrap.configurationSourceProvider,
+            EnvironmentVariableSubstitutor(true)
+        )
+    }
+
     override fun run(configuration: SkullKingConfig, environment: Environment) {
         environment.run {
-            objectMapper.registerKotlinModule()
+            val mapper = JsonObjectMapper.getObjectMapper(environment.objectMapper)
 
             healthChecks().register("base", BaseHealthCheck());
 
             val skullKingComponent: SkullKingComponent = DaggerSkullKingComponent.builder()
-                .configurationModule(ConfigurationModule(configuration))
+                .configurationModule(ConfigurationModule(configuration, mapper))
                 .build()
 
-            jersey().register(skullKingComponent.provideHelloWorldResource())
-            jersey().register(skullKingComponent.provideGameResource())
+            // exception mapper
+            jersey().register(DomainErrorExceptionMapper())
+
+            // controllers
             jersey().register(skullKingComponent.provideSkullKingResource())
         }
     }
-
 }

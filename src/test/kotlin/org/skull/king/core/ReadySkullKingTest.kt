@@ -8,15 +8,15 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.StartSkullKing
-import org.skull.king.command.domain.Deck
-import org.skull.king.command.domain.SpecialCard
-import org.skull.king.command.domain.SpecialCardType
-import org.skull.king.event.Started
+import org.skull.king.core.command.AnnounceWinningCardsFoldCount
+import org.skull.king.core.command.StartSkullKing
+import org.skull.king.core.command.domain.Deck
+import org.skull.king.core.command.domain.SpecialCard
+import org.skull.king.core.command.domain.SpecialCardType
+import org.skull.king.core.event.Started
+import org.skull.king.core.query.handler.GetGame
+import org.skull.king.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
-import org.skull.king.query.handler.GetGame
-import org.skull.king.saga.PlayCardSaga
 import java.time.Duration
 
 class ReadySkullKingTest : LocalBus() {

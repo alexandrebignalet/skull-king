@@ -3,18 +3,18 @@ package org.skull.king.core
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.StartSkullKing
-import org.skull.king.command.error.PlayerAlreadyAnnouncedError
-import org.skull.king.command.error.PlayerNotInGameError
-import org.skull.king.command.error.SkullKingAlreadyReadyError
-import org.skull.king.command.error.SkullKingNotStartedError
-import org.skull.king.event.PlayerAnnounced
-import org.skull.king.event.Started
+import org.skull.king.core.command.AnnounceWinningCardsFoldCount
+import org.skull.king.core.command.StartSkullKing
+import org.skull.king.core.command.error.PlayerAlreadyAnnouncedError
+import org.skull.king.core.command.error.PlayerNotInGameError
+import org.skull.king.core.command.error.SkullKingAlreadyReadyError
+import org.skull.king.core.command.error.SkullKingNotStartedError
+import org.skull.king.core.event.PlayerAnnounced
+import org.skull.king.core.event.Started
+import org.skull.king.core.query.from
+import org.skull.king.core.query.handler.GetGame
+import org.skull.king.core.query.handler.GetPlayer
 import org.skull.king.helpers.LocalBus
-import org.skull.king.query.ReadPlayer
-import org.skull.king.query.handler.GetGame
-import org.skull.king.query.handler.GetPlayer
 
 class AnnounceWinningCardsFoldCountTest : LocalBus() {
 
@@ -72,9 +72,9 @@ class AnnounceWinningCardsFoldCountTest : LocalBus() {
             Assertions.assertThat(game.id).isEqualTo(gameId)
 
             val getPlayer = GetPlayer(gameId, announcingPlayerId)
-            val player = queryBus.send(getPlayer) as ReadPlayer
+            val player = queryBus.send(getPlayer)
             Assertions.assertThat(player.id).isEqualTo(announcingPlayerId)
-            Assertions.assertThat(player.scorePerRound[roundNb]?.announced).isEqualTo(firstPlayerAnnounce)
+            Assertions.assertThat(player.scorePerRound.from(roundNb)?.announced).isEqualTo(firstPlayerAnnounce)
         }
     }
 

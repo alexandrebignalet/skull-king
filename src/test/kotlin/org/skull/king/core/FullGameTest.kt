@@ -2,26 +2,25 @@ package org.skull.king.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.skull.king.command.AnnounceWinningCardsFoldCount
-import org.skull.king.command.StartSkullKing
-import org.skull.king.command.domain.CardColor
-import org.skull.king.command.domain.ColoredCard
-import org.skull.king.command.domain.Deck
-import org.skull.king.command.domain.Player
-import org.skull.king.command.domain.SpecialCard
-import org.skull.king.command.domain.SpecialCardType
-import org.skull.king.event.Started
+import org.skull.king.core.command.AnnounceWinningCardsFoldCount
+import org.skull.king.core.command.StartSkullKing
+import org.skull.king.core.command.domain.CardColor
+import org.skull.king.core.command.domain.ColoredCard
+import org.skull.king.core.command.domain.Deck
+import org.skull.king.core.command.domain.Player
+import org.skull.king.core.command.domain.SpecialCard
+import org.skull.king.core.command.domain.SpecialCardType
+import org.skull.king.core.event.Started
+import org.skull.king.core.query.ReadCard
+import org.skull.king.core.query.handler.GetPlayer
+import org.skull.king.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
-import org.skull.king.query.ReadCard
-import org.skull.king.query.handler.GetPlayer
-import org.skull.king.saga.PlayCardSaga
 import java.time.Duration
 
 class FullGameTest : LocalBus() {
@@ -40,13 +39,11 @@ class FullGameTest : LocalBus() {
         var firstPlayerCard = 0
         var secondPlayerCard = 1
 
-        runBlocking {
-            val start = StartSkullKing(gameId, players)
-            val startedEvent = commandBus.send(start).second.first() as Started
+        val start = StartSkullKing(gameId, players)
+        val startedEvent = commandBus.send(start).second.first() as Started
 
-            firstPlayer = startedEvent.players.first()
-            secondPlayer = startedEvent.players.last()
-        }
+        firstPlayer = startedEvent.players.first()
+        secondPlayer = startedEvent.players.last()
 
         repeat((1..10).count()) { currentRound ->
 
@@ -70,7 +67,7 @@ class FullGameTest : LocalBus() {
                 Assertions.assertThat(f.cards).contains(ReadCard.of(fullDeckMocked[firstPlayerCard]))
                 Assertions.assertThat(s.cards).contains(ReadCard.of(fullDeckMocked[secondPlayerCard]))
             }
-            
+
             repeat((0..currentRound).count()) { currentFold ->
                 println("--- FOLD ${currentFold + 1}")
 
@@ -81,6 +78,7 @@ class FullGameTest : LocalBus() {
                     val f = queryBus.send(getFirstPlayer)
 
                     Assertions.assertThat(f.cards).doesNotContain(ReadCard.of(fullDeckMocked[firstPlayerCard]))
+                    Assertions.assertThat(f.isCurrent).isFalse()
                 }
 
                 commandBus.send(PlayCardSaga(gameId, secondPlayer.id, fullDeckMocked[secondPlayerCard]))

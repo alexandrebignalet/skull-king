@@ -4,9 +4,17 @@ server:
   applicationConnectors:
     - type: http
       port: 8080
-  adminConnectors:
-    - type: http
-      port: 8081
 
 firebase:
-  credentials_path: $GOOGLE_APPLICATION_CREDENTIALS
+  database_url: ${DATABASE_URL}
+  service_account:
+    type: ${TYPE}
+    project_id: ${PROJECT_ID}
+    private_key_id: ${PRIVATE_KEY_ID}
+    private_key: ${PRIVATE_KEY}
+    client_email: ${CLIENT_EMAIL}
+    client_id: ${CLIENT_ID}
+    auth_uri: ${AUTH_URI}
+    token_uri: ${TOKEN_URI}
+    auth_provider_x509_cert_url: ${AUTH_PROVIDER_CERT_URL}
+    client_x509_cert_url: ${CLIENT_CERT_URL}
