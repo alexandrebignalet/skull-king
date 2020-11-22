@@ -43,6 +43,7 @@ dependencies {
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin"
 
     compile "io.dropwizard:dropwizard-core:$dropwizard_version"
+    compile "io.dropwizard:dropwizard-auth:$dropwizard_version"
 
     api "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"

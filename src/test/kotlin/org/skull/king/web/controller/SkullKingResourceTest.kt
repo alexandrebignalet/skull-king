@@ -9,6 +9,7 @@ import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -20,13 +21,28 @@ import org.skull.king.core.command.domain.SpecialCard
 import org.skull.king.core.command.domain.SpecialCardType
 import org.skull.king.helpers.ApiHelper
 import org.skull.king.helpers.LocalBus
+import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
+import org.skull.king.infrastructure.authentication.User
 import org.skull.king.web.controller.dto.PlayCardRequest
 import org.skull.king.web.controller.dto.start.StartResponse
+import java.util.Optional
 import java.util.UUID
 import javax.ws.rs.client.Entity
 
 @ExtendWith(DropwizardExtensionsSupport::class)
 class SkullKingResourceTest : LocalBus() {
+
+    companion object {
+
+        private val defaultUser = User("uid", "uid@example.com")
+
+        @JvmStatic
+        @BeforeAll
+        fun beforeAll() {
+            mockkConstructor(FirebaseAuthenticator::class)
+            every { anyConstructed<FirebaseAuthenticator>().authenticate(any()) } returns Optional.of(defaultUser)
+        }
+    }
 
     private val EXTENSION = DropwizardAppExtension(
         SkullKingApplication::class.java,
@@ -39,6 +55,7 @@ class SkullKingResourceTest : LocalBus() {
         SpecialCard(SpecialCardType.SKULL_KING),
         ColoredCard(1, CardColor.BLUE)
     )
+
 
     @BeforeEach
     fun setUp() {
@@ -65,6 +82,7 @@ class SkullKingResourceTest : LocalBus() {
         val commandResponse = EXTENSION.client()
             .target("http://localhost:${EXTENSION.localPort}/skullking/games/start")
             .request()
+            .header("Authorization", "Bearer token")
             .post(Entity.json(startRequest))
             .readEntity(StartResponse::class.java)
 
@@ -95,6 +113,7 @@ class SkullKingResourceTest : LocalBus() {
         val commandResponse = EXTENSION.client()
             .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/$playerId/announce")
             .request()
+            .header("Authorization", "Bearer token")
             .post(Entity.json(announceRequest))
 
         // Then
@@ -140,6 +159,7 @@ class SkullKingResourceTest : LocalBus() {
         val commandResponse = EXTENSION.client()
             .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/1/play")
             .request()
+            .header("Authorization", "Bearer token")
             .post(Entity.json(PlayCardRequest(mockedCard.first())))
 
         // Then

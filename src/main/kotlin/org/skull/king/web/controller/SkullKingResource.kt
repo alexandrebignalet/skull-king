@@ -9,6 +9,7 @@ import org.skull.king.web.controller.dto.PlayCardRequest
 import org.skull.king.web.controller.dto.start.StartRequest
 import org.skull.king.web.controller.dto.start.StartResponse
 import java.util.UUID
+import javax.annotation.security.PermitAll
 import javax.inject.Inject
 import javax.validation.Valid;
 import javax.ws.rs.Consumes
@@ -19,6 +20,7 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
+@PermitAll
 @Path("/skullking/games")
 @Produces(MediaType.APPLICATION_JSON)
 class SkullKingResource @Inject constructor(private val commandBus: CommandBus) {
