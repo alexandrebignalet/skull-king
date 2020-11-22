@@ -1,8 +1,8 @@
 #!/bin/bash
 # Stop firebase emulator
 
-PID=$(lsof -t -i :9000 -s tcp:LISTEN)
-if [ ! -z "$PID" ]; then
-  echo "Stopping mock Firestore server"
-  kill "$PID"
+PID_DB=$(lsof -t -i :9000 -s tcp:LISTEN)
+if [ ! -z "$PID_DB" ]; then
+  echo "Stopping mock Firebase Realtime Database server"
+  kill "$PID_DB"
 fi

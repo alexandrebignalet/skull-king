@@ -1,15 +1,9 @@
 #!/bin/bash
-# Launch firestore emulator on port 9000
+# Launch firebase emulator; db on port 9000
 
-waitport() {
-  while ! nc -z localhost $1; do
-    sleep 1
-  done
-}
-
-PID=$(lsof -t -i :9000 -s tcp:LISTEN)
-if [ -z "$PID" ]; then
-  echo "Starting mock Firebase Realtime Database server on port 9000"
+PID_DB=$(lsof -t -i :9000 -s tcp:LISTEN)
+if [ -z "$PID_DB" ] || [ -z "$PID_AUTH" ]; then
+  echo "Starting mock Firebase Database server on ports 9000"
   (firebase --project=skullking emulators:start&) > /tmp/mock-firestore-logs
   while ! nc -z localhost 9000; do
     sleep 0.1
