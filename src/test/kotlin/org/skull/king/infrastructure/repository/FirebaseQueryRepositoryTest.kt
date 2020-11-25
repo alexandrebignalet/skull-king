@@ -2,14 +2,14 @@ package org.skull.king.infrastructure.repository
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.core.command.domain.SpecialCard
-import org.skull.king.core.command.domain.SpecialCardType
-import org.skull.king.core.query.Play
-import org.skull.king.core.query.ReadCard
-import org.skull.king.core.query.ReadPlayer
-import org.skull.king.core.query.ReadSkullKing
-import org.skull.king.core.query.RoundScore
-import org.skull.king.core.query.Score
+import org.skull.king.domain.core.command.domain.SpecialCard
+import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.query.Play
+import org.skull.king.domain.core.query.ReadCard
+import org.skull.king.domain.core.query.ReadPlayer
+import org.skull.king.domain.core.query.ReadSkullKing
+import org.skull.king.domain.core.query.RoundScore
+import org.skull.king.domain.core.query.Score
 import org.skull.king.helpers.LocalFirebase
 import org.skull.king.utils.JsonObjectMapper
 

@@ -7,9 +7,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.runBlocking
-import org.skull.king.cqrs.ddd.event.Cursor
-import org.skull.king.cqrs.ddd.event.Event
-import org.skull.king.cqrs.ddd.event.EventStore
+import org.skull.king.infrastructure.cqrs.ddd.event.Cursor
+import org.skull.king.infrastructure.cqrs.ddd.event.Event
+import org.skull.king.infrastructure.cqrs.ddd.event.EventStore
 import org.slf4j.LoggerFactory
 import kotlin.coroutines.suspendCoroutine
 

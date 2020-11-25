@@ -14,11 +14,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.skull.king.SkullKingApplication
-import org.skull.king.core.command.domain.CardColor
-import org.skull.king.core.command.domain.ColoredCard
-import org.skull.king.core.command.domain.Deck
-import org.skull.king.core.command.domain.SpecialCard
-import org.skull.king.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.CardColor
+import org.skull.king.domain.core.command.domain.ColoredCard
+import org.skull.king.domain.core.command.domain.Deck
+import org.skull.king.domain.core.command.domain.SpecialCard
+import org.skull.king.domain.core.command.domain.SpecialCardType
 import org.skull.king.helpers.ApiHelper
 import org.skull.king.helpers.LocalBus
 import org.skull.king.infrastructure.authentication.FirebaseAuthenticator

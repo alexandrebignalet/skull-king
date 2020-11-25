@@ -8,9 +8,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.runBlocking
-import org.skull.king.core.query.QueryRepository
-import org.skull.king.core.query.ReadPlayer
-import org.skull.king.core.query.ReadSkullKing
+import org.skull.king.domain.core.query.QueryRepository
+import org.skull.king.domain.core.query.ReadPlayer
+import org.skull.king.domain.core.query.ReadSkullKing
 import org.slf4j.LoggerFactory
 import kotlin.coroutines.suspendCoroutine
 

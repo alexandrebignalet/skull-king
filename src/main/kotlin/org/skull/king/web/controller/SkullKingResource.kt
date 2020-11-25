@@ -1,9 +1,9 @@
 package org.skull.king.web.controller;
 
-import org.skull.king.core.command.AnnounceWinningCardsFoldCount
-import org.skull.king.core.command.PlayCard
-import org.skull.king.core.command.StartSkullKing
-import org.skull.king.cqrs.command.CommandBus
+import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
+import org.skull.king.domain.core.command.PlayCard
+import org.skull.king.domain.core.command.StartSkullKing
+import org.skull.king.infrastructure.cqrs.command.CommandBus
 import org.skull.king.web.controller.dto.AnnounceWinningCardsFoldCountRequest
 import org.skull.king.web.controller.dto.PlayCardRequest
 import org.skull.king.web.controller.dto.start.StartRequest

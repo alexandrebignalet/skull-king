@@ -17,6 +17,7 @@ import org.skull.king.module.ConfigurationModule
 import org.skull.king.utils.JsonObjectMapper
 import org.skull.king.web.controller.healthcheck.BaseHealthCheck
 import org.skull.king.web.exception.DomainErrorExceptionMapper
+import org.skull.king.web.exception.GameRoomExceptionMapper
 
 
 class SkullKingApplication : Application<SkullKingConfig>() {
@@ -59,9 +60,11 @@ class SkullKingApplication : Application<SkullKingConfig>() {
 
             // exception mapper
             jersey().register(DomainErrorExceptionMapper())
+            jersey().register(GameRoomExceptionMapper())
 
             // controllers
             jersey().register(skullKingComponent.provideSkullKingResource())
+            jersey().register(skullKingComponent.provideGameRoomResource())
         }
     }
 }
