@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response
 class ApiHelper(private val EXTENSION: DropwizardAppExtension<SkullKingConfig>) {
 
     val skullKing = SkullKingApiHelper()
+    val gameRoom = GameRoomHelper()
 
     inner class SkullKingApiHelper {
         fun start(playerIds: Set<String>): Response = EXTENSION.client()
@@ -23,5 +24,25 @@ class ApiHelper(private val EXTENSION: DropwizardAppExtension<SkullKingConfig>) 
             .request()
             .header("Authorization", "Bearer token")
             .post(Entity.json(AnnounceWinningCardsFoldCountRequest(count)))
+    }
+
+    inner class GameRoomHelper {
+        fun join(gameRoomId: String): Response = EXTENSION.client()
+            .target("http://localhost:${EXTENSION.localPort}/skullking/game_rooms/$gameRoomId/users")
+            .request()
+            .header("Authorization", "Bearer token")
+            .post(Entity.json(null))
+
+        fun kick(gameRoomId: String, userId: String): Response = EXTENSION.client()
+            .target("http://localhost:${EXTENSION.localPort}/skullking/game_rooms/$gameRoomId/users/$userId")
+            .request()
+            .header("Authorization", "Bearer token")
+            .delete()
+
+        fun launch(gameRoomId: String): Response = EXTENSION.client()
+            .target("http://localhost:${EXTENSION.localPort}/skullking/game_rooms/$gameRoomId/launch")
+            .request()
+            .header("Authorization", "Bearer token")
+            .post(Entity.json(null))
     }
 }

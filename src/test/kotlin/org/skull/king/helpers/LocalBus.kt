@@ -1,36 +1,35 @@
 package org.skull.king.helpers
 
-import org.junit.jupiter.api.AfterEach
-import org.skull.king.core.command.handler.AnnounceHandler
-import org.skull.king.core.command.handler.PlayCardHandler
-import org.skull.king.core.command.handler.SettleFoldHandler
-import org.skull.king.core.command.handler.StartHandler
-import org.skull.king.core.query.QueryRepository
-import org.skull.king.core.query.handler.GetGameHandler
-import org.skull.king.core.query.handler.GetPlayerHandler
-import org.skull.king.core.query.sync.OnCardPlayed
-import org.skull.king.core.query.sync.OnFoldWinnerSettled
-import org.skull.king.core.query.sync.OnGameFinished
-import org.skull.king.core.query.sync.OnGameStarted
-import org.skull.king.core.query.sync.OnNewRoundStarted
-import org.skull.king.core.query.sync.OnPlayerAnnounced
-import org.skull.king.core.saga.PlayCardSagaHandler
-import org.skull.king.cqrs.command.Command
-import org.skull.king.cqrs.command.CommandBus
-import org.skull.king.cqrs.command.CommandMiddleware
-import org.skull.king.cqrs.ddd.event.Event
-import org.skull.king.cqrs.ddd.event.EventBus
-import org.skull.king.cqrs.ddd.event.EventCaptor
-import org.skull.king.cqrs.ddd.event.EventStore
-import org.skull.king.cqrs.infrastructure.bus.command.CommandBusSynchronous
-import org.skull.king.cqrs.infrastructure.bus.event.EventBusSynchronous
-import org.skull.king.cqrs.infrastructure.bus.event.EventDispatcherMiddleware
-import org.skull.king.cqrs.infrastructure.bus.query.QueryBusSynchronous
-import org.skull.king.cqrs.infrastructure.persistence.EventStoreMiddleware
-import org.skull.king.cqrs.query.QueryBus
-import org.skull.king.cqrs.saga.Saga
-import org.skull.king.cqrs.saga.SagaHandler
-import org.skull.king.cqrs.saga.SagaMiddleware
+import org.skull.king.domain.core.command.handler.AnnounceHandler
+import org.skull.king.domain.core.command.handler.PlayCardHandler
+import org.skull.king.domain.core.command.handler.SettleFoldHandler
+import org.skull.king.domain.core.command.handler.StartHandler
+import org.skull.king.domain.core.query.QueryRepository
+import org.skull.king.domain.core.query.handler.GetGameHandler
+import org.skull.king.domain.core.query.handler.GetPlayerHandler
+import org.skull.king.domain.core.query.sync.OnCardPlayed
+import org.skull.king.domain.core.query.sync.OnFoldWinnerSettled
+import org.skull.king.domain.core.query.sync.OnGameFinished
+import org.skull.king.domain.core.query.sync.OnGameStarted
+import org.skull.king.domain.core.query.sync.OnNewRoundStarted
+import org.skull.king.domain.core.query.sync.OnPlayerAnnounced
+import org.skull.king.domain.core.saga.PlayCardSagaHandler
+import org.skull.king.infrastructure.cqrs.command.Command
+import org.skull.king.infrastructure.cqrs.command.CommandBus
+import org.skull.king.infrastructure.cqrs.command.CommandMiddleware
+import org.skull.king.infrastructure.cqrs.ddd.event.Event
+import org.skull.king.infrastructure.cqrs.ddd.event.EventBus
+import org.skull.king.infrastructure.cqrs.ddd.event.EventCaptor
+import org.skull.king.infrastructure.cqrs.ddd.event.EventStore
+import org.skull.king.infrastructure.cqrs.infrastructure.bus.command.CommandBusSynchronous
+import org.skull.king.infrastructure.cqrs.infrastructure.bus.event.EventBusSynchronous
+import org.skull.king.infrastructure.cqrs.infrastructure.bus.event.EventDispatcherMiddleware
+import org.skull.king.infrastructure.cqrs.infrastructure.bus.query.QueryBusSynchronous
+import org.skull.king.infrastructure.cqrs.infrastructure.persistence.EventStoreMiddleware
+import org.skull.king.infrastructure.cqrs.query.QueryBus
+import org.skull.king.infrastructure.cqrs.saga.Saga
+import org.skull.king.infrastructure.cqrs.saga.SagaHandler
+import org.skull.king.infrastructure.cqrs.saga.SagaMiddleware
 import org.skull.king.infrastructure.event.EventStoreInMemory
 import org.skull.king.infrastructure.event.FirebaseEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
@@ -44,12 +43,6 @@ open class LocalBus : LocalFirebase() {
 
     companion object {
         private val mapper = JsonObjectMapper.getObjectMapper()
-    }
-
-    @AfterEach
-    fun tearDown() {
-        println("TEAR DOWN CLEANING")
-        clearFirebaseData()
     }
 
     private val eventStoreInMemory = EventStoreInMemory()

@@ -1,7 +1,7 @@
 package org.skull.king.infrastructure.event
 
-import org.skull.king.cqrs.ddd.event.Event
-import org.skull.king.cqrs.ddd.event.EventStore
+import org.skull.king.infrastructure.cqrs.ddd.event.Event
+import org.skull.king.infrastructure.cqrs.ddd.event.EventStore
 
 class EventStoreInMemory : EventStore {
     private val eventCache = mutableMapOf<Any, List<Event>>()

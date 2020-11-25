@@ -1,8 +1,8 @@
 package org.skull.king.infrastructure.repository
 
-import org.skull.king.core.query.QueryRepository
-import org.skull.king.core.query.ReadPlayer
-import org.skull.king.core.query.ReadSkullKing
+import org.skull.king.domain.core.query.QueryRepository
+import org.skull.king.domain.core.query.ReadPlayer
+import org.skull.king.domain.core.query.ReadSkullKing
 
 class QueryRepositoryInMemory : QueryRepository {
 

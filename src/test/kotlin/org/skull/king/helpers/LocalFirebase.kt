@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.AfterEach
 import org.skull.king.config.FirebaseConfig
 import org.skull.king.utils.JsonObjectMapper
 import kotlin.coroutines.suspendCoroutine
@@ -12,10 +13,12 @@ import kotlin.coroutines.suspendCoroutine
 open class LocalFirebase {
 
     companion object {
-        private val objectMapper = JsonObjectMapper.getObjectMapper()
+        val objectMapper = JsonObjectMapper.getObjectMapper()
         private const val GAMES_PATH = "games"
         private const val PLAYERS_PATH = "players"
         private const val EVENTS_PATH = "events"
+        private const val USERS_PATH = "users"
+        private const val GAME_ROOMS_PATH = "game_rooms"
         private val serviceAccountJson: String = """{
           "type": "service_account",
           "project_id": "skullking",
@@ -45,11 +48,18 @@ open class LocalFirebase {
             FirebaseApp.initializeApp(options).let { FirebaseDatabase.getInstance() }
     }
 
+    @AfterEach
+    fun tearDown() {
+        clearFirebaseData()
+    }
+
     fun clearFirebaseData() {
         runBlocking {
             clearRefData(GAMES_PATH)
             clearRefData(PLAYERS_PATH)
             clearRefData(EVENTS_PATH)
+            clearRefData(USERS_PATH)
+            clearRefData(GAME_ROOMS_PATH)
         }
     }
 

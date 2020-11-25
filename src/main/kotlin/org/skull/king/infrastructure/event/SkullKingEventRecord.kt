@@ -2,8 +2,8 @@ package org.skull.king.infrastructure.event
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import org.skull.king.core.event.SkullKingEvent
-import org.skull.king.cqrs.ddd.event.Event
+import org.skull.king.domain.core.event.SkullKingEvent
+import org.skull.king.infrastructure.cqrs.ddd.event.Event
 
 @JsonDeserialize(using = SkullKingEventRecordJsonDeserializer::class)
 data class SkullKingEventRecord(

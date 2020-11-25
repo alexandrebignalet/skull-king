@@ -1,6 +1,6 @@
 package org.skull.king.web.exception
 
-import org.skull.king.core.command.error.DomainError
+import org.skull.king.domain.core.command.error.DomainError
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper

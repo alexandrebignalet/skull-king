@@ -2,15 +2,15 @@ package org.skull.king.infrastructure.event
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.core.command.domain.CardColor
-import org.skull.king.core.command.domain.ColoredCard
-import org.skull.king.core.command.domain.NewPlayer
-import org.skull.king.core.command.domain.ScaryMary
-import org.skull.king.core.command.domain.ScaryMaryUsage
-import org.skull.king.core.command.domain.SpecialCard
-import org.skull.king.core.command.domain.SpecialCardType
-import org.skull.king.core.event.SkullKingEvent
-import org.skull.king.core.event.Started
+import org.skull.king.domain.core.command.domain.CardColor
+import org.skull.king.domain.core.command.domain.ColoredCard
+import org.skull.king.domain.core.command.domain.NewPlayer
+import org.skull.king.domain.core.command.domain.ScaryMary
+import org.skull.king.domain.core.command.domain.ScaryMaryUsage
+import org.skull.king.domain.core.command.domain.SpecialCard
+import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.event.SkullKingEvent
+import org.skull.king.domain.core.event.Started
 import org.skull.king.helpers.LocalFirebase
 import org.skull.king.utils.JsonObjectMapper
 
