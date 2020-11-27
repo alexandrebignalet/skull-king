@@ -1,5 +1,6 @@
 package org.skull.king
 
+import CorsFilter
 import io.dropwizard.Application
 import io.dropwizard.auth.AuthDynamicFeature
 import io.dropwizard.auth.AuthValueFactoryProvider
@@ -18,11 +19,14 @@ import org.skull.king.utils.JsonObjectMapper
 import org.skull.king.web.controller.healthcheck.BaseHealthCheck
 import org.skull.king.web.exception.DomainErrorExceptionMapper
 import org.skull.king.web.exception.GameRoomExceptionMapper
+import org.slf4j.LoggerFactory
 
 
 class SkullKingApplication : Application<SkullKingConfig>() {
 
     companion object {
+        private val LOGGER = LoggerFactory.getLogger(SkullKingApplication::class.java)
+
         @JvmStatic
         fun main(vararg args: String) {
             SkullKingApplication().run(*args)
@@ -39,13 +43,12 @@ class SkullKingApplication : Application<SkullKingConfig>() {
     override fun run(configuration: SkullKingConfig, environment: Environment) {
         environment.run {
             val mapper = JsonObjectMapper.getObjectMapper(environment.objectMapper)
-
-            healthChecks().register("base", BaseHealthCheck());
-
             val skullKingComponent: SkullKingComponent = DaggerSkullKingComponent.builder()
                 .configurationModule(ConfigurationModule(configuration, mapper))
                 .build()
 
+            // cors
+            environment.jersey().register(CorsFilter())
             // auth
             environment.jersey().register(
                 AuthDynamicFeature(
@@ -57,6 +60,9 @@ class SkullKingApplication : Application<SkullKingConfig>() {
             )
             // use @Auth to inject User in resource
             environment.jersey().register(AuthValueFactoryProvider.Binder(User::class.java))
+
+            // healthchecks
+            healthChecks().register("base", BaseHealthCheck());
 
             // exception mapper
             jersey().register(DomainErrorExceptionMapper())

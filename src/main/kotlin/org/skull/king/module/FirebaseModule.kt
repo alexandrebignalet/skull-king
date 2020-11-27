@@ -35,7 +35,11 @@ class FirebaseModule {
     @Singleton
     @Provides
     fun provideFirebaseAuth(options: FirebaseOptions): FirebaseAuth =
-        kotlin.runCatching { FirebaseApp.initializeApp(options).let { FirebaseAuth.getInstance() } }
+        kotlin
+            .runCatching {
+                FirebaseApp.initializeApp(options)
+                    .let { FirebaseAuth.getInstance() }
+            }
             .getOrElse { FirebaseAuth.getInstance() }
 
     @Singleton
