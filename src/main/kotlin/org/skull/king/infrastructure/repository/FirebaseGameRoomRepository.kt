@@ -41,12 +41,7 @@ class FirebaseGameRoomRepository(private val database: FirebaseDatabase, private
         val gameRoomPayload = gameRoom.fireMap()
         val userUpdate = gameRoom.users.fold(mapOf<String, Any?>()) { acc, user ->
             acc + mapOf(
-                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/id" to gameRoom.id,
-                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/users" to gameRoom.users.map { it.fireRelationMap() },
-                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/creator" to gameRoom.creator,
-                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/game_id" to gameRoom.gameId,
-                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/creation_date" to gameRoom.creationDate,
-                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/update_date" to gameRoomPayload["update_date"],
+                "$USER_PATH/${user.id}/rooms/${gameRoom.id}" to gameRoomPayload,
                 "$USER_PATH/${user.id}/id" to user.id,
                 "$USER_PATH/${user.id}/name" to user.name
             )

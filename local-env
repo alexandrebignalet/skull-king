@@ -1,0 +1,11 @@
+  service_account:
+    type: "service_account"
+    project_id: "skull-king"
+    private_key_id: "c63a01891400f42ce946f251299dcd4a2f517c05"
+    private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDONfueoQF49+vM\nE6KymUnfazwna++uvhYi7yWzKIuX1L4UmMMBijzZEXH78Z72L9EzhNFgA+yZFja1\nqzSULwz0dUMXC/VwZaYD6RYb8tUe7SNk7yMrzFp6jw81Y6Y7BvI04BCOzF0U/pow\nX6KOg9Xixer1iK8ys4gGwg6BNzTdt83kB1dneLyypV6yRPAxBbaCOU6dtzoOd4BH\nSusdVECNBckdArvz5Jknvoi+AopluutN7M+pF4lzHq8zngwMvydIz1K8iQVxmwZR\nOCCnaIjkt1ByFK86u2W5PCknhutRtFJW5OyiNi+TH5q2N21fYrSxqkc6b+2CNKHv\nL6BIoL5DAgMBAAECggEAY+STuTLuty6GbAxhBtqqBhB5CfHIIKLVr2OhJCpygQEe\neXTNFpxkQJUqXe2c306nrajcEoKkJT61DwlaRaSLRordjrcM1T9wjjlmK/DVHA+t\nUzJjG875T6CosejNeI+zWjjm3H4UY1y4zdEuOpKT1LCi0wG9OTbuILP1+dOICRUn\n6P3bOREx7+j4ERInBaTfdVqLEwQ2YnO6lxjLZ/Cs/nRJKtuV8UFj2FafR+s8HNHb\nXPZcQy+GVbenxTr3PgA0dY2uG8hNTbKQp3c1ecQ+BfdQfrQgZeffMYkfQNWKHF2r\n85+vw6+9xU5AvuHXbOVQgijdaNhqq8bkKtgzDdxR8QKBgQDuJ1OVQdIY694NMsdH\n4p50cF1IYZ2uCqHG6Se62/2HpV1AFvD6BTBuIPRsxWV1scPCiJAR3bt/kv2+M5pt\nHrBuXgTm6NSMzhvk+UMKIbn11ooWGCIrtXw92a2sIgiEJ9LGSexrO/kH6YDlsgMs\nuPWuHTTY7LAL1DsEorkHkBS/EwKBgQDdqeAgc6nEtiXqvzY+xnKJzEU1/sHpiBTa\nmGXpNGh3ggKRlgwjiS4W3JCHrDLRcZ9J12H2/UNT0i/OioNaWVpBMLvFtmgQS5qo\nGUBuUrz7VzCp0Zo9i0jAK/cI9T9KF0i270eCfz6AfLF5isPjL8zINDVP+H6EheHX\n5CEK1Ct6EQKBgHeP2tCGOPo2AEbUBWQ7i52dg9eA2m6z+8Am8cFIDKJ7DLPOULDU\nxhmkBdJNz8AkvMj/UoUFsso7e5Rvx8mcrKrcHM3oej0uhKaR1WxSvk+Do9Ovzgfv\nly5eCGjwtSHT9GeEWWMEuuOUARhQJHPhb8Y3934oZcGqjO6o2wfG+ANtAoGBALn9\npg/UvShPZfVYx91YihbRjWlG/9JB2q2onipVTSqprhoWesz+d+u62pLcjC9tVSiS\nTqL90xZsEK0PUDPpMW/twkCdUygJKBXQSl3HksaaXDzBoNfvHPYSbc/YaGh0rRDC\nKZB30CvjdM70/nSMURnTpMAbU51C8UNDKe56JJjhAoGBAKP/qyUnBEydo7o4VQ5E\n8tY5b3uihxQS+32/Dk4dUzYj/KpJhaPZcQR22Wfrz3Vmilwj4/pC7cxqVqiMYED1\nl8VtPyVk0TwTlPp2CUxF5cKlJ8KTAv9lSr2BAcqangNFwUhobFy3L7YFSkyiIbW7\nil4UyR0xyX472eIUFJQh8Wrg\n-----END PRIVATE KEY-----\n"
+    client_email: "firebase-adminsdk-iwggw@skull-king.iam.gserviceaccount.com"
+    client_id: "117853751345001448146"
+    auth_uri: "https://accounts.google.com/o/oauth2/auth"
+    token_uri: "https://oauth2.googleapis.com/token"
+    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs"
+    client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-iwggw%40skull-king.iam.gserviceaccount.com"

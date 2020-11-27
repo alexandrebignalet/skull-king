@@ -12,7 +12,7 @@ data class GameUser(
     val rooms: Set<GameRoom> = setOf()
 ) {
     companion object {
-        fun from(user: User) = GameUser(user.id, user.name, setOf())
+        fun from(user: User) = GameUser(user.id, user.displayName, setOf())
     }
 
     fun fireRelationMap() = mapOf(

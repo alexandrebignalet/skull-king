@@ -18,7 +18,7 @@ data class GameRoom(
     fun fireMap() = mapOf(
         "id" to id,
         "creator" to creator,
-        "users" to users.map { it.fireRelationMap() }.toList(),
+        "users" to users.map { it.fireRelationMap() },
         "game_id" to gameId,
         "creation_date" to creationDate,
         "update_date" to Instant.now().toEpochMilli()
