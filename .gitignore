@@ -8,3 +8,4 @@ nohup.out
 firebase-debug.log
 tmp/
 ui-debug.log
+local-env
