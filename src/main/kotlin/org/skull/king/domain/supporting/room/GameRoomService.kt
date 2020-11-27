@@ -4,6 +4,7 @@ import org.skull.king.domain.core.GameLauncher
 import org.skull.king.domain.supporting.room.domain.GameRoom
 import org.skull.king.domain.supporting.room.exception.AlreadyInGameRoomException
 import org.skull.king.domain.supporting.room.exception.GameRoomFullException
+import org.skull.king.domain.supporting.user.domain.GameUser
 import org.skull.king.infrastructure.repository.FirebaseGameRoomRepository
 import javax.ws.rs.ForbiddenException
 import javax.ws.rs.NotFoundException
@@ -13,21 +14,21 @@ class GameRoomService(
     private val launcher: GameLauncher
 ) {
 
-    fun create(creator: String) = GameRoom(creator = creator, users = setOf(creator))
+    fun create(creator: GameUser) = GameRoom(creator = creator.id, users = setOf(creator))
         .also { repository.save(it) }.id
 
     fun findOne(gameRoomId: String): GameRoom =
         repository.findOne(gameRoomId) ?: throw NotFoundException("Game room $gameRoomId do not exist")
 
-    fun join(gameRoomId: String, userId: String) {
+    fun join(gameRoomId: String, user: GameUser) {
         val gameRoom = findOne(gameRoomId)
 
         if (gameRoom.isFull())
             throw GameRoomFullException(gameRoomId)
 
-        val newUsers = gameRoom.users + userId
+        val newUsers = gameRoom.users + user
 
-        if (newUsers.count() == gameRoom.users.count()) throw AlreadyInGameRoomException(userId, gameRoomId)
+        if (newUsers.count() == gameRoom.users.count()) throw AlreadyInGameRoomException(user.id, gameRoomId)
 
         gameRoom.copy(users = newUsers).let { repository.save(it) }
     }
@@ -37,7 +38,8 @@ class GameRoomService(
 
         if (kicker != gameRoom.creator && kicker != kicked)
             throw ForbiddenException("Kicker $kicker is not allowed to kick from game room $gameRoomId")
-        if (kicked !in gameRoom.users) throw ForbiddenException("User $kicked not in game room $gameRoomId")
+        if (kicked !in gameRoom.users.map { it.id })
+            throw ForbiddenException("User $kicked not in game room $gameRoomId")
 
         repository.kick(gameRoom, kicked)
     }
@@ -47,7 +49,7 @@ class GameRoomService(
 
         if (starter != gameRoom.creator) throw ForbiddenException("Only game room creator can start the game")
 
-        val gameId = launcher.startFrom(gameRoom.users)
+        val gameId = launcher.startFrom(gameRoom.users.map { it.id }.toSet())
 
         gameRoom.copy(gameId = gameId).let { repository.save(it) }
 

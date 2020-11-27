@@ -6,6 +6,9 @@
     "database": {
       "port": 9000
     },
+    "auth": {
+      "port": 9001
+    },
     "ui": {
       "enabled": true
     }

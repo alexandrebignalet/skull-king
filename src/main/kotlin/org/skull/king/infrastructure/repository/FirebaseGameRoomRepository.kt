@@ -38,13 +38,20 @@ class FirebaseGameRoomRepository(private val database: FirebaseDatabase, private
 
     private suspend fun saveGameRoomAndUsers(gameRoom: GameRoom) = suspendCoroutine<Unit> { cont ->
         val ref = database.reference
-        val userUpdate = gameRoom.users.fold(mapOf<String, Any>()) { acc, userId ->
+        val gameRoomPayload = gameRoom.fireMap()
+        val userUpdate = gameRoom.users.fold(mapOf<String, Any?>()) { acc, user ->
             acc + mapOf(
-                "$USER_PATH/$userId/rooms/${gameRoom.id}" to true,
-                "$USER_PATH/$userId/id" to userId
+                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/id" to gameRoom.id,
+                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/users" to gameRoom.users.map { it.fireRelationMap() },
+                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/creator" to gameRoom.creator,
+                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/game_id" to gameRoom.gameId,
+                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/creation_date" to gameRoom.creationDate,
+                "$USER_PATH/${user.id}/rooms/${gameRoom.id}/update_date" to gameRoomPayload["update_date"],
+                "$USER_PATH/${user.id}/id" to user.id,
+                "$USER_PATH/${user.id}/name" to user.name
             )
         }
-        val update = mapOf("$PATH/${gameRoom.id}" to gameRoom.fireMap()) + userUpdate
+        val update = mapOf("$PATH/${gameRoom.id}" to gameRoomPayload) + userUpdate
 
         ref.updateChildren(update) { databaseError, _ ->
             databaseError?.let {
@@ -81,15 +88,15 @@ class FirebaseGameRoomRepository(private val database: FirebaseDatabase, private
     }
 
     private suspend fun kickUserFromGameRoom(gameRoom: GameRoom, kicked: String): Unit = suspendCoroutine { cont ->
-        val newUsers = gameRoom.users - kicked
+        val newUsers = gameRoom.users.filter { it.id != kicked }
 
         val userUpdate = mapOf("$USER_PATH/$kicked/rooms/${gameRoom.id}" to null)
 
         val gameRoomUpdate =
             if (newUsers.count() == 0) mapOf("$PATH/${gameRoom.id}" to null)
             else mapOf(
-                "$PATH/${gameRoom.id}/creator" to if (kicked == gameRoom.creator) newUsers.random() else gameRoom.creator,
-                "$PATH/${gameRoom.id}/users" to newUsers.toList()
+                "$PATH/${gameRoom.id}/creator" to if (kicked == gameRoom.creator) newUsers.random().id else gameRoom.creator,
+                "$PATH/${gameRoom.id}/users" to newUsers.map { it.fireRelationMap() }
             )
 
         val finalUpdate = userUpdate + gameRoomUpdate

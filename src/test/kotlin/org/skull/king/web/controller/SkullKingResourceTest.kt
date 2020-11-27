@@ -34,7 +34,7 @@ class SkullKingResourceTest : LocalBus() {
 
     companion object {
 
-        private val defaultUser = User("uid", "uid@example.com")
+        private val defaultUser = User("uid", "johnny", "uid@example.com")
 
         @JvmStatic
         @BeforeAll

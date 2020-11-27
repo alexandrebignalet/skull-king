@@ -17,14 +17,14 @@ class FirebaseAuthenticator(private val firebaseAuth: FirebaseAuth) : Authentica
     override fun authenticate(idToken: IdToken): Optional<User> {
         try {
             val decodedToken = firebaseAuth.verifyIdToken(idToken)
-            return Optional.of(User(decodedToken.uid, decodedToken.email))
+            return Optional.of(User(decodedToken.uid, decodedToken.name, decodedToken.email))
         } catch (exception: FirebaseAuthException) {
             return Optional.empty()
         }
     }
 }
 
-data class User(val id: String, val email: String) : Principal {
+data class User(val id: String, val displayName: String, val email: String) : Principal {
     override fun getName(): String {
         return email
     }
