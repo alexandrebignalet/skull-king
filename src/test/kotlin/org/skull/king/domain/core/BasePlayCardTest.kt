@@ -16,11 +16,11 @@ import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
+import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.NewPlayer
 import org.skull.king.domain.core.command.domain.Player
 import org.skull.king.domain.core.command.domain.SkullKing
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.command.error.NotYourTurnError
 import org.skull.king.domain.core.command.error.PlayerDoNotHaveCardError
 import org.skull.king.domain.core.command.error.PlayerNotInGameError
@@ -67,8 +67,8 @@ class BasePlayCardTest : LocalBus() {
     @Nested
     inner class OnCardPlayed {
         private val mockedCard = listOf(
-            SpecialCard(SpecialCardType.MERMAID),
-            SpecialCard(SpecialCardType.SKULL_KING),
+            Mermaid(),
+            SkullKingCard(),
 
             ColoredCard(1, CardColor.RED),
             ColoredCard(1, CardColor.BLUE),

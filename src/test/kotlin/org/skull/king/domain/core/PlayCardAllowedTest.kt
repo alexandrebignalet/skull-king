@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.Pirate
+import org.skull.king.domain.core.command.domain.PirateName
 import org.skull.king.domain.core.command.service.CardService.isCardPlayAllowed
 
 class PlayCardAllowedTest {
@@ -37,8 +37,8 @@ class PlayCardAllowedTest {
     fun `Should allow to play special card anytime`() {
         val cardAllowed = isCardPlayAllowed(
             listOf(ColoredCard(2, CardColor.RED)),
-            listOf(SpecialCard(SpecialCardType.PIRATE), ColoredCard(1, CardColor.BLUE)),
-            SpecialCard(SpecialCardType.PIRATE)
+            listOf(Pirate(PirateName.BETTY_BRAVE), ColoredCard(1, CardColor.BLUE)),
+            Pirate(PirateName.BETTY_BRAVE)
         )
         Assertions.assertThat(cardAllowed).isTrue()
     }

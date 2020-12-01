@@ -28,6 +28,6 @@ class OnFoldWinnerSettled(private val repository: QueryRepository) : EventCaptor
             }
 
 
-        game?.let { repository.addGame(it.copy(firstPlayerId = event.winner)) }
+        game?.let { repository.addGame(it.copy(firstPlayerId = event.winner, fold = listOf())) }
     }
 }

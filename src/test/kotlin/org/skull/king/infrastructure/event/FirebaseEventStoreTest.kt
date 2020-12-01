@@ -4,11 +4,10 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
+import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.NewPlayer
 import org.skull.king.domain.core.command.domain.ScaryMary
 import org.skull.king.domain.core.command.domain.ScaryMaryUsage
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
 import org.skull.king.domain.core.event.SkullKingEvent
 import org.skull.king.domain.core.event.Started
 import org.skull.king.helpers.LocalFirebase
@@ -23,7 +22,7 @@ class FirebaseEventStoreTest : LocalFirebase() {
         // Given
         val firstGameId = "game_one"
 
-        val playerOne = NewPlayer("1", firstGameId, cards = listOf(SpecialCard(SpecialCardType.MERMAID)))
+        val playerOne = NewPlayer("1", firstGameId, cards = listOf(Mermaid()))
         val playerTwo = NewPlayer("2", firstGameId, cards = listOf(ScaryMary(ScaryMaryUsage.ESCAPE)))
         val playerThree = NewPlayer("3", firstGameId, cards = listOf(ColoredCard(1, CardColor.BLACK)))
 

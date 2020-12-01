@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test
 import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
 import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.domain.Deck
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.Mermaid
+import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.saga.PlayCardSaga
@@ -21,7 +21,7 @@ import java.time.Duration
 
 class ReadySkullKingTest : LocalBus() {
 
-    private val mockedCard = listOf(SpecialCard(SpecialCardType.MERMAID), SpecialCard(SpecialCardType.SKULL_KING))
+    private val mockedCard = listOf(Mermaid(), SkullKingCard())
     private val players = listOf("1", "2")
     private val gameId = "101"
 

@@ -2,8 +2,10 @@ package org.skull.king.infrastructure.repository
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.Mermaid
+import org.skull.king.domain.core.command.domain.Pirate
+import org.skull.king.domain.core.command.domain.PirateName
+import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.query.Play
 import org.skull.king.domain.core.query.ReadCard
 import org.skull.king.domain.core.query.ReadPlayer
@@ -24,8 +26,8 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
     fun `Should correctly save a game`() {
         // Given
         val fold = listOf(
-            Play("2", ReadCard.of(SpecialCard(SpecialCardType.SKULL_KING))),
-            Play("3", ReadCard.of(SpecialCard(SpecialCardType.MERMAID)))
+            Play("2", ReadCard.of(SkullKingCard())),
+            Play("3", ReadCard.of(Mermaid()))
         )
         val game = ReadSkullKing("123", listOf("1", "2", "3"), 2, fold, false, "2")
 
@@ -44,8 +46,8 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
             "123",
             "34",
             listOf(
-                ReadCard.of(SpecialCard(SpecialCardType.SKULL_KING)),
-                ReadCard.of(SpecialCard(SpecialCardType.MERMAID))
+                ReadCard.of(SkullKingCard()),
+                ReadCard.of(Mermaid())
             ),
             mutableListOf(
                 RoundScore(1, Score(1, 2, 50)),
@@ -69,13 +71,13 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
         val gameTwoId = "2"
 
         val playerOne =
-            ReadPlayer("1", gameOneId, listOf(ReadCard.of(SpecialCard(SpecialCardType.SKULL_KING))), isCurrent = false)
+            ReadPlayer("1", gameOneId, listOf(ReadCard.of(SkullKingCard())), isCurrent = false)
         val playerTwo =
-            ReadPlayer("2", gameOneId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))), isCurrent = true)
+            ReadPlayer("2", gameOneId, listOf(ReadCard.of(Pirate(PirateName.TORTUGA_JACK))), isCurrent = true)
         val playerThree =
-            ReadPlayer("3", gameTwoId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))), isCurrent = true)
+            ReadPlayer("3", gameTwoId, listOf(ReadCard.of(Pirate(PirateName.HARRY_THE_GIANT))), isCurrent = true)
         val playerFour =
-            ReadPlayer("4", gameTwoId, listOf(ReadCard.of(SpecialCard(SpecialCardType.PIRATE))), isCurrent = false)
+            ReadPlayer("4", gameTwoId, listOf(ReadCard.of(Pirate(PirateName.EVIL_EMMY))), isCurrent = false)
         val gameOne = ReadSkullKing(gameOneId, listOf("1", "2"), 2, listOf(), false, "2")
         val gameTwo = ReadSkullKing(gameTwoId, listOf("3", "4"), 2, listOf(), false, "3")
 

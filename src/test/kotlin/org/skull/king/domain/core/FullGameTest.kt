@@ -13,9 +13,9 @@ import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
+import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.Player
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.ReadCard
 import org.skull.king.domain.core.query.handler.GetPlayer
@@ -102,8 +102,8 @@ class FullGameTest : LocalBus() {
     }
 
     private val fullDeckMocked = listOf(
-        SpecialCard(SpecialCardType.MERMAID),
-        SpecialCard(SpecialCardType.SKULL_KING),
+        Mermaid(),
+        SkullKingCard(),
 
         ColoredCard(2, CardColor.RED),
         ColoredCard(1, CardColor.BLUE),

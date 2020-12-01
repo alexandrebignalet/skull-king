@@ -2,12 +2,11 @@ package org.skull.king.domain.core.command.service
 
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.CardColor
+import org.skull.king.domain.core.command.domain.CardType
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.PlayerId
 import org.skull.king.domain.core.command.domain.ScaryMary
 import org.skull.king.domain.core.command.domain.ScaryMaryUsage
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
 
 typealias Fold = List<FoldSettlementService.PlayerCard>
 
@@ -41,18 +40,18 @@ object FoldSettlementService {
     }
 
     private fun Fold.skullKing() =
-        filter { it.card is SpecialCard && it.card.type == SpecialCardType.SKULL_KING }
+        filter { it.card is Card && it.card.type == CardType.SKULLKING }
 
     private fun Fold.mermaids() =
-        filter { it.card is SpecialCard && it.card.type == SpecialCardType.MERMAID }
+        filter { it.card is Card && it.card.type == CardType.MERMAID }
 
     private fun Fold.pirates() = filter {
-        (it.card is SpecialCard && it.card.type == SpecialCardType.PIRATE)
+        (it.card is Card && it.card.type == CardType.PIRATE)
                 || (it.card is ScaryMary && it.card.usage == ScaryMaryUsage.PIRATE)
     }
 
     private fun Fold.onlyEscapes() = all {
-        (it.card is SpecialCard && it.card.type == SpecialCardType.ESCAPE)
+        (it.card is Card && it.card.type == CardType.ESCAPE)
                 || (it.card is ScaryMary && it.card.usage == ScaryMaryUsage.ESCAPE)
     }
 
