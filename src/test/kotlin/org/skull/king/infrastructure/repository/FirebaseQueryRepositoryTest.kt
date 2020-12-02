@@ -12,6 +12,7 @@ import org.skull.king.domain.core.query.ReadPlayer
 import org.skull.king.domain.core.query.ReadSkullKing
 import org.skull.king.domain.core.query.RoundScore
 import org.skull.king.domain.core.query.Score
+import org.skull.king.domain.core.query.SkullKingPhase
 import org.skull.king.helpers.LocalFirebase
 import org.skull.king.utils.JsonObjectMapper
 
@@ -29,7 +30,7 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
             Play("2", ReadCard.of(SkullKingCard())),
             Play("3", ReadCard.of(Mermaid()))
         )
-        val game = ReadSkullKing("123", listOf("1", "2", "3"), 2, fold, false, "2")
+        val game = ReadSkullKing("123", listOf("1", "2", "3"), 2, fold, false, "2", SkullKingPhase.ANNOUNCEMENT)
 
         // When
         repository.addGame(game)
@@ -78,8 +79,8 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
             ReadPlayer("3", gameTwoId, listOf(ReadCard.of(Pirate(PirateName.HARRY_THE_GIANT))), isCurrent = true)
         val playerFour =
             ReadPlayer("4", gameTwoId, listOf(ReadCard.of(Pirate(PirateName.EVIL_EMMY))), isCurrent = false)
-        val gameOne = ReadSkullKing(gameOneId, listOf("1", "2"), 2, listOf(), false, "2")
-        val gameTwo = ReadSkullKing(gameTwoId, listOf("3", "4"), 2, listOf(), false, "3")
+        val gameOne = ReadSkullKing(gameOneId, listOf("1", "2"), 2, listOf(), false, "2", SkullKingPhase.ANNOUNCEMENT)
+        val gameTwo = ReadSkullKing(gameTwoId, listOf("3", "4"), 2, listOf(), false, "3", SkullKingPhase.CARDS)
 
         repository.addGame(gameOne)
         repository.addPlayer(playerOne)

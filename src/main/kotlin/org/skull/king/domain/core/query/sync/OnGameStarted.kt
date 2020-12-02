@@ -6,23 +6,28 @@ import org.skull.king.domain.core.query.QueryRepository
 import org.skull.king.domain.core.query.ReadCard
 import org.skull.king.domain.core.query.ReadPlayer
 import org.skull.king.domain.core.query.ReadSkullKing
+import org.skull.king.domain.core.query.SkullKingPhase
 import org.skull.king.infrastructure.cqrs.ddd.event.EventCaptor
 
 class OnGameStarted(private val repository: QueryRepository) : EventCaptor<Started> {
 
     override fun execute(event: Started) {
         val firstPlayerId = event.players.first().id
-        val gameUpdated =
-            ReadSkullKing(event.gameId, event.players.map { it.id }, 1, firstPlayerId = firstPlayerId)
+        val gameUpdated = ReadSkullKing(
+            event.gameId, event.players.map { it.id },
+            1,
+            firstPlayerId = firstPlayerId,
+            phase = SkullKingPhase.ANNOUNCEMENT
+        )
         repository.addGame(gameUpdated)
 
-        for (player in event.players) {
+        event.players.forEach { player ->
             player as NewPlayer
             val updatedPlayer =
                 ReadPlayer(
                     player.id,
                     event.gameId,
-                    player.cards.map { ReadCard.of(it) },
+                    player.cards.map { ReadCard.of(it, false) },
                     isCurrent = player.id == firstPlayerId
                 )
             repository.addPlayer(updatedPlayer)

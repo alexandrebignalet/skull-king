@@ -16,7 +16,8 @@ data class ReadSkullKing(
     val roundNb: RoundNb,
     val fold: List<Play> = listOf(),
     val isEnded: Boolean = false,
-    val firstPlayerId: String
+    val firstPlayerId: String,
+    val phase: SkullKingPhase
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
@@ -25,7 +26,8 @@ data class ReadSkullKing(
         "round_nb" to roundNb,
         "fold" to fold.map { it.fireMap() },
         "is_ended" to isEnded,
-        "first_player_id" to firstPlayerId
+        "first_player_id" to firstPlayerId,
+        "phase" to phase.name
     )
 
     fun nextPlayerAfter(currentPlayerId: String): String {
@@ -33,6 +35,10 @@ data class ReadSkullKing(
         return if (currentPlayerIndex == players.size - 1) players.first()
         else players[currentPlayerIndex + 1]
     }
+}
+
+enum class SkullKingPhase {
+    ANNOUNCEMENT, CARDS
 }
 
 data class ReadPlayer(
@@ -51,8 +57,6 @@ data class ReadPlayer(
         "is_current" to isCurrent
     )
 }
-
-// TODO create a read model for card which might update according on card allowed or not
 
 typealias RoundNb = Int
 typealias ScorePerRound = MutableList<RoundScore>
@@ -103,8 +107,12 @@ data class ReadCard(
     val name: String? = null
 ) : ReadEntity() {
     companion object {
-        fun of(card: Card) = when (card) {
-            is ColoredCard -> ReadCard(type = ReadCardType.COLORED.name, value = card.value, color = card.color.name)
+        fun of(card: Card, allowed: Boolean = false) = when (card) {
+            is ColoredCard -> ReadCard(
+                type = ReadCardType.COLORED.name,
+                value = card.value,
+                color = card.color.name
+            )
             is ScaryMary -> ReadCard(type = ReadCardType.SCARY_MARY.name, usage = card.usage.name)
             is Pirate -> ReadCard(type = ReadCardType.PIRATE.name, name = card.name.name)
             else -> ReadCard(type = card.type.name)

@@ -7,7 +7,6 @@ import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
 import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.error.PlayerAlreadyAnnouncedError
 import org.skull.king.domain.core.command.error.PlayerNotInGameError
-import org.skull.king.domain.core.command.error.SkullKingAlreadyReadyError
 import org.skull.king.domain.core.command.error.SkullKingNotStartedError
 import org.skull.king.domain.core.event.PlayerAnnounced
 import org.skull.king.domain.core.event.Started
@@ -114,7 +113,7 @@ class AnnounceWinningCardsFoldCountTest : LocalBus() {
             commandBus.send(secondAnnounce)
 
             Assertions.assertThatThrownBy { commandBus.send(errorAnnounce) }
-                .isInstanceOf(SkullKingAlreadyReadyError::class.java)
+                .isInstanceOf(PlayerAlreadyAnnouncedError::class.java)
         }
     }
 }

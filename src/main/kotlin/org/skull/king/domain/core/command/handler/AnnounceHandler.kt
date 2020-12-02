@@ -7,7 +7,6 @@ import org.skull.king.domain.core.command.domain.emptySkullKing
 import org.skull.king.domain.core.command.domain.skullKingOver
 import org.skull.king.domain.core.command.error.PlayerAlreadyAnnouncedError
 import org.skull.king.domain.core.command.error.PlayerNotInGameError
-import org.skull.king.domain.core.command.error.SkullKingAlreadyReadyError
 import org.skull.king.domain.core.command.error.SkullKingNotStartedError
 import org.skull.king.domain.core.command.error.SkullKingOverError
 import org.skull.king.domain.core.event.PlayerAnnounced
@@ -28,11 +27,22 @@ class AnnounceHandler(private val repository: SkullkingEventSourcedRepository) :
                 )
                 game.has(command.playerId) -> Pair(
                     game.getId(),
-                    sequenceOf(PlayerAnnounced(command.gameId, command.playerId, command.count, game.roundNb))
+                    sequenceOf(
+                        PlayerAnnounced(
+                            command.gameId,
+                            command.playerId,
+                            command.count,
+                            game.roundNb,
+                            game.isMissingOneLastAnnounce()
+                        )
+                    )
                 )
                 else -> throw PlayerNotInGameError("Player ${command.playerId} not in game", command)
             }
-            is ReadySkullKing -> throw SkullKingAlreadyReadyError("Game ${command.gameId} already ready !", command)
+            is ReadySkullKing -> throw PlayerAlreadyAnnouncedError(
+                "Player ${command.playerId} already announced",
+                command
+            )
             is skullKingOver -> throw SkullKingOverError(command)
         }
     }

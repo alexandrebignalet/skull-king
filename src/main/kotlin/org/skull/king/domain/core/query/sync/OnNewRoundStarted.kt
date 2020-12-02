@@ -4,6 +4,7 @@ import org.skull.king.domain.core.event.NewRoundStarted
 import org.skull.king.domain.core.query.QueryRepository
 import org.skull.king.domain.core.query.ReadCard
 import org.skull.king.domain.core.query.ReadSkullKing
+import org.skull.king.domain.core.query.SkullKingPhase
 import org.skull.king.infrastructure.cqrs.ddd.event.EventCaptor
 
 class OnNewRoundStarted(private val repository: QueryRepository) : EventCaptor<NewRoundStarted> {
@@ -19,7 +20,8 @@ class OnNewRoundStarted(private val repository: QueryRepository) : EventCaptor<N
                     game.id,
                     gamePlayers.map { it.id },
                     event.nextRoundNb,
-                    firstPlayerId = newFirstPlayerId
+                    firstPlayerId = newFirstPlayerId,
+                    phase = SkullKingPhase.ANNOUNCEMENT
                 )
             )
 

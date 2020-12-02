@@ -169,5 +169,9 @@ data class NewRound(val gameId: String, val players: List<Player>, val roundNb: 
     }
 
     fun has(playerId: String) = players.any { it.id == playerId }
+
+    fun isMissingOneLastAnnounce(): Boolean {
+        return players.filterIsInstance<ReadyPlayer>().count() == players.count() - 1
+    }
 }
 

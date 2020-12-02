@@ -14,8 +14,8 @@ import org.skull.king.domain.core.command.domain.SkullKing
 import org.skull.king.domain.core.command.error.SkullKingConfigurationError
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.handler.GetPlayer
-import org.skull.king.infrastructure.cqrs.ddd.event.Event
 import org.skull.king.helpers.LocalBus
+import org.skull.king.infrastructure.cqrs.ddd.event.Event
 
 class StartSkullKingTest : LocalBus() {
 
