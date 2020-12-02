@@ -158,7 +158,8 @@ class SkullKingResourceTest : LocalBus() {
         // When
         val request = """{
             "card": {
-                "type": "MERMAID"
+                "type": "MERMAID",
+                "id": "${mockedCard.first().id}"
             }    
         }""".trimIndent()
         val s = EXTENSION.objectMapper.writeValueAsString(PlayCardRequest(mockedCard.first()))

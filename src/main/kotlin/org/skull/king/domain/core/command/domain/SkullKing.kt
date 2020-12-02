@@ -125,9 +125,10 @@ data class ReadySkullKing(
     override fun nextFirstPlayerIndex(): Int = (firstPlayerIndex + 1).let { if (it > players.size) 0 else it }
 
     private fun removeCardFromPlayerHand(event: CardPlayed) = players.map {
-        if (it.id == event.playerId)
-            ReadyPlayer(it.playerId, it.gameId, it.cards.filterNot { card -> card == event.card }, it.count)
-        else it
+        if (it.id == event.playerId) {
+            val cardsUpdate = it.cards.filter { card -> card != event.card }
+            ReadyPlayer(it.playerId, it.gameId, cardsUpdate, it.count)
+        } else it
     }
 
     private fun addCardInFold(event: CardPlayed): Map<PlayerId, Card> {

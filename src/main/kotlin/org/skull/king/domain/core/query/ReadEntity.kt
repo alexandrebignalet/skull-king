@@ -3,6 +3,7 @@ package org.skull.king.domain.core.query
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.ColoredCard
+import org.skull.king.domain.core.command.domain.Escape
 import org.skull.king.domain.core.command.domain.Pirate
 import org.skull.king.domain.core.command.domain.ScaryMary
 
@@ -106,34 +107,33 @@ data class ReadCard(
     val value: Int? = null,
     val color: String? = null,
     val usage: String? = null,
-    val name: String? = null
+    val name: String? = null,
+    val id: String? = null
 ) : ReadEntity() {
     companion object {
-        fun of(card: Card, allowed: Boolean = false) = when (card) {
+        fun of(card: Card) = when (card) {
             is ColoredCard -> ReadCard(
+                id = card.id,
                 type = ReadCardType.COLORED.name,
                 value = card.value,
                 color = card.color.name
             )
-            is ScaryMary -> ReadCard(type = ReadCardType.SCARY_MARY.name, usage = card.usage.name)
-            is Pirate -> ReadCard(type = ReadCardType.PIRATE.name, name = card.name.name)
-            else -> ReadCard(type = card.type.name)
+            is ScaryMary -> ReadCard(id = card.id, type = ReadCardType.SCARY_MARY.name, usage = card.usage.name)
+            is Escape -> ReadCard(id = card.id, type = ReadCardType.ESCAPE.name)
+            is Pirate -> ReadCard(id = card.id, type = ReadCardType.PIRATE.name, name = card.name.name)
+            else -> ReadCard(id = card.id, type = card.type.name)
         }
     }
 
-    fun isSameAs(card: Card): Boolean = when (card) {
-        is ColoredCard -> type == ReadCardType.COLORED.name && value == card.value && color == card.color.name
-        is ScaryMary -> type == ReadCardType.SCARY_MARY.name && usage == card.usage.name
-        is Pirate -> type == ReadCardType.PIRATE.name && name == card.name.name
-        else -> type == card.type.name
-    }
+    fun isSameAs(card: Card): Boolean = id == card.id
 
     override fun fireMap() = mapOf(
         "type" to type,
         "value" to value,
         "color" to color,
         "usage" to usage,
-        "name" to name
+        "name" to name,
+        "id" to id
     )
 }
 

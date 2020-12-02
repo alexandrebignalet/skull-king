@@ -18,6 +18,7 @@ import org.skull.king.domain.core.command.domain.Player
 import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.ReadCard
+import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.query.handler.GetPlayer
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
@@ -98,6 +99,7 @@ class FullGameTest : LocalBus() {
             secondPlayer = tmpPlayer
         }
 
+        queryBus.send(GetGame(gameId)).let { Assertions.assertThat(it.isEnded).isTrue() }
     }
 
     private val fullDeckMocked = listOf(
