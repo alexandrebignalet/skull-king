@@ -17,6 +17,7 @@ import org.skull.king.domain.core.query.sync.OnGameFinished
 import org.skull.king.domain.core.query.sync.OnGameStarted
 import org.skull.king.domain.core.query.sync.OnNewRoundStarted
 import org.skull.king.domain.core.query.sync.OnPlayerAnnounced
+import org.skull.king.domain.core.saga.PlayCardSagaHandler
 import org.skull.king.infrastructure.cqrs.command.CommandBus
 import org.skull.king.infrastructure.cqrs.command.CommandHandler
 import org.skull.king.infrastructure.cqrs.command.CommandMiddleware
@@ -33,6 +34,9 @@ import org.skull.king.infrastructure.cqrs.infrastructure.persistence.EventStoreM
 import org.skull.king.infrastructure.cqrs.query.QueryBus
 import org.skull.king.infrastructure.cqrs.query.QueryHandler
 import org.skull.king.infrastructure.cqrs.query.QueryMiddleware
+import org.skull.king.infrastructure.cqrs.saga.Saga
+import org.skull.king.infrastructure.cqrs.saga.SagaHandler
+import org.skull.king.infrastructure.cqrs.saga.SagaMiddleware
 import org.skull.king.infrastructure.event.FirebaseEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 import org.skull.king.infrastructure.repository.FirebaseQueryRepository
@@ -60,11 +64,22 @@ class CoreModule {
         StartHandler(repository)
     )
 
+    @Provides
+    @Singleton
+    fun provideSagaHandler(repository: SkullkingEventSourcedRepository): Set<SagaHandler<*, *>> = setOf(
+        PlayCardSagaHandler(repository)
+    )
+
     @Singleton
     @Provides
-    fun provideCommandMiddlewares(eventStore: EventStore, eventBus: EventBus): Set<CommandMiddleware> = setOf(
+    fun provideCommandMiddlewares(
+        eventStore: EventStore,
+        eventBus: EventBus,
+        sagaHandlers: Set<@JvmSuppressWildcards SagaHandler<*, *>>
+    ): Set<CommandMiddleware> = setOf(
         EventStoreMiddleware(eventStore),
-        EventDispatcherMiddleware(eventBus)
+        EventDispatcherMiddleware(eventBus),
+        SagaMiddleware(sagaHandlers as Set<SagaHandler<*, Saga<*>>>)
     )
 
     @Singleton

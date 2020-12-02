@@ -3,8 +3,8 @@ package org.skull.king.domain.core.query
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.ColoredCard
+import org.skull.king.domain.core.command.domain.Pirate
 import org.skull.king.domain.core.command.domain.ScaryMary
-import org.skull.king.domain.core.command.domain.SpecialCard
 
 sealed class ReadEntity {
     abstract fun fireMap(): Map<String, Any?>
@@ -16,7 +16,9 @@ data class ReadSkullKing(
     val roundNb: RoundNb,
     val fold: List<Play> = listOf(),
     val isEnded: Boolean = false,
-    val firstPlayerId: String
+    val phase: SkullKingPhase,
+    val currentPlayerId: String,
+    val scoreBoard: ScoreBoard = mutableListOf()
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
@@ -25,7 +27,9 @@ data class ReadSkullKing(
         "round_nb" to roundNb,
         "fold" to fold.map { it.fireMap() },
         "is_ended" to isEnded,
-        "first_player_id" to firstPlayerId
+        "phase" to phase.name,
+        "current_player_id" to currentPlayerId,
+        "score_board" to scoreBoard.fireMap()
     )
 
     fun nextPlayerAfter(currentPlayerId: String): String {
@@ -35,37 +39,22 @@ data class ReadSkullKing(
     }
 }
 
-data class ReadPlayer(
-    val id: String,
-    val gameId: String,
-    val cards: List<ReadCard> = listOf(),
-    val scorePerRound: ScorePerRound = mutableListOf(),
-    val isCurrent: Boolean
-) : ReadEntity() {
+typealias ScoreBoard = MutableList<PlayerRoundScore>
 
-    override fun fireMap() = mapOf(
-        "id" to id,
-        "game_id" to gameId,
-        "cards" to cards,
-        "score_per_round" to scorePerRound.fireMap(),
-        "is_current" to isCurrent
-    )
-}
+fun ScoreBoard.fireMap() = map { it.fireMap() }
+fun ScoreBoard.from(playerId: String, roundNb: RoundNb) =
+    find { it.playerId == playerId && it.roundNb == roundNb }?.score
 
-// TODO create a read model for card which might update according on card allowed or not
-
-typealias RoundNb = Int
-typealias ScorePerRound = MutableList<RoundScore>
-
-fun ScorePerRound.from(roundNb: RoundNb) = find { it.roundNb == roundNb }?.score
-fun ScorePerRound.fireMap() = map { it.fireMap() }
-
-data class RoundScore(val roundNb: RoundNb, val score: Score) {
+data class PlayerRoundScore(val playerId: String, val roundNb: RoundNb, val score: Score) {
     fun fireMap() = mapOf(
+        "player_id" to playerId,
         "round_nb" to roundNb,
         "score" to score.fireMap()
     )
 }
+
+
+typealias RoundNb = Int
 
 data class Score(
     val announced: Int,
@@ -84,6 +73,23 @@ data class Score(
     )
 }
 
+enum class SkullKingPhase {
+    ANNOUNCEMENT, CARDS
+}
+
+data class ReadPlayer(
+    val id: String,
+    val gameId: String,
+    val cards: List<ReadCard> = listOf()
+) : ReadEntity() {
+
+    override fun fireMap() = mapOf(
+        "id" to id,
+        "game_id" to gameId,
+        "cards" to cards
+    )
+}
+
 data class Play(
     val playerId: String,
     val card: ReadCard
@@ -99,28 +105,36 @@ data class ReadCard(
     val type: String,
     val value: Int? = null,
     val color: String? = null,
-    val usage: String? = null
+    val usage: String? = null,
+    val name: String? = null
 ) : ReadEntity() {
     companion object {
-        fun of(card: Card) = when (card) {
-            is ColoredCard -> ReadCard(type = ReadCardType.COLORED.name, value = card.value, color = card.color.name)
-            is SpecialCard -> ReadCard(type = card.type.name)
+        fun of(card: Card, allowed: Boolean = false) = when (card) {
+            is ColoredCard -> ReadCard(
+                type = ReadCardType.COLORED.name,
+                value = card.value,
+                color = card.color.name
+            )
             is ScaryMary -> ReadCard(type = ReadCardType.SCARY_MARY.name, usage = card.usage.name)
+            is Pirate -> ReadCard(type = ReadCardType.PIRATE.name, name = card.name.name)
+            else -> ReadCard(type = card.type.name)
         }
     }
 
     fun isSameAs(card: Card): Boolean = when (card) {
         is ColoredCard -> type == ReadCardType.COLORED.name && value == card.value && color == card.color.name
-        is SpecialCard -> type == card.type.name
-        is ScaryMary -> type == ReadCardType.SCARY_MARY.name
+        is ScaryMary -> type == ReadCardType.SCARY_MARY.name && usage == card.usage.name
+        is Pirate -> type == ReadCardType.PIRATE.name && name == card.name.name
+        else -> type == card.type.name
     }
 
     override fun fireMap() = mapOf(
         "type" to type,
         "value" to value,
         "color" to color,
-        "usage" to usage
+        "usage" to usage,
+        "name" to name
     )
 }
 
-enum class ReadCardType { SKULL_KING, ESCAPE, PIRATE, SCARY_MARY, COLORED }
+enum class ReadCardType { SKULLKING, ESCAPE, PIRATE, SCARY_MARY, COLORED }

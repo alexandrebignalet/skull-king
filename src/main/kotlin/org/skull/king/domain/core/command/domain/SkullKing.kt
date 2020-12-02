@@ -15,7 +15,6 @@ sealed class SkullKing(private val id: String) : AggregateRoot<String, SkullKing
         const val MIN_PLAYERS = 2
         const val MAX_PLAYERS = 6
         const val FIRST_ROUND_NB = 1
-        const val NEXT_FIRST_PLAYER_INDEX = 1
         const val MAX_ROUND = 10
 
         val CARDS: List<Card> = listOf(
@@ -23,10 +22,14 @@ sealed class SkullKing(private val id: String) : AggregateRoot<String, SkullKing
             *(1..13).map { ColoredCard(it, CardColor.RED) }.toTypedArray(),
             *(1..13).map { ColoredCard(it, CardColor.BLUE) }.toTypedArray(),
             *(1..13).map { ColoredCard(it, CardColor.BLACK) }.toTypedArray(),
-            *(0..5).map { SpecialCard(SpecialCardType.PIRATE) }.toTypedArray(),
-            *(0..5).map { SpecialCard(SpecialCardType.ESCAPE) }.toTypedArray(),
-            *(0..2).map { SpecialCard(SpecialCardType.MERMAID) }.toTypedArray(),
-            SpecialCard(SpecialCardType.SKULL_KING),
+            *(0..5).map { Escape() }.toTypedArray(),
+            *(0..2).map { Mermaid() }.toTypedArray(),
+            Pirate(PirateName.EVIL_EMMY),
+            Pirate(PirateName.HARRY_THE_GIANT),
+            Pirate(PirateName.TORTUGA_JACK),
+            Pirate(PirateName.BADEYE_JOE),
+            Pirate(PirateName.BETTY_BRAVE),
+            SkullKingCard(),
             ScaryMary(ScaryMaryUsage.NOT_SET)
         )
     }
@@ -166,5 +169,9 @@ data class NewRound(val gameId: String, val players: List<Player>, val roundNb: 
     }
 
     fun has(playerId: String) = players.any { it.id == playerId }
+
+    fun isMissingOneLastAnnounce(): Boolean {
+        return players.filterIsInstance<ReadyPlayer>().count() == players.count() - 1
+    }
 }
 

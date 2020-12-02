@@ -71,7 +71,8 @@ data class PlayerAnnounced(
     val gameId: String,
     val playerId: String,
     val count: Int,
-    val roundNb: Int
+    val roundNb: Int,
+    val isLast: Boolean
 ) : SkullKingEvent(gameId, EVENT_TYPE) {
     companion object {
         const val EVENT_TYPE = "player_announced"

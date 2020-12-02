@@ -10,8 +10,7 @@ import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.domain.Deck
 import org.skull.king.domain.core.command.domain.ScaryMary
 import org.skull.king.domain.core.command.domain.ScaryMaryUsage
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.command.error.ScaryMaryUsageError
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.saga.PlayCardSaga
@@ -21,7 +20,7 @@ class ScaryMaryPlayTest : LocalBus() {
 
     private val mockedCard = listOf(
         ScaryMary(),
-        SpecialCard(SpecialCardType.SKULL_KING)
+        SkullKingCard()
     )
     private val players = listOf("1", "2")
     private val gameId = "101"

@@ -16,11 +16,11 @@ import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
+import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.NewPlayer
 import org.skull.king.domain.core.command.domain.Player
 import org.skull.king.domain.core.command.domain.SkullKing
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.command.error.NotYourTurnError
 import org.skull.king.domain.core.command.error.PlayerDoNotHaveCardError
 import org.skull.king.domain.core.command.error.PlayerNotInGameError
@@ -67,8 +67,8 @@ class BasePlayCardTest : LocalBus() {
     @Nested
     inner class OnCardPlayed {
         private val mockedCard = listOf(
-            SpecialCard(SpecialCardType.MERMAID),
-            SpecialCard(SpecialCardType.SKULL_KING),
+            Mermaid(),
+            SkullKingCard(),
 
             ColoredCard(1, CardColor.RED),
             ColoredCard(1, CardColor.BLUE),
@@ -138,7 +138,7 @@ class BasePlayCardTest : LocalBus() {
 
                 val game = queryBus.send(getGame)
 
-                Assertions.assertThat(game.firstPlayerId).isEqualTo(currentPlayer.id)
+                Assertions.assertThat(game.currentPlayerId).isEqualTo(currentPlayer.id)
             }
 
             // First two times in a row
@@ -289,19 +289,21 @@ class BasePlayCardTest : LocalBus() {
 
             // Then
             await atMost Duration.ofSeconds(5) untilAsserted {
-                val getFirstPlayer = GetPlayer(gameId, firstPlayer.id)
-                val winner = queryBus.send(getFirstPlayer)
-                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.announced).isEqualTo(futureWinnerAnnounce)
-                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.done).isEqualTo(1)
-                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.bonus).isEqualTo(50)
-                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.potentialBonus).isEqualTo(50)
+                val game = queryBus.send(GetGame(gameId))
+
+                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.announced)
+                    .isEqualTo(futureWinnerAnnounce)
+                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.done).isEqualTo(1)
+                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.bonus).isEqualTo(50)
+                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.potentialBonus).isEqualTo(50)
 
                 val getSecondPlayer = GetPlayer(gameId, secondPlayer.id)
                 val loser = queryBus.send(getSecondPlayer)
-                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.announced).isEqualTo(futureLoserAnnounce)
-                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.done).isEqualTo(0)
-                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.bonus).isEqualTo(0)
-                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.potentialBonus).isEqualTo(0)
+                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.announced)
+                    .isEqualTo(futureLoserAnnounce)
+                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.done).isEqualTo(0)
+                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.bonus).isEqualTo(0)
+                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.potentialBonus).isEqualTo(0)
             }
         }
     }

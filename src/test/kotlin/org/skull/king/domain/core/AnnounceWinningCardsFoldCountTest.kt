@@ -7,13 +7,11 @@ import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
 import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.error.PlayerAlreadyAnnouncedError
 import org.skull.king.domain.core.command.error.PlayerNotInGameError
-import org.skull.king.domain.core.command.error.SkullKingAlreadyReadyError
 import org.skull.king.domain.core.command.error.SkullKingNotStartedError
 import org.skull.king.domain.core.event.PlayerAnnounced
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.from
 import org.skull.king.domain.core.query.handler.GetGame
-import org.skull.king.domain.core.query.handler.GetPlayer
 import org.skull.king.helpers.LocalBus
 
 class AnnounceWinningCardsFoldCountTest : LocalBus() {
@@ -70,11 +68,8 @@ class AnnounceWinningCardsFoldCountTest : LocalBus() {
             val query = GetGame(gameId)
             val game = queryBus.send(query)
             Assertions.assertThat(game.id).isEqualTo(gameId)
-
-            val getPlayer = GetPlayer(gameId, announcingPlayerId)
-            val player = queryBus.send(getPlayer)
-            Assertions.assertThat(player.id).isEqualTo(announcingPlayerId)
-            Assertions.assertThat(player.scorePerRound.from(roundNb)?.announced).isEqualTo(firstPlayerAnnounce)
+            Assertions.assertThat(game.scoreBoard.from(announcingPlayerId, roundNb)?.announced)
+                .isEqualTo(firstPlayerAnnounce)
         }
     }
 
@@ -114,7 +109,7 @@ class AnnounceWinningCardsFoldCountTest : LocalBus() {
             commandBus.send(secondAnnounce)
 
             Assertions.assertThatThrownBy { commandBus.send(errorAnnounce) }
-                .isInstanceOf(SkullKingAlreadyReadyError::class.java)
+                .isInstanceOf(PlayerAlreadyAnnouncedError::class.java)
         }
     }
 }

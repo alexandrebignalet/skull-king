@@ -17,8 +17,8 @@ import org.skull.king.SkullKingApplication
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
-import org.skull.king.domain.core.command.domain.SpecialCard
-import org.skull.king.domain.core.command.domain.SpecialCardType
+import org.skull.king.domain.core.command.domain.Mermaid
+import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.helpers.ApiHelper
 import org.skull.king.helpers.LocalBus
 import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
@@ -51,8 +51,8 @@ class SkullKingResourceTest : LocalBus() {
     )
 
     private val mockedCard = listOf(
-        SpecialCard(SpecialCardType.MERMAID),
-        SpecialCard(SpecialCardType.SKULL_KING),
+        Mermaid(),
+        SkullKingCard(),
         ColoredCard(1, CardColor.BLUE)
     )
 
@@ -156,11 +156,17 @@ class SkullKingResourceTest : LocalBus() {
         playerIds.forEach { api.skullKing.announce(gameId, it, 1) }
 
         // When
+        val request = """{
+            "card": {
+                "type": "MERMAID"
+            }    
+        }""".trimIndent()
+        val s = EXTENSION.objectMapper.writeValueAsString(PlayCardRequest(mockedCard.first()))
         val commandResponse = EXTENSION.client()
             .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/1/play")
             .request()
             .header("Authorization", "Bearer token")
-            .post(Entity.json(PlayCardRequest(mockedCard.first())))
+            .post(Entity.json(request))
 
         // Then
         Assertions.assertThat(commandResponse.status).isEqualTo(204)
