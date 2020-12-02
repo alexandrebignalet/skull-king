@@ -186,35 +186,34 @@ class MultiFoldPlayCardTest : LocalBus() {
 
         await atMost Duration.ofSeconds(5) untilAsserted {
             val game = queryBus.send(getGame)
-            Assertions.assertThat(game.firstPlayerId).isEqualTo(newFirstPlayer)
+            Assertions.assertThat(game.currentPlayerId).isEqualTo(newSecondPlayer)
         }
     }
 
     @Test
-    fun `Should mark isCurrent on new round and after card played`() {
-        val getNewFirstPlayer = { queryBus.send(GetPlayer(gameId, secondPlayer.id)) }
-        val getNewSecondPlayer = { queryBus.send(GetPlayer(gameId, firstPlayer.id)) }
+    fun `Should mark current player id on new round and after card played`() {
+        val getGame = { queryBus.send(GetGame(gameId)) }
 
-        Assertions.assertThat(getNewFirstPlayer().isCurrent).isTrue()
-        Assertions.assertThat(getNewSecondPlayer().isCurrent).isFalse()
+        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isTrue()
+        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isFalse()
 
         val anAnnounce = AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, 0)
         val anotherAnnounce = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, 0)
 
-        Assertions.assertThat(getNewFirstPlayer().isCurrent).isTrue()
-        Assertions.assertThat(getNewSecondPlayer().isCurrent).isFalse()
+        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isTrue()
+        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isFalse()
 
         commandBus.send(anAnnounce)
         commandBus.send(anotherAnnounce)
 
         commandBus.send(PlayCardSaga(gameId, secondPlayer.id, mockedCard[2]))
 
-        Assertions.assertThat(getNewFirstPlayer().isCurrent).isFalse()
-        Assertions.assertThat(getNewSecondPlayer().isCurrent).isTrue()
+        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isFalse()
+        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isTrue()
 
         commandBus.send(PlayCardSaga(gameId, firstPlayer.id, mockedCard[3]))
 
-        Assertions.assertThat(getNewFirstPlayer().isCurrent).isTrue()
-        Assertions.assertThat(getNewSecondPlayer().isCurrent).isFalse()
+        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isTrue()
+        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isFalse()
     }
 }

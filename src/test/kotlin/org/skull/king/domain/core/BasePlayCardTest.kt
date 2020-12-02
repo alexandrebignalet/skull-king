@@ -138,7 +138,7 @@ class BasePlayCardTest : LocalBus() {
 
                 val game = queryBus.send(getGame)
 
-                Assertions.assertThat(game.firstPlayerId).isEqualTo(currentPlayer.id)
+                Assertions.assertThat(game.currentPlayerId).isEqualTo(currentPlayer.id)
             }
 
             // First two times in a row

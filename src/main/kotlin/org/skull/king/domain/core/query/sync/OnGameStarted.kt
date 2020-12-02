@@ -16,8 +16,8 @@ class OnGameStarted(private val repository: QueryRepository) : EventCaptor<Start
         val gameUpdated = ReadSkullKing(
             event.gameId, event.players.map { it.id },
             1,
-            firstPlayerId = firstPlayerId,
-            phase = SkullKingPhase.ANNOUNCEMENT
+            phase = SkullKingPhase.ANNOUNCEMENT,
+            currentPlayerId = firstPlayerId
         )
         repository.addGame(gameUpdated)
 
@@ -27,8 +27,7 @@ class OnGameStarted(private val repository: QueryRepository) : EventCaptor<Start
                 ReadPlayer(
                     player.id,
                     event.gameId,
-                    player.cards.map { ReadCard.of(it, false) },
-                    isCurrent = player.id == firstPlayerId
+                    player.cards.map { ReadCard.of(it, false) }
                 )
             repository.addPlayer(updatedPlayer)
         }

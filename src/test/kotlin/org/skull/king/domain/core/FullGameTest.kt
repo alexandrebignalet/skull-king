@@ -78,7 +78,6 @@ class FullGameTest : LocalBus() {
                     val f = queryBus.send(getFirstPlayer)
 
                     Assertions.assertThat(f.cards).doesNotContain(ReadCard.of(fullDeckMocked[firstPlayerCard]))
-                    Assertions.assertThat(f.isCurrent).isFalse()
                 }
 
                 commandBus.send(PlayCardSaga(gameId, secondPlayer.id, fullDeckMocked[secondPlayerCard]))

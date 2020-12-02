@@ -13,7 +13,7 @@ import org.skull.king.domain.core.command.domain.Player
 import org.skull.king.domain.core.command.domain.SkullKing
 import org.skull.king.domain.core.command.error.SkullKingConfigurationError
 import org.skull.king.domain.core.event.Started
-import org.skull.king.domain.core.query.handler.GetPlayer
+import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.helpers.LocalBus
 import org.skull.king.infrastructure.cqrs.ddd.event.Event
 
@@ -95,14 +95,9 @@ class StartSkullKingTest : LocalBus() {
         @Test
         fun `Should set the first player as current player before announcement`() {
             val gameStarted = response.second.first() as Started
-            val futureFirstPlayer = queryBus.send(GetPlayer(gameId, "1"))
+            val game = queryBus.send(GetGame(gameId))
 
-            Assertions.assertThat(futureFirstPlayer.isCurrent).isTrue()
-
-            gameStarted.players.filter { it.id != futureFirstPlayer.id }.forEach {
-                val player = queryBus.send(GetPlayer(gameId, it.id))
-                Assertions.assertThat(player.isCurrent).isFalse()
-            }
+            Assertions.assertThat(game.currentPlayerId).isEqualTo(gameStarted.players.first().id)
         }
     }
 }

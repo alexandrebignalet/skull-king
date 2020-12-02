@@ -16,8 +16,8 @@ data class ReadSkullKing(
     val roundNb: RoundNb,
     val fold: List<Play> = listOf(),
     val isEnded: Boolean = false,
-    val firstPlayerId: String,
-    val phase: SkullKingPhase
+    val phase: SkullKingPhase,
+    val currentPlayerId: String
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
@@ -26,8 +26,8 @@ data class ReadSkullKing(
         "round_nb" to roundNb,
         "fold" to fold.map { it.fireMap() },
         "is_ended" to isEnded,
-        "first_player_id" to firstPlayerId,
-        "phase" to phase.name
+        "phase" to phase.name,
+        "current_player_id" to currentPlayerId
     )
 
     fun nextPlayerAfter(currentPlayerId: String): String {
@@ -45,16 +45,14 @@ data class ReadPlayer(
     val id: String,
     val gameId: String,
     val cards: List<ReadCard> = listOf(),
-    val scorePerRound: ScorePerRound = mutableListOf(),
-    val isCurrent: Boolean
+    val scorePerRound: ScorePerRound = mutableListOf()
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
         "id" to id,
         "game_id" to gameId,
         "cards" to cards,
-        "score_per_round" to scorePerRound.fireMap(),
-        "is_current" to isCurrent
+        "score_per_round" to scorePerRound.fireMap()
     )
 }
 

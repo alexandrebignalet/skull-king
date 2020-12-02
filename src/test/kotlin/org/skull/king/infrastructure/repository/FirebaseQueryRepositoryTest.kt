@@ -30,7 +30,7 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
             Play("2", ReadCard.of(SkullKingCard())),
             Play("3", ReadCard.of(Mermaid()))
         )
-        val game = ReadSkullKing("123", listOf("1", "2", "3"), 2, fold, false, "2", SkullKingPhase.ANNOUNCEMENT)
+        val game = ReadSkullKing("123", listOf("1", "2", "3"), 2, fold, false, SkullKingPhase.ANNOUNCEMENT, "2")
 
         // When
         repository.addGame(game)
@@ -53,8 +53,7 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
             mutableListOf(
                 RoundScore(1, Score(1, 2, 50)),
                 RoundScore(2, Score(1, 2, 50))
-            ),
-            false
+            )
         )
 
         // When
@@ -72,15 +71,24 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
         val gameTwoId = "2"
 
         val playerOne =
-            ReadPlayer("1", gameOneId, listOf(ReadCard.of(SkullKingCard())), isCurrent = false)
+            ReadPlayer("1", gameOneId, listOf(ReadCard.of(SkullKingCard())))
         val playerTwo =
-            ReadPlayer("2", gameOneId, listOf(ReadCard.of(Pirate(PirateName.TORTUGA_JACK))), isCurrent = true)
+            ReadPlayer("2", gameOneId, listOf(ReadCard.of(Pirate(PirateName.TORTUGA_JACK))))
         val playerThree =
-            ReadPlayer("3", gameTwoId, listOf(ReadCard.of(Pirate(PirateName.HARRY_THE_GIANT))), isCurrent = true)
+            ReadPlayer("3", gameTwoId, listOf(ReadCard.of(Pirate(PirateName.HARRY_THE_GIANT))))
         val playerFour =
-            ReadPlayer("4", gameTwoId, listOf(ReadCard.of(Pirate(PirateName.EVIL_EMMY))), isCurrent = false)
-        val gameOne = ReadSkullKing(gameOneId, listOf("1", "2"), 2, listOf(), false, "2", SkullKingPhase.ANNOUNCEMENT)
-        val gameTwo = ReadSkullKing(gameTwoId, listOf("3", "4"), 2, listOf(), false, "3", SkullKingPhase.CARDS)
+            ReadPlayer("4", gameTwoId, listOf(ReadCard.of(Pirate(PirateName.EVIL_EMMY))))
+        val gameOne = ReadSkullKing(
+            gameOneId,
+            listOf("1", "2"),
+            2,
+            listOf(),
+            false,
+            SkullKingPhase.ANNOUNCEMENT,
+            playerOne.id
+        )
+        val gameTwo =
+            ReadSkullKing(gameTwoId, listOf("3", "4"), 2, listOf(), false, SkullKingPhase.CARDS, playerThree.id)
 
         repository.addGame(gameOne)
         repository.addPlayer(playerOne)
