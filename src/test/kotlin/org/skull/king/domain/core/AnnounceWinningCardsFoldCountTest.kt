@@ -12,7 +12,6 @@ import org.skull.king.domain.core.event.PlayerAnnounced
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.from
 import org.skull.king.domain.core.query.handler.GetGame
-import org.skull.king.domain.core.query.handler.GetPlayer
 import org.skull.king.helpers.LocalBus
 
 class AnnounceWinningCardsFoldCountTest : LocalBus() {
@@ -69,11 +68,8 @@ class AnnounceWinningCardsFoldCountTest : LocalBus() {
             val query = GetGame(gameId)
             val game = queryBus.send(query)
             Assertions.assertThat(game.id).isEqualTo(gameId)
-
-            val getPlayer = GetPlayer(gameId, announcingPlayerId)
-            val player = queryBus.send(getPlayer)
-            Assertions.assertThat(player.id).isEqualTo(announcingPlayerId)
-            Assertions.assertThat(player.scorePerRound.from(roundNb)?.announced).isEqualTo(firstPlayerAnnounce)
+            Assertions.assertThat(game.scoreBoard.from(announcingPlayerId, roundNb)?.announced)
+                .isEqualTo(firstPlayerAnnounce)
         }
     }
 

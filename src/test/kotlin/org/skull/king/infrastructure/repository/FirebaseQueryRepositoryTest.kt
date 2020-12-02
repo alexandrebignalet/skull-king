@@ -7,10 +7,10 @@ import org.skull.king.domain.core.command.domain.Pirate
 import org.skull.king.domain.core.command.domain.PirateName
 import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.query.Play
+import org.skull.king.domain.core.query.PlayerRoundScore
 import org.skull.king.domain.core.query.ReadCard
 import org.skull.king.domain.core.query.ReadPlayer
 import org.skull.king.domain.core.query.ReadSkullKing
-import org.skull.king.domain.core.query.RoundScore
 import org.skull.king.domain.core.query.Score
 import org.skull.king.domain.core.query.SkullKingPhase
 import org.skull.king.helpers.LocalFirebase
@@ -30,7 +30,21 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
             Play("2", ReadCard.of(SkullKingCard())),
             Play("3", ReadCard.of(Mermaid()))
         )
-        val game = ReadSkullKing("123", listOf("1", "2", "3"), 2, fold, false, SkullKingPhase.ANNOUNCEMENT, "2")
+        val game = ReadSkullKing(
+            "123",
+            listOf("1", "2", "3"),
+            2,
+            fold,
+            false,
+            SkullKingPhase.ANNOUNCEMENT,
+            "2",
+            mutableListOf(
+                PlayerRoundScore("1", 0, Score(4, 3, 50)),
+                PlayerRoundScore("1", 1, Score(2, 2, 0)),
+                PlayerRoundScore("2", 0, Score(4, 3, 50)),
+                PlayerRoundScore("2", 1, Score(0, 0, 0))
+            )
+        )
 
         // When
         repository.addGame(game)
@@ -49,10 +63,6 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
             listOf(
                 ReadCard.of(SkullKingCard()),
                 ReadCard.of(Mermaid())
-            ),
-            mutableListOf(
-                RoundScore(1, Score(1, 2, 50)),
-                RoundScore(2, Score(1, 2, 50))
             )
         )
 

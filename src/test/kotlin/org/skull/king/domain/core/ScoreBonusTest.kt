@@ -21,6 +21,7 @@ import org.skull.king.domain.core.command.domain.Player
 import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.from
+import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.query.handler.GetPlayer
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
@@ -81,29 +82,25 @@ class ScoreBonusTest : LocalBus() {
 
         // Then
         await atMost Duration.ofSeconds(5) untilAsserted {
-            val getFirstPlayer = GetPlayer(gameId, firstPlayer.id)
-            val firstFoldWinner = queryBus.send(getFirstPlayer)
-            Assertions.assertThat(firstFoldWinner.scorePerRound.from(firstRoundNb)?.announced)
+            val game = queryBus.send(GetGame(gameId))
+
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.announced)
                 .isEqualTo(firstFoldWinnerAnnounce)
-            Assertions.assertThat(firstFoldWinner.scorePerRound.from(firstRoundNb)?.done).isEqualTo(1)
-            Assertions.assertThat(firstFoldWinner.scorePerRound.from(firstRoundNb)?.potentialBonus).isEqualTo(50)
-            Assertions.assertThat(firstFoldWinner.scorePerRound.from(firstRoundNb)?.bonus).isEqualTo(50)
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.done).isEqualTo(1)
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.potentialBonus).isEqualTo(50)
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.bonus).isEqualTo(50)
 
-            val getThirdPlayer = GetPlayer(gameId, thirdPlayer.id)
-            val firstFoldLoser = queryBus.send(getThirdPlayer)
-            Assertions.assertThat(firstFoldLoser.scorePerRound.from(firstRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(thirdPlayer.id, firstRoundNb)?.announced)
                 .isEqualTo(firstFoldLoserAnnounce)
-            Assertions.assertThat(firstFoldLoser.scorePerRound.from(firstRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(firstFoldLoser.scorePerRound.from(firstRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(firstFoldLoser.scorePerRound.from(firstRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(thirdPlayer.id, firstRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(thirdPlayer.id, firstRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(thirdPlayer.id, firstRoundNb)?.bonus).isEqualTo(0)
 
-            val getSecondPlayer = GetPlayer(gameId, secondPlayer.id)
-            val secondFoldLoser = queryBus.send(getSecondPlayer)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(firstRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.announced)
                 .isEqualTo(firstFoldLoserAnnounce)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(firstRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(firstFoldLoser.scorePerRound.from(firstRoundNb)?.bonus).isEqualTo(0)
-            Assertions.assertThat(firstFoldLoser.scorePerRound.from(firstRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.potentialBonus).isEqualTo(0)
         }
     }
 
@@ -135,26 +132,25 @@ class ScoreBonusTest : LocalBus() {
 
         // The winner gains a potential bonus
         await atMost Duration.ofSeconds(5) untilAsserted {
-            val secondFoldWinner = queryBus.send(GetPlayer(gameId, newThirdPlayer))
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.announced)
+            val game = queryBus.send(GetGame(gameId))
+
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureWinnerAnnounce)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.done).isEqualTo(1)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(60)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(1)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.potentialBonus).isEqualTo(60)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
-            val secondFoldLoser = queryBus.send(GetPlayer(gameId, newFirstPlayer))
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
-            val lastFoldLoser = queryBus.send(GetPlayer(gameId, newSecondPlayer))
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.bonus).isEqualTo(0)
         }
 
         // On next fold the previous winner wins again respecting his announcement
@@ -166,26 +162,26 @@ class ScoreBonusTest : LocalBus() {
 
         // At the end of the round the bonus is kept
         await atMost Duration.ofSeconds(5) untilAsserted {
+            val game = queryBus.send(GetGame(gameId))
+
             val secondFoldWinner = queryBus.send(GetPlayer(gameId, newThirdPlayer))
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureWinnerAnnounce)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.done).isEqualTo(2)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(60)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(60)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(2)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.potentialBonus).isEqualTo(60)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.bonus).isEqualTo(60)
 
-            val secondFoldLoser = queryBus.send(GetPlayer(gameId, newFirstPlayer))
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
-            val lastFoldLoser = queryBus.send(GetPlayer(gameId, newSecondPlayer))
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.bonus).isEqualTo(0)
         }
     }
 
@@ -210,26 +206,25 @@ class ScoreBonusTest : LocalBus() {
 
         // The winner gains a potential bonus
         await atMost Duration.ofSeconds(5) untilAsserted {
-            val secondFoldWinner = queryBus.send(GetPlayer(gameId, newThirdPlayer))
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.announced)
+            val game = queryBus.send(GetGame(gameId))
+
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureWinnerAnnounce)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.done).isEqualTo(1)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(60)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(1)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.potentialBonus).isEqualTo(60)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
-            val secondFoldLoser = queryBus.send(GetPlayer(gameId, newFirstPlayer))
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
-            val lastFoldLoser = queryBus.send(GetPlayer(gameId, newSecondPlayer))
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.bonus).isEqualTo(0)
         }
 
         // On next fold the previous winner wins again respecting his announcement
@@ -239,26 +234,25 @@ class ScoreBonusTest : LocalBus() {
 
         // At the end of the round the bonus is kept
         await atMost Duration.ofSeconds(5) untilAsserted {
-            val secondFoldWinner = queryBus.send(GetPlayer(gameId, newThirdPlayer))
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.announced)
+            val game = queryBus.send(GetGame(gameId))
+
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureWinnerAnnounce)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.done).isEqualTo(2)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(60)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(2)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.potentialBonus).isEqualTo(60)
+            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
-            val secondFoldLoser = queryBus.send(GetPlayer(gameId, newFirstPlayer))
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
-            val lastFoldLoser = queryBus.send(GetPlayer(gameId, newSecondPlayer))
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(lastFoldLoser.scorePerRound.from(secondRoundNb)?.bonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.bonus).isEqualTo(0)
         }
     }
 }

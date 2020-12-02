@@ -14,7 +14,7 @@ class OnCardPlayed(private val repository: QueryRepository) : EventCaptor<CardPl
             repository.getPlayer(game.id, event.playerId)?.let { player ->
                 val indexToRemove = player.cards.indexOfFirst { it.isSameAs(event.card) }
                 val cardsUpdate = player.cards.filterIndexed { index, _ -> index != indexToRemove }
-                repository.addPlayer(ReadPlayer(player.id, game.id, cardsUpdate, player.scorePerRound))
+                repository.addPlayer(ReadPlayer(player.id, game.id, cardsUpdate))
             }
 
             val foldUpdate = game.fold + Play(event.playerId, ReadCard.of(event.card))

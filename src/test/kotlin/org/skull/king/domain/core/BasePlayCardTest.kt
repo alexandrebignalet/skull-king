@@ -289,19 +289,21 @@ class BasePlayCardTest : LocalBus() {
 
             // Then
             await atMost Duration.ofSeconds(5) untilAsserted {
-                val getFirstPlayer = GetPlayer(gameId, firstPlayer.id)
-                val winner = queryBus.send(getFirstPlayer)
-                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.announced).isEqualTo(futureWinnerAnnounce)
-                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.done).isEqualTo(1)
-                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.bonus).isEqualTo(50)
-                Assertions.assertThat(winner.scorePerRound.from(roundNb)?.potentialBonus).isEqualTo(50)
+                val game = queryBus.send(GetGame(gameId))
+
+                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.announced)
+                    .isEqualTo(futureWinnerAnnounce)
+                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.done).isEqualTo(1)
+                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.bonus).isEqualTo(50)
+                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.potentialBonus).isEqualTo(50)
 
                 val getSecondPlayer = GetPlayer(gameId, secondPlayer.id)
                 val loser = queryBus.send(getSecondPlayer)
-                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.announced).isEqualTo(futureLoserAnnounce)
-                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.done).isEqualTo(0)
-                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.bonus).isEqualTo(0)
-                Assertions.assertThat(loser.scorePerRound.from(roundNb)?.potentialBonus).isEqualTo(0)
+                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.announced)
+                    .isEqualTo(futureLoserAnnounce)
+                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.done).isEqualTo(0)
+                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.bonus).isEqualTo(0)
+                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.potentialBonus).isEqualTo(0)
             }
         }
     }

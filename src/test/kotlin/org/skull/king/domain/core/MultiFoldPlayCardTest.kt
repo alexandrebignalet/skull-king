@@ -21,7 +21,6 @@ import org.skull.king.domain.core.command.error.NotYourTurnError
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.from
 import org.skull.king.domain.core.query.handler.GetGame
-import org.skull.king.domain.core.query.handler.GetPlayer
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
 import java.time.Duration
@@ -74,17 +73,14 @@ class MultiFoldPlayCardTest : LocalBus() {
 
         // Then
         await atMost Duration.ofSeconds(5) untilAsserted {
-            val getFirstPlayer = GetPlayer(gameId, firstPlayer.id)
-            val firstFoldWinner = queryBus.send(getFirstPlayer)
-            Assertions.assertThat(firstFoldWinner.scorePerRound.from(firstRoundNb)?.announced)
+            val game = queryBus.send(GetGame(gameId))
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.announced)
                 .isEqualTo(firstFoldWinnerAnnounce)
-            Assertions.assertThat(firstFoldWinner.scorePerRound.from(firstRoundNb)?.done).isEqualTo(1)
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.done).isEqualTo(1)
 
-            val getSecondPlayer = GetPlayer(gameId, secondPlayer.id)
-            val firstFoldLoser = queryBus.send(getSecondPlayer)
-            Assertions.assertThat(firstFoldLoser.scorePerRound.from(firstRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.announced)
                 .isEqualTo(firstFoldLoserAnnounce)
-            Assertions.assertThat(firstFoldLoser.scorePerRound.from(firstRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.done).isEqualTo(0)
         }
     }
 
@@ -108,20 +104,16 @@ class MultiFoldPlayCardTest : LocalBus() {
         commandBus.send(firstPlayCard)
         commandBus.send(secondPlayCard)
 
-
         // Then
         await atMost Duration.ofSeconds(5) untilAsserted {
-            val getFirstPlayer = GetPlayer(gameId, newSecondPlayer)
-            val secondFoldWinner = queryBus.send(getFirstPlayer)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.announced)
+            val game = queryBus.send(GetGame(gameId))
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureWinnerAnnounce)
-            Assertions.assertThat(secondFoldWinner.scorePerRound.from(secondRoundNb)?.done).isEqualTo(1)
+            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(1)
 
-            val getSecondPlayer = GetPlayer(gameId, newFirstPlayer)
-            val secondFoldLoser = queryBus.send(getSecondPlayer)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.announced)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
-            Assertions.assertThat(secondFoldLoser.scorePerRound.from(secondRoundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
         }
     }
 

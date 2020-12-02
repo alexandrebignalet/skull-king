@@ -21,19 +21,15 @@ class OnNewRoundStarted(private val repository: QueryRepository) : EventCaptor<N
                     gamePlayers.map { it.id },
                     event.nextRoundNb,
                     phase = SkullKingPhase.ANNOUNCEMENT,
-                    currentPlayerId = newFirstPlayerId
+                    currentPlayerId = newFirstPlayerId,
+                    scoreBoard = game.scoreBoard
                 )
             )
 
             event.players.forEach { player ->
                 gamePlayers.find { it.id == player.id }?.let { readPlayer ->
                     val newCards = player.cards.map { ReadCard.of(it) }
-                    repository.addPlayer(
-                        readPlayer.copy(
-                            cards = newCards,
-                            scorePerRound = readPlayer.scorePerRound
-                        )
-                    )
+                    repository.addPlayer(readPlayer.copy(cards = newCards))
                 }
             }
         }

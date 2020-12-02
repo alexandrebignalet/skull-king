@@ -17,7 +17,8 @@ data class ReadSkullKing(
     val fold: List<Play> = listOf(),
     val isEnded: Boolean = false,
     val phase: SkullKingPhase,
-    val currentPlayerId: String
+    val currentPlayerId: String,
+    val scoreBoard: ScoreBoard = mutableListOf()
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
@@ -27,7 +28,8 @@ data class ReadSkullKing(
         "fold" to fold.map { it.fireMap() },
         "is_ended" to isEnded,
         "phase" to phase.name,
-        "current_player_id" to currentPlayerId
+        "current_player_id" to currentPlayerId,
+        "score_board" to scoreBoard.fireMap()
     )
 
     fun nextPlayerAfter(currentPlayerId: String): String {
@@ -37,37 +39,22 @@ data class ReadSkullKing(
     }
 }
 
-enum class SkullKingPhase {
-    ANNOUNCEMENT, CARDS
-}
+typealias ScoreBoard = MutableList<PlayerRoundScore>
 
-data class ReadPlayer(
-    val id: String,
-    val gameId: String,
-    val cards: List<ReadCard> = listOf(),
-    val scorePerRound: ScorePerRound = mutableListOf()
-) : ReadEntity() {
+fun ScoreBoard.fireMap() = map { it.fireMap() }
+fun ScoreBoard.from(playerId: String, roundNb: RoundNb) =
+    find { it.playerId == playerId && it.roundNb == roundNb }?.score
 
-    override fun fireMap() = mapOf(
-        "id" to id,
-        "game_id" to gameId,
-        "cards" to cards,
-        "score_per_round" to scorePerRound.fireMap()
-    )
-}
-
-typealias RoundNb = Int
-typealias ScorePerRound = MutableList<RoundScore>
-
-fun ScorePerRound.from(roundNb: RoundNb) = find { it.roundNb == roundNb }?.score
-fun ScorePerRound.fireMap() = map { it.fireMap() }
-
-data class RoundScore(val roundNb: RoundNb, val score: Score) {
+data class PlayerRoundScore(val playerId: String, val roundNb: RoundNb, val score: Score) {
     fun fireMap() = mapOf(
+        "player_id" to playerId,
         "round_nb" to roundNb,
         "score" to score.fireMap()
     )
 }
+
+
+typealias RoundNb = Int
 
 data class Score(
     val announced: Int,
@@ -83,6 +70,23 @@ data class Score(
         "done" to done,
         "potential_bonus" to potentialBonus,
         "bonus" to bonus
+    )
+}
+
+enum class SkullKingPhase {
+    ANNOUNCEMENT, CARDS
+}
+
+data class ReadPlayer(
+    val id: String,
+    val gameId: String,
+    val cards: List<ReadCard> = listOf()
+) : ReadEntity() {
+
+    override fun fireMap() = mapOf(
+        "id" to id,
+        "game_id" to gameId,
+        "cards" to cards
     )
 }
 
