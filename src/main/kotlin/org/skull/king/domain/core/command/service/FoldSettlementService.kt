@@ -40,19 +40,17 @@ object FoldSettlementService {
     }
 
     private fun Fold.skullKing() =
-        filter { it.card is Card && it.card.type == CardType.SKULLKING }
+        filter { it.card.type == CardType.SKULLKING }
 
     private fun Fold.mermaids() =
-        filter { it.card is Card && it.card.type == CardType.MERMAID }
+        filter { it.card.type == CardType.MERMAID }
 
     private fun Fold.pirates() = filter {
-        (it.card is Card && it.card.type == CardType.PIRATE)
-                || (it.card is ScaryMary && it.card.usage == ScaryMaryUsage.PIRATE)
+        it.card.type == CardType.PIRATE || (it.card is ScaryMary && it.card.usage == ScaryMaryUsage.PIRATE)
     }
 
     private fun Fold.onlyEscapes() = all {
-        (it.card is Card && it.card.type == CardType.ESCAPE)
-                || (it.card is ScaryMary && it.card.usage == ScaryMaryUsage.ESCAPE)
+        (it.card.type == CardType.ESCAPE) || (it.card is ScaryMary && it.card.usage == ScaryMaryUsage.ESCAPE)
     }
 
     private fun Fold.highestOf(colorAsked: CardColor) =
