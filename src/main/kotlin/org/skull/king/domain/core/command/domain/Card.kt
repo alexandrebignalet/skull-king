@@ -3,6 +3,7 @@ package org.skull.king.domain.core.command.domain
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.Stack
+import java.util.UUID
 
 enum class CardType {
     ESCAPE,
@@ -27,14 +28,14 @@ enum class CardType {
     JsonSubTypes.Type(value = Escape::class, name = "ESCAPE"),
     JsonSubTypes.Type(value = Mermaid::class, name = "MERMAID")
 )
-abstract class Card(val type: CardType) {
+abstract class Card(val type: CardType, val id: String = UUID.randomUUID().toString()) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
         other as Card
 
-        if (type != other.type) return false
+        if (id != other.id) return false
 
         return true
     }

@@ -27,7 +27,7 @@ class OnGameStarted(private val repository: QueryRepository) : EventCaptor<Start
                 ReadPlayer(
                     player.id,
                     event.gameId,
-                    player.cards.map { ReadCard.of(it, false) }
+                    player.cards.map { ReadCard.of(it) }
                 )
             repository.addPlayer(updatedPlayer)
         }

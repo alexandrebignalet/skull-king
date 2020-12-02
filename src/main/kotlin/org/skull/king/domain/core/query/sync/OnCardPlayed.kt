@@ -12,8 +12,7 @@ class OnCardPlayed(private val repository: QueryRepository) : EventCaptor<CardPl
     override fun execute(event: CardPlayed) {
         repository.getGame(event.gameId)?.let { game ->
             repository.getPlayer(game.id, event.playerId)?.let { player ->
-                val indexToRemove = player.cards.indexOfFirst { it.isSameAs(event.card) }
-                val cardsUpdate = player.cards.filterIndexed { index, _ -> index != indexToRemove }
+                val cardsUpdate = player.cards.filterNot { it.isSameAs(event.card) }
                 repository.addPlayer(ReadPlayer(player.id, game.id, cardsUpdate))
             }
 

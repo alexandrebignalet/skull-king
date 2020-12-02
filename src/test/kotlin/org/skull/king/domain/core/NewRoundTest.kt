@@ -85,9 +85,9 @@ class NewRoundTest : LocalBus() {
             val newSecondPlayer = queryBus.send(getNewSecondPlayer)
 
             Assertions.assertThat(newFirstPlayer.cards)
-                .contains(ReadCard.of(ColoredCard(1, CardColor.RED)), ReadCard.of(ColoredCard(2, CardColor.RED)))
+                .contains(ReadCard.of(mockedCard[2]), ReadCard.of(mockedCard[4]))
             Assertions.assertThat(newSecondPlayer.cards)
-                .contains(ReadCard.of(ColoredCard(1, CardColor.BLUE)), ReadCard.of(ColoredCard(2, CardColor.BLUE)))
+                .contains(ReadCard.of(mockedCard[3]), ReadCard.of(mockedCard[5]))
         }
     }
 }
