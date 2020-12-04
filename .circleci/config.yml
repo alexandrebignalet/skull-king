@@ -5,11 +5,7 @@ jobs:
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1"
-    docker:
-      - image: circleci/openjdk:11.0.3-jdk-stretch
-        auth:
-          username: ab64320
-          password: $DOCKERHUB_PASSWORD
+    machine: true
     steps:
       - checkout
       - run:
