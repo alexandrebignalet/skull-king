@@ -7,6 +7,9 @@ buildscript {
     ext.dagger_version = '2.13'
     ext.configPath = "$rootProject.projectDir/src/main/resources/"
     ext.dropwizard_version = '2.0.15'
+    ext.liquibase_version = '3.8.8'
+    ext.test_containers_version = '1.15.0'
+    ext.postgres_driver_version = '42.1.4'
     ext.kotlinx_version = "1.4.1"
     ext.jackson_kotlin = "2.11.3"
     ext.firebase_version = '7.0.1'
@@ -49,6 +52,8 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     implementation "com.google.firebase:firebase-admin:$firebase_version"
+
+    compile files('db/jdbc/postgresql-42.2.18.jar')
 }
 
 compileKotlin {
@@ -76,6 +81,8 @@ test {
 
 dependencies {
     testCompile 'org.assertj:assertj-core:3.11.1'
+    testImplementation("org.liquibase:liquibase-core:$liquibase_version")
+    testImplementation("org.testcontainers:postgresql:$test_containers_version")
 
     testImplementation "io.mockk:mockk:1.10.2"
     testImplementation "org.awaitility:awaitility-kotlin:4.0.3"

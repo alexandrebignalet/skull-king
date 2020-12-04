@@ -1,6 +1,5 @@
 package org.skull.king.web.controller
 
-import io.dropwizard.testing.ConfigOverride
 import io.dropwizard.testing.ResourceHelpers
 import io.dropwizard.testing.junit5.DropwizardAppExtension
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport
@@ -17,43 +16,43 @@ import org.skull.king.domain.supporting.room.GameRoomService
 import org.skull.king.domain.supporting.user.UserService
 import org.skull.king.domain.supporting.user.domain.GameUser
 import org.skull.king.helpers.ApiHelper
-import org.skull.king.helpers.LocalBus
+import org.skull.king.helpers.DockerIntegrationTestUtils
+import org.skull.king.helpers.LocalFirebase
 import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
 import org.skull.king.infrastructure.authentication.User
 import org.skull.king.infrastructure.repository.FirebaseGameRoomRepository
 import org.skull.king.infrastructure.repository.FirebaseUserRepository
+import org.skull.king.utils.JsonObjectMapper
 import org.skull.king.web.controller.dto.CreateGameRoomResponse
 import org.skull.king.web.controller.dto.start.StartResponse
 import java.util.Optional
 import javax.ws.rs.client.Entity
 
 @ExtendWith(DropwizardExtensionsSupport::class)
-class GameRoomResourceTest : LocalBus() {
+class GameRoomResourceTest : DockerIntegrationTestUtils() {
 
     companion object {
+        private val objectMapper = JsonObjectMapper.getObjectMapper()
         private val defaultUser = User("uid", "francis", "uid@example.com")
         private val defaultGameUser = GameUser.from(defaultUser)
 
         @JvmStatic
         @BeforeAll
-        fun beforeAll() {
+        fun mockAuthentication() {
             mockkConstructor(FirebaseAuthenticator::class)
             every { anyConstructed<FirebaseAuthenticator>().authenticate(any()) } returns Optional.of(defaultUser)
         }
     }
 
     private val mockGameLauncher = mockk<GameLauncher>()
-    private val userService = UserService(FirebaseUserRepository(database, objectMapper))
-    private val gameRoomService = GameRoomService(FirebaseGameRoomRepository(database, objectMapper), mockGameLauncher)
+    private val userService = UserService(FirebaseUserRepository(LocalFirebase.database, objectMapper))
+    private val gameRoomService =
+        GameRoomService(FirebaseGameRoomRepository(LocalFirebase.database, objectMapper), mockGameLauncher)
     private val EXTENSION = DropwizardAppExtension(
         SkullKingApplication::class.java,
         ResourceHelpers.resourceFilePath("config.yml"),
         *configOverride()
     )
-
-    private fun configOverride(): Array<ConfigOverride> {
-        return arrayOf()
-    }
 
     val api = ApiHelper(EXTENSION)
 

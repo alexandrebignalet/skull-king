@@ -44,7 +44,7 @@ open class LocalFirebase {
             .setDatabaseUrl(firebaseConfig.databaseURL)
             .build()
 
-        internal val database: FirebaseDatabase =
+        val database: FirebaseDatabase =
             FirebaseApp.initializeApp(options).let { FirebaseDatabase.getInstance() }
     }
 

@@ -13,7 +13,12 @@ class OnPlayerAnnounced(private val repository: QueryRepository) : EventCaptor<P
         repository.getGame(event.gameId)?.let { game ->
             game.scoreBoard.add(PlayerRoundScore(event.playerId, event.roundNb, Score(event.count)))
 
-            val newPhase = if (event.isLast) SkullKingPhase.CARDS else game.phase
+            val roundPlayerAnnouncesCount = game.scoreBoard
+                .filter { it.roundNb == event.roundNb }
+                .count()
+
+            val newPhase = if (game.players.count() == roundPlayerAnnouncesCount) SkullKingPhase.CARDS
+            else SkullKingPhase.ANNOUNCEMENT
 
             repository.addGame(game.copy(phase = newPhase))
         }

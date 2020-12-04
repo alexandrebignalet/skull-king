@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
+import org.skull.king.config.PostgresConfig
 import org.skull.king.domain.core.command.handler.AnnounceHandler
 import org.skull.king.domain.core.command.handler.PlayCardHandler
 import org.skull.king.domain.core.command.handler.SettleFoldHandler
@@ -38,12 +39,18 @@ import org.skull.king.infrastructure.cqrs.saga.Saga
 import org.skull.king.infrastructure.cqrs.saga.SagaHandler
 import org.skull.king.infrastructure.cqrs.saga.SagaMiddleware
 import org.skull.king.infrastructure.event.FirebaseEventStore
+import org.skull.king.infrastructure.event.PostgresEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 import org.skull.king.infrastructure.repository.FirebaseQueryRepository
 import javax.inject.Singleton
 
 @Module
 class CoreModule {
+
+    @Singleton
+    @Provides
+    fun providePostgresEventStore(config: PostgresConfig, objectMapper: ObjectMapper): PostgresEventStore =
+        PostgresEventStore(config, objectMapper)
 
     @Singleton
     @Provides

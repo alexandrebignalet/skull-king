@@ -9,12 +9,17 @@ firebase:
   database_url: http://localhost:9000/?ns=skullking
   service_account:
     type: "service_account"
-    project_id: "skullking-dev"
-    private_key_id: "5555555555555555555555555555555555555555"
-    private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC87tYtPEX398g6\neauVKuPdawiJFyPq2ClFsT83LcDMOTNkgwazHYlBkyBaZU++t8PSa3TWgcHfcP7g\n1ydlFNmUIepnLgBtQ+56FVDlLRQdSsDURALSHIHHlNW7wE3Rn2D4dgogxNx5S+RA\nH351vuiSnh6JwkCnA8Neer0Rv1SiXuQO20c3P2/TjGrxVkP5MONZNhsMrp4MBxIB\n9XI2LBJp8qY+IjXdLuW0CYT6jDu4BK49wpBjb5PWUjkifTvPtNuNWJH8JXyET4h6\nm9C8xBw1qiCuZrnQO87nklLrGzsf38AivaeFlmtQLVDZTTC+JyI5oqETf8GVVzuO\n61OuDKCrAgMBAAECggEAA9lW1nhqNdSQ6RkgQaxwnSig/hZAIavvJ5UMwizztdNB\nkHEbtRmC4CEv6+EgGNcqfnNBTrJ9om06J0GJyIUxfH3x/Y1US/ag7KYNDi4udEGD\nrRfmaK2IIS7TpTRHZddkxvFwJJVK633ztduDunygCYbCuSxn25SEpWcZQcRNW9Rc\nm02X1b+rsLfkq6+HfrKXlgTxe82hqKIgDAZsMcBgTZjEOkRDMx7QFKnWS9J0oBzv\naBUOyEfBWxiqQvWN2MPjQDgLXbHbIe9+L2q4ZlCnyOEGb4dfD1qw8KwEhPfLzUvt\nPfyX1MB25/2+yONsccFBL3dQPfyFV3ziLTGf/A3t0QKBgQDtkVFiOI5otXt/9heN\nih4sX1Pp0N+ahWTwLaneROppDWh0zin4r6Zb9nVjWhaAod3l8guM9KLQOZt98ayH\nWDTLqtMtkL8BwHPQ5ZDBCHDwXiXE3M8c1hvk/aQDrfAz73FRdbY4JK/S4V5RV8YU\nQeMVMryu4bq6yLDh/HCuXDh9EwKBgQDLl4NjHt75apzAHLXQLFSbRhHJzlCuzWBJ\nHsRVLyFwR2jMx5qKob0m0CRkcZG6ivsEVT0NvBvrs6RbkjQ3q+wMLtdiOEPfFe5u\n98uUPeupvSg5Z1P0zwscYxtLLUHJgejTeL2plsL/RanyDVS/VDLRg052bO9ti6HG\nLB1V/M05CQKBgQCi4+jxd+XtVcKAUrSDkBhwREy9HUK0KJK1PBolFQvFTDQ7IsEU\nixt+ItcKcFLNkC8d44CX/YVFULqU+IhbpNdObqqtq3nMMbE3orBGKwuFRIiRGvXH\nx+cIdAFppHH2qk8Ak72FcWI9LdoF3DEs4qBZgJhvMMdgGwttaDG62/C/kQKBgHl8\nkO9d5YoJvz24JBnzygzZ1BWLIoQck38ud9OpCxgX1IaV+TcOanO1snGpf19EPaOJ\nRaRjgnm0ubfW14f89B8U+Htovb9qM9xNy1JLXMvtzwnqCaRExAmNbiT+/YnEFm3S\nV8LR7swrAs0ofVCqaqSw6Oor+PdyYfeCLYM5FjEZAoGAXrD9D3/UbS7q7kIjZ6uq\n+/4e6EvodXtYYguiP5WHTFylGzAb86fpvjup6GExXB5G1ww9Yv+z1JBnYpMSvHWI\nJYUfF8DD0m8DJkhwPLiDGDnr45c92U+U3/ZHLy3EqalAHvLAC+Eo+FgkdE+LSfIz\nve1ipLrpcpONkRjFK6E3szY=\n-----END PRIVATE KEY-----\n"
-    client_email: "skullking@yopmail.com"
-    client_id: "111111111111111111111"
+    project_id: "skull-king"
+    private_key_id: "c63a01891400f42ce946f251299dcd4a2f517c05"
+    private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDONfueoQF49+vM\nE6KymUnfazwna++uvhYi7yWzKIuX1L4UmMMBijzZEXH78Z72L9EzhNFgA+yZFja1\nqzSULwz0dUMXC/VwZaYD6RYb8tUe7SNk7yMrzFp6jw81Y6Y7BvI04BCOzF0U/pow\nX6KOg9Xixer1iK8ys4gGwg6BNzTdt83kB1dneLyypV6yRPAxBbaCOU6dtzoOd4BH\nSusdVECNBckdArvz5Jknvoi+AopluutN7M+pF4lzHq8zngwMvydIz1K8iQVxmwZR\nOCCnaIjkt1ByFK86u2W5PCknhutRtFJW5OyiNi+TH5q2N21fYrSxqkc6b+2CNKHv\nL6BIoL5DAgMBAAECggEAY+STuTLuty6GbAxhBtqqBhB5CfHIIKLVr2OhJCpygQEe\neXTNFpxkQJUqXe2c306nrajcEoKkJT61DwlaRaSLRordjrcM1T9wjjlmK/DVHA+t\nUzJjG875T6CosejNeI+zWjjm3H4UY1y4zdEuOpKT1LCi0wG9OTbuILP1+dOICRUn\n6P3bOREx7+j4ERInBaTfdVqLEwQ2YnO6lxjLZ/Cs/nRJKtuV8UFj2FafR+s8HNHb\nXPZcQy+GVbenxTr3PgA0dY2uG8hNTbKQp3c1ecQ+BfdQfrQgZeffMYkfQNWKHF2r\n85+vw6+9xU5AvuHXbOVQgijdaNhqq8bkKtgzDdxR8QKBgQDuJ1OVQdIY694NMsdH\n4p50cF1IYZ2uCqHG6Se62/2HpV1AFvD6BTBuIPRsxWV1scPCiJAR3bt/kv2+M5pt\nHrBuXgTm6NSMzhvk+UMKIbn11ooWGCIrtXw92a2sIgiEJ9LGSexrO/kH6YDlsgMs\nuPWuHTTY7LAL1DsEorkHkBS/EwKBgQDdqeAgc6nEtiXqvzY+xnKJzEU1/sHpiBTa\nmGXpNGh3ggKRlgwjiS4W3JCHrDLRcZ9J12H2/UNT0i/OioNaWVpBMLvFtmgQS5qo\nGUBuUrz7VzCp0Zo9i0jAK/cI9T9KF0i270eCfz6AfLF5isPjL8zINDVP+H6EheHX\n5CEK1Ct6EQKBgHeP2tCGOPo2AEbUBWQ7i52dg9eA2m6z+8Am8cFIDKJ7DLPOULDU\nxhmkBdJNz8AkvMj/UoUFsso7e5Rvx8mcrKrcHM3oej0uhKaR1WxSvk+Do9Ovzgfv\nly5eCGjwtSHT9GeEWWMEuuOUARhQJHPhb8Y3934oZcGqjO6o2wfG+ANtAoGBALn9\npg/UvShPZfVYx91YihbRjWlG/9JB2q2onipVTSqprhoWesz+d+u62pLcjC9tVSiS\nTqL90xZsEK0PUDPpMW/twkCdUygJKBXQSl3HksaaXDzBoNfvHPYSbc/YaGh0rRDC\nKZB30CvjdM70/nSMURnTpMAbU51C8UNDKe56JJjhAoGBAKP/qyUnBEydo7o4VQ5E\n8tY5b3uihxQS+32/Dk4dUzYj/KpJhaPZcQR22Wfrz3Vmilwj4/pC7cxqVqiMYED1\nl8VtPyVk0TwTlPp2CUxF5cKlJ8KTAv9lSr2BAcqangNFwUhobFy3L7YFSkyiIbW7\nil4UyR0xyX472eIUFJQh8Wrg\n-----END PRIVATE KEY-----\n"
+    client_email: "firebase-adminsdk-iwggw@skull-king.iam.gserviceaccount.com"
+    client_id: "117853751345001448146"
     auth_uri: "https://accounts.google.com/o/oauth2/auth"
     token_uri: "https://oauth2.googleapis.com/token"
     auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs"
-    client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/skullking"
+    client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-iwggw%40skull-king.iam.gserviceaccount.com"
+
+postgres:
+  user: "test"
+  password: "test"
+  url: jdbc:postgresql://localhost:42000/skullking

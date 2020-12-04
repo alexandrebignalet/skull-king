@@ -10,12 +10,18 @@ import org.skull.king.domain.core.command.domain.ScaryMary
 import org.skull.king.domain.core.command.domain.ScaryMaryUsage
 import org.skull.king.domain.core.event.SkullKingEvent
 import org.skull.king.domain.core.event.Started
+import org.skull.king.helpers.DockerIntegrationTestUtils
 import org.skull.king.helpers.LocalFirebase
 import org.skull.king.utils.JsonObjectMapper
 
-class FirebaseEventStoreTest : LocalFirebase() {
+class FirebaseEventStoreTest : DockerIntegrationTestUtils() {
 
-    private val eventStore = FirebaseEventStore(database, JsonObjectMapper.getObjectMapper())
+    private val eventStore = FirebaseEventStore(LocalFirebase.database, JsonObjectMapper.getObjectMapper())
+
+    @Test
+    fun `Should have connect to the db`() {
+        localPostgres.selectOne()
+    }
 
     @Test
     fun `Should store events by gameId`() {

@@ -4,6 +4,8 @@ server:
   applicationConnectors:
     - type: http
       port: 8080
+logging:
+  level: INFO
 
 firebase:
   database_url: http://localhost:9000/?ns=skullking
@@ -18,3 +20,8 @@ firebase:
     token_uri: "https://oauth2.googleapis.com/token"
     auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs"
     client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/skullking"
+
+postgres:
+  user: "test"
+  password: "test"
+  url: jdbc:postgresql://localhost:42000/skullking
