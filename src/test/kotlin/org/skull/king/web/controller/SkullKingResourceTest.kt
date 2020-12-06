@@ -1,6 +1,5 @@
 package org.skull.king.web.controller
 
-import io.dropwizard.testing.ConfigOverride
 import io.dropwizard.testing.ResourceHelpers
 import io.dropwizard.testing.junit5.DropwizardAppExtension
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport
@@ -20,7 +19,7 @@ import org.skull.king.domain.core.command.domain.Deck
 import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.helpers.ApiHelper
-import org.skull.king.helpers.LocalBus
+import org.skull.king.helpers.DockerIntegrationTestUtils
 import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
 import org.skull.king.infrastructure.authentication.User
 import org.skull.king.web.controller.dto.PlayCardRequest
@@ -30,7 +29,7 @@ import java.util.UUID
 import javax.ws.rs.client.Entity
 
 @ExtendWith(DropwizardExtensionsSupport::class)
-class SkullKingResourceTest : LocalBus() {
+class SkullKingResourceTest : DockerIntegrationTestUtils() {
 
     companion object {
 
@@ -38,7 +37,7 @@ class SkullKingResourceTest : LocalBus() {
 
         @JvmStatic
         @BeforeAll
-        fun beforeAll() {
+        fun mockAuthentication() {
             mockkConstructor(FirebaseAuthenticator::class)
             every { anyConstructed<FirebaseAuthenticator>().authenticate(any()) } returns Optional.of(defaultUser)
         }
@@ -61,10 +60,6 @@ class SkullKingResourceTest : LocalBus() {
     fun setUp() {
         mockkConstructor(Deck::class)
         every { anyConstructed<Deck>().pop() } returnsMany (mockedCard)
-    }
-
-    private fun configOverride(): Array<ConfigOverride> {
-        return arrayOf()
     }
 
     val api = ApiHelper(EXTENSION)

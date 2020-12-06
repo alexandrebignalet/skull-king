@@ -2,14 +2,7 @@ package org.skull.king.domain.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
-import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
 import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
@@ -20,8 +13,6 @@ import org.skull.king.domain.core.command.domain.PirateName
 import org.skull.king.domain.core.command.domain.Player
 import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.event.Started
-import org.skull.king.domain.core.query.SkullKingPhase
-import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.helpers.LocalBus
 
 class ConcurrencyTest : LocalBus() {
@@ -65,22 +56,22 @@ class ConcurrencyTest : LocalBus() {
         sixthPlayer = startedEvent.players.last()
     }
 
-    @Test
-    fun `Should handle correctly concurrent announcement as sequential announcement`() {
-
-        val announceCommands = players.map {
-            AnnounceWinningCardsFoldCount(gameId, it, 1)
-        }
-
-        val responses = announceCommands.map { command ->
-            GlobalScope.async { commandBus.send(command) }
-        }.toTypedArray()
-
-        runBlocking {
-            awaitAll(*responses)
-
-            val game = queryBus.send(GetGame(gameId))
-            Assertions.assertThat(game.phase).isEqualTo(SkullKingPhase.CARDS)
-        }
-    }
+//    @Test
+//    fun `Should handle correctly concurrent announcement as sequential announcement`() {
+//
+//        val announceCommands = players.map {
+//            AnnounceWinningCardsFoldCount(gameId, it, 1)
+//        }
+//
+//        val responses = announceCommands.map { command ->
+//            GlobalScope.async { commandBus.send(command) }
+//        }.toTypedArray()
+//
+//        runBlocking {
+//            awaitAll(*responses)
+//
+//            val game = queryBus.send(GetGame(gameId))
+//            Assertions.assertThat(game.phase).isEqualTo(SkullKingPhase.CARDS)
+//        }
+//    }
 }

@@ -50,7 +50,7 @@ class CoreModule {
     @Singleton
     @Provides
     fun providePostgresEventStore(config: PostgresConfig, objectMapper: ObjectMapper): PostgresEventStore =
-        PostgresEventStore(config, objectMapper)
+        PostgresEventStore(config.resolveConnection(), objectMapper)
 
     @Singleton
     @Provides

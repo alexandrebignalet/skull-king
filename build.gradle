@@ -13,6 +13,16 @@ buildscript {
     ext.kotlinx_version = "1.4.1"
     ext.jackson_kotlin = "2.11.3"
     ext.firebase_version = '7.0.1'
+    ext.shadow_version = '6.1.0'
+
+//    ext.db_url = System.getenv("DB_URL")
+//    ext.db_name = System.getenv("DB_NAME")
+//    ext.db_user = System.getenv("DB_USER")
+//    ext.db_password = System.getenv("DB_PASSWORD")
+    ext.db_url = "localhost:5432"
+    ext.db_name = "skullking"
+    ext.db_user = "postgres"
+    ext.db_password = "test"
 
     repositories {
         jcenter()
@@ -24,10 +34,16 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+        classpath "com.github.jengelman.gradle.plugins:shadow:$shadow_version"
+        classpath('org.liquibase:liquibase-gradle-plugin:1.1.1') {
+            exclude(module: 'liquibase-core')
+        }
+        classpath('org.liquibase:liquibase-core:3.4.0')
+        classpath files('db/jdbc/postgresql-42.2.18.jar')
     }
 }
 
+apply plugin: 'org.liquibase.gradle'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -136,5 +152,21 @@ gradle.taskGraph.whenReady { graph ->
 }
 
 task stage {
-    dependsOn build
+    dependsOn {
+        build
+        update // liquibase
+    }
+}
+
+liquibase {
+    activities {
+        main {
+            classpath "$rootDir"
+            changeLogFile "src/main/db/changelog.xml"
+            url "jdbc:postgresql://$db_url/$db_name"
+            username "$db_user"
+            password "$db_password"
+        }
+    }
+    runList = 'main'
 }
