@@ -28,5 +28,5 @@ class ConfigurationModule(
 
     @Provides
     @Singleton
-    fun provideProsgresConfig(): PostgresConfig = configuration.postgres
+    fun providePostgresConfig(): PostgresConfig = configuration.postgres
 }
