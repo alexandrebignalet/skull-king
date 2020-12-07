@@ -144,7 +144,11 @@ data class ReadySkullKing(
 }
 
 
-data class NewRound(val gameId: String, val players: List<Player>, val roundNb: Int) : SkullKing(gameId) {
+data class NewRound(
+    val gameId: String,
+    val players: List<Player>,
+    val roundNb: Int
+) : SkullKing(gameId) {
 
     override fun compose(e: SkullKingEvent) = when (e) {
         is PlayerAnnounced -> {

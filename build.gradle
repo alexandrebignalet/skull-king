@@ -7,22 +7,45 @@ buildscript {
     ext.dagger_version = '2.13'
     ext.configPath = "$rootProject.projectDir/src/main/resources/"
     ext.dropwizard_version = '2.0.15'
+    ext.liquibase_version = '3.8.8'
+    ext.test_containers_version = '1.15.0'
+    ext.postgres_driver_version = '42.1.4'
     ext.kotlinx_version = "1.4.1"
     ext.jackson_kotlin = "2.11.3"
     ext.firebase_version = '7.0.1'
+    ext.shadow_version = '6.1.0'
+
+    ext.connectionMap = {
+        def connection = new HashMap<String, String>()
+        if (System.getenv("ENVIRONMENT") != "production") return connection
+
+        def uri = URI.create(System.getenv("HEROKU_POSTGRESQL_OLIVE_URL"))
+        connection.put("user", uri.userInfo.split(":")[0])
+        connection.put("password", uri.userInfo.split(":")[1])
+        connection.put("url", "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}?sslmode=require")
+        return connection
+    }
 
     repositories {
         jcenter()
         mavenCentral()
-    }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
 
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
+        dependencies {
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+            classpath "com.github.jengelman.gradle.plugins:shadow:$shadow_version"
+            classpath('org.liquibase:liquibase-gradle-plugin:1.1.1') {
+                exclude(module: 'liquibase-core')
+            }
+            classpath('org.liquibase:liquibase-core:3.4.0')
+            classpath files('db/jdbc/postgresql-42.2.18.jar')
+        }
     }
 }
 
-
+apply plugin: 'org.liquibase.gradle'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -49,6 +72,8 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     implementation "com.google.firebase:firebase-admin:$firebase_version"
+
+    compile files('db/jdbc/postgresql-42.2.18.jar')
 }
 
 compileKotlin {
@@ -76,6 +101,8 @@ test {
 
 dependencies {
     testCompile 'org.assertj:assertj-core:3.11.1'
+    testImplementation("org.liquibase:liquibase-core:$liquibase_version")
+    testImplementation("org.testcontainers:postgresql:$test_containers_version")
 
     testImplementation "io.mockk:mockk:1.10.2"
     testImplementation "org.awaitility:awaitility-kotlin:4.0.3"
@@ -127,5 +154,22 @@ gradle.taskGraph.whenReady { graph ->
 }
 
 task stage {
-    dependsOn build
+    dependsOn {
+        build
+        update // liquibase
+    }
+}
+
+def connection = ext.connectionMap()
+liquibase {
+    activities {
+        main {
+            classpath "$rootDir"
+            changeLogFile "src/main/db/changelog.xml"
+            url connection.get("url")
+            username connection.get("user")
+            password connection.get("password")
+        }
+    }
+    runList = 'main'
 }

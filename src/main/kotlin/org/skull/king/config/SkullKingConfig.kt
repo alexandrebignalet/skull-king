@@ -10,4 +10,7 @@ class SkullKingConfig : Configuration() {
 
     @JsonProperty("firebase")
     lateinit var firebase: FirebaseConfig
+
+    @JsonProperty("postgres")
+    lateinit var postgres: PostgresConfig
 }

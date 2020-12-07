@@ -22,7 +22,6 @@ import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.from
 import org.skull.king.domain.core.query.handler.GetGame
-import org.skull.king.domain.core.query.handler.GetPlayer
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
 import java.time.Duration
@@ -164,7 +163,6 @@ class ScoreBonusTest : LocalBus() {
         await atMost Duration.ofSeconds(5) untilAsserted {
             val game = queryBus.send(GetGame(gameId))
 
-            val secondFoldWinner = queryBus.send(GetPlayer(gameId, newThirdPlayer))
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureWinnerAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(2)

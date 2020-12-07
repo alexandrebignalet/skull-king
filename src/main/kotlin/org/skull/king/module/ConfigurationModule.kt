@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import dagger.Module
 import dagger.Provides
 import org.skull.king.config.FirebaseConfig
+import org.skull.king.config.PostgresConfig
 import org.skull.king.config.SkullKingConfig
 import javax.inject.Singleton
 
 @Module
-class ConfigurationModule(private val configuration: SkullKingConfig, private val objectMapper: ObjectMapper) {
+class ConfigurationModule(
+    private val configuration: SkullKingConfig,
+    private val objectMapper: ObjectMapper
+) {
 
     @Provides
     @Singleton
@@ -21,4 +25,8 @@ class ConfigurationModule(private val configuration: SkullKingConfig, private va
     @Provides
     @Singleton
     fun provideObjectMapper(): ObjectMapper = objectMapper
+
+    @Provides
+    @Singleton
+    fun providePostgresConfig(): PostgresConfig = configuration.postgres
 }
