@@ -17,27 +17,27 @@ services:
       - '5432:5432'
     expose:
       - '5432'
-
-  liquibase:
-    image: liquibase/liquibase
-    volumes:
-      - ./db:/liquibase/db
-    networks:
-      - pg_net
-    depends_on:
-      postgres:
-        condition: service_healthy
-    container_name: liquibase
-    command: [
-      "--driver=org.postgresql.Driver",
-      "--classpath=db/jdbc/postgresql-42.2.18.jar",
-      "--url=jdbc:postgresql://postgres:5432/skullking",
-      "--changeLogFile=db/changelog.xml",
-      "--username=postgres",
-      "--password=test",
-      "--logLevel=DEBUG",
-      "update"
-    ]
+#
+#  liquibase:
+#    image: liquibase/liquibase
+#    volumes:
+#      - ./db:/liquibase/db
+#    networks:
+#      - pg_net
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    container_name: liquibase
+#    command: [
+#      "--driver=org.postgresql.Driver",
+#      "--classpath=db/jdbc/postgresql-42.2.18.jar",
+#      "--url=jdbc:postgresql://postgres:5432/skullking",
+#      "--changeLogFile=db/changelog.xml",
+#      "--username=postgres",
+#      "--password=test",
+#      "--logLevel=DEBUG",
+#      "update"
+#    ]
 
 networks:
   pg_net:
