@@ -22,7 +22,6 @@ import org.skull.king.helpers.ApiHelper
 import org.skull.king.helpers.DockerIntegrationTestUtils
 import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
 import org.skull.king.infrastructure.authentication.User
-import org.skull.king.web.controller.dto.PlayCardRequest
 import org.skull.king.web.controller.dto.start.StartResponse
 import java.util.Optional
 import java.util.UUID
@@ -157,7 +156,6 @@ class SkullKingResourceTest : DockerIntegrationTestUtils() {
                 "id": "${mockedCard.first().id}"
             }    
         }""".trimIndent()
-        val s = EXTENSION.objectMapper.writeValueAsString(PlayCardRequest(mockedCard.first()))
         val commandResponse = EXTENSION.client()
             .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/1/play")
             .request()
