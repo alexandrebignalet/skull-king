@@ -20,6 +20,7 @@ class InvokeCommandHandlerMiddleware(handlers: Set<CommandHandler<*, *>>) : Comm
     private val handlersMap: Map<Class<out Command<*>>, CommandHandler<*, *>> =
         handlers.associateBy { it.commandType() }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T> intercept(
         bus: CommandBus,
         message: Command<T>,

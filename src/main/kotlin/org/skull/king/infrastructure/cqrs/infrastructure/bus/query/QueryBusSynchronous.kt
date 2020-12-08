@@ -35,6 +35,7 @@ class QueryBusSynchronous(middlewares: Set<QueryMiddleware>, handlers: Set<Query
 
     private class HandlerInvokation(private val handlers: List<QueryHandler<*, *>>) : Chain(null, null) {
 
+        @Suppress("UNCHECKED_CAST")
         override fun <T> apply(command: Query<T>): T {
             return handlers
                 .filter { h -> h.queryType() == command.javaClass }

@@ -12,6 +12,7 @@ class SagaMiddleware(handlers: Set<SagaHandler<*, Saga<*>>>) : CommandMiddleware
     private val handlersMap: Map<Class<out Command<*>>, SagaHandler<*, Saga<*>>> =
         handlers.associateBy { it.sagaType() }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T> intercept(
         bus: CommandBus,
         message: Command<T>,

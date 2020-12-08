@@ -35,6 +35,8 @@ class EventBusSynchronous(middlewares: Set<EventBusMiddleware>, captors: Set<Eve
     }
 
     private class CaptorInvokation(private val captors: List<EventCaptor<*>>) : Chain(null, null) {
+
+        @Suppress("UNCHECKED_CAST")
         override fun apply(event: Event): Boolean {
             return captors
                 .filter { c -> c.eventType() == event.javaClass }

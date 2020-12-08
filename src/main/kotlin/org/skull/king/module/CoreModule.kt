@@ -79,6 +79,7 @@ class CoreModule {
 
     @Singleton
     @Provides
+    @Suppress("UNCHECKED_CAST")
     fun provideCommandMiddlewares(
         eventStore: EventStore,
         eventBus: EventBus,
@@ -98,6 +99,7 @@ class CoreModule {
 
     @Singleton
     @Provides
+    @Suppress("UNCHECKED_CAST")
     fun provideEventBus(
         middlewares: Set<@JvmSuppressWildcards EventBusMiddleware>,
         eventCaptors: Set<@JvmSuppressWildcards EventCaptor<*>>

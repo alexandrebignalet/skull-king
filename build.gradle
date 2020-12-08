@@ -4,6 +4,7 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.4.10'
+    ext.kotlin_reflect_version = '1.4.0'
     ext.dagger_version = '2.13'
     ext.configPath = "$rootProject.projectDir/src/main/resources/"
     ext.dropwizard_version = '2.0.15'
@@ -13,7 +14,7 @@ buildscript {
     ext.kotlinx_version = "1.4.1"
     ext.jackson_kotlin = "2.11.3"
     ext.firebase_version = '7.0.1'
-    ext.shadow_version = '6.1.0'
+    ext.shadow_version = '4.0.3'
 
     ext.connectionMap = {
         def connection = new HashMap<String, String>()
@@ -61,6 +62,7 @@ repositories {
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_reflect_version"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_version"
 
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin"
@@ -68,12 +70,12 @@ dependencies {
     compile "io.dropwizard:dropwizard-core:$dropwizard_version"
     compile "io.dropwizard:dropwizard-auth:$dropwizard_version"
 
+    compile files('db/jdbc/postgresql-42.2.18.jar')
+
     api "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     implementation "com.google.firebase:firebase-admin:$firebase_version"
-
-    compile files('db/jdbc/postgresql-42.2.18.jar')
 }
 
 compileKotlin {
