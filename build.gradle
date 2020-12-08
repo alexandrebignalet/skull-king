@@ -70,7 +70,7 @@ dependencies {
     compile "io.dropwizard:dropwizard-core:$dropwizard_version"
     compile "io.dropwizard:dropwizard-auth:$dropwizard_version"
 
-    compile files('db/jdbc/postgresql-42.2.18.jar')
+    compile files("db/jdbc/postgresql-42.2.18.jar")
 
     api "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
@@ -162,7 +162,7 @@ liquibase {
     activities {
         main {
             classpath "$rootDir"
-            changeLogFile "src/main/db/changelog.xml"
+            changeLogFile "db/changelog.xml"
             url connection.get("url")
             username connection.get("user")
             password connection.get("password")
