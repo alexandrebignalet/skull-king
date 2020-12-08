@@ -150,6 +150,7 @@ data class NewRound(
     val roundNb: Int
 ) : SkullKing(gameId) {
 
+    @Suppress("UNCHECKED_CAST")
     override fun compose(e: SkullKingEvent) = when (e) {
         is PlayerAnnounced -> {
             val updatedPlayers = players.map {
