@@ -71,6 +71,7 @@ open class LocalBus : LocalFirebase() {
             setOf(GetGameHandler(queryRepository), GetPlayerHandler(queryRepository))
         )
 
+        @Suppress("UNCHECKED_CAST")
         val eventBus: EventBus = EventBusSynchronous(
             setOf(),
             setOf(
@@ -83,6 +84,7 @@ open class LocalBus : LocalFirebase() {
             ) as Set<EventCaptor<Event>>
         )
 
+        @Suppress("UNCHECKED_CAST")
         val commandBus: CommandBus = CommandBusSynchronous(
             setOf(
                 EventStoreMiddleware(eventStore),

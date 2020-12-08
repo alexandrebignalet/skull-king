@@ -297,7 +297,6 @@ class BasePlayCardTest : LocalBus() {
                 Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.bonus).isEqualTo(50)
                 Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.potentialBonus).isEqualTo(50)
 
-                val getSecondPlayer = GetPlayer(gameId, secondPlayer.id)
                 Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.announced)
                     .isEqualTo(futureLoserAnnounce)
                 Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.done).isEqualTo(0)
