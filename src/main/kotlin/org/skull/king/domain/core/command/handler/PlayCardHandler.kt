@@ -38,10 +38,11 @@ class PlayCardHandler(private val repository: SkullkingEventSourcedRepository) :
                 !game.isPlayerTurn(command.playerId) -> throw NotYourTurnError(command)
                 game.doesPlayerHaveCard(command.playerId, command.card) -> {
                     val cardPlayed = CardPlayed(
-                        game.getId(),
-                        command.playerId,
-                        command.card,
-                        game.isLastFoldPlay()
+                        gameId = game.getId(),
+                        playerId = command.playerId,
+                        card = command.card,
+                        isLastFoldPlay = game.isLastFoldPlay(),
+                        version = game.version
                     )
 
                     when {

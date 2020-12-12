@@ -19,7 +19,7 @@ class EventDispatcherMiddleware(private val eventBus: EventBus) : CommandMiddlew
         message: Command<T>,
         next: Supplier<Pair<T, Sequence<Event>>>
     ) = next.get().let {
-        LOGGER.info("Dispatching ${it.second.toList()}")
+        LOGGER.debug("Dispatching ${it.second.toList()}")
         eventBus.publish(it.second)
         it
     }

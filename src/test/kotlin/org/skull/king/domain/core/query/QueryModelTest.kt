@@ -13,6 +13,7 @@ import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.handler.GetGame
+import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSaga
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
 
@@ -56,7 +57,7 @@ class QueryModelTest : LocalBus() {
             val started = commandBus.send(StartSkullKing(gameId, players)).second.single() as Started
 
             started.players.forEach {
-                commandBus.send(AnnounceWinningCardsFoldCount(gameId, it.id, 0))
+                commandBus.send(AnnounceWinningCardsFoldCountSaga(gameId, it.id, 0))
             }
 
             commandBus.send(PlayCardSaga(gameId, started.players.first().id, mockedCard.first()))

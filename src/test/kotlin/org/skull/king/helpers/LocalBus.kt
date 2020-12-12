@@ -13,6 +13,7 @@ import org.skull.king.domain.core.query.sync.OnGameFinished
 import org.skull.king.domain.core.query.sync.OnGameStarted
 import org.skull.king.domain.core.query.sync.OnNewRoundStarted
 import org.skull.king.domain.core.query.sync.OnPlayerAnnounced
+import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSagaHandler
 import org.skull.king.domain.core.saga.PlayCardSagaHandler
 import org.skull.king.infrastructure.cqrs.command.Command
 import org.skull.king.infrastructure.cqrs.command.CommandBus
@@ -30,32 +31,24 @@ import org.skull.king.infrastructure.cqrs.query.QueryBus
 import org.skull.king.infrastructure.cqrs.saga.Saga
 import org.skull.king.infrastructure.cqrs.saga.SagaHandler
 import org.skull.king.infrastructure.cqrs.saga.SagaMiddleware
-import org.skull.king.infrastructure.event.EventStoreInMemory
-import org.skull.king.infrastructure.event.FirebaseEventStore
+import org.skull.king.infrastructure.event.PostgresEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 import org.skull.king.infrastructure.repository.FirebaseQueryRepository
-import org.skull.king.infrastructure.repository.QueryRepositoryInMemory
 import org.skull.king.utils.JsonObjectMapper
 import org.slf4j.LoggerFactory
 import java.util.function.Supplier
 
-open class LocalBus : LocalFirebase() {
+open class LocalBus : DockerIntegrationTestUtils() {
 
     companion object {
         private val mapper = JsonObjectMapper.getObjectMapper()
     }
 
-    private val eventStoreInMemory = EventStoreInMemory()
-    private val firebaseEventStore = FirebaseEventStore(database, mapper)
-    private val inMemoryBuses = Builder(
-        eventStoreInMemory,
-        SkullkingEventSourcedRepository(eventStoreInMemory),
-        QueryRepositoryInMemory()
-    )
+    val postgresEventStore = PostgresEventStore(localPostgres.connection, mapper)
     val firebaseBuses = Builder(
-        firebaseEventStore,
-        SkullkingEventSourcedRepository(firebaseEventStore),
-        FirebaseQueryRepository(database, mapper)
+        postgresEventStore,
+        SkullkingEventSourcedRepository(postgresEventStore),
+        FirebaseQueryRepository(LocalFirebase.database, mapper)
     )
 
     val queryBus = firebaseBuses.queryBus
@@ -91,7 +84,10 @@ open class LocalBus : LocalFirebase() {
                 EventDispatcherMiddleware(eventBus),
                 BusContextLoggerMiddleware(),
                 SagaMiddleware(
-                    setOf(PlayCardSagaHandler(eventSourcedRepository)) as Set<SagaHandler<*, Saga<*>>>
+                    setOf(
+                        PlayCardSagaHandler(),
+                        AnnounceWinningCardsFoldCountSagaHandler()
+                    ) as Set<SagaHandler<*, Saga<*>>>
                 )
             ),
             setOf(
@@ -122,7 +118,7 @@ open class LocalBus : LocalFirebase() {
             }.onFailure {
                 LOGGER.info("Failed to process $message : $it")
                 throw it
-            }.onSuccess { LOGGER.info("Processed $message: ${response?.second}") }
+            }.onSuccess { LOGGER.info("Processed $message: ${response?.second?.toList()}") }
 
             return requireNotNull(response)
         }

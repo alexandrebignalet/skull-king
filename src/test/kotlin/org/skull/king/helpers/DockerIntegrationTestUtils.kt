@@ -42,15 +42,11 @@ abstract class DockerIntegrationTestUtils {
             postgresContainer.stop()
         }
 
-        fun configOverride(): Array<ConfigOverride> {
-            val port = postgresContainer.getMappedPort(5432)
-            return arrayOf(
-                ConfigOverride.config(
-                    "postgres.jdbcUrl",
-                    "postgresql://$DATABASE_USER:$DATABASE_PASSWORD@${postgresContainer.host}:$port/$DATABASE_NAME"
-                )
-            )
+        fun jdbcUrl() = postgresContainer.getMappedPort(5432).let { port ->
+            "postgresql://$DATABASE_USER:$DATABASE_PASSWORD@${postgresContainer.host}:$port/$DATABASE_NAME"
         }
+
+        fun configOverride() = arrayOf(ConfigOverride.config("postgres.jdbcUrl", jdbcUrl()))
     }
 
     @AfterEach

@@ -14,7 +14,7 @@ import org.skull.king.domain.core.query.from
 import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.helpers.LocalBus
 
-class AnnounceWinningCardsFoldCountTest : LocalBus() {
+class AnnounceWinningCardsFoldCountSagaTest : LocalBus() {
 
     @Test
     fun `Should return an error if gameId not started`() {

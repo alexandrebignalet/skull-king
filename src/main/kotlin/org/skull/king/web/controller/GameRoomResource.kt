@@ -27,7 +27,6 @@ class GameRoomResource @Inject constructor(
 
     @POST
     fun createRoom(@Auth creator: User): Response {
-        pg.save(sequenceOf())
         val gameRoomId = service.create(GameUser.from(creator))
         return Response.ok(CreateGameRoomResponse(gameRoomId)).build()
     }

@@ -6,13 +6,21 @@ import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.FileSystemResourceAccessor
+import org.skull.king.config.PostgresConfig
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.sql.DriverManager
 
-class LocalPostgresHelper(private val jdbcUrl: String) {
+class LocalPostgresHelper(jdbcUrl: String) {
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(LocalPostgresHelper::class.java)
+    }
+
+    val connection = PostgresConfig.Connection("test", "test", jdbcUrl)
 
     fun createTables() {
-        DriverManager.getConnection(jdbcUrl, "test", "test").use { connection ->
+        DriverManager.getConnection(connection.url, connection.user, connection.password).use { connection ->
             val liquibase = Liquibase(
                 "db/changelog.xml",
                 FileSystemResourceAccessor(),
@@ -24,23 +32,11 @@ class LocalPostgresHelper(private val jdbcUrl: String) {
     }
 
     fun flushTables() {
-        DriverManager.getConnection(jdbcUrl, "test", "test").use { connection ->
+        DriverManager.getConnection(connection.url, connection.user, connection.password).use { connection ->
             val initTableSql = File(ResourceHelpers.resourceFilePath("db/flush_tables.sql")).readText()
             connection
                 .createStatement()
                 .execute(initTableSql)
-        }
-    }
-
-    fun selectOne() {
-        DriverManager.getConnection(jdbcUrl, "test", "test").use { connection ->
-            val query = "SELECT * FROM EVENTS"
-
-            val res = connection
-                .createStatement()
-                .execute(query)
-
-            print(res)
         }
     }
 }
