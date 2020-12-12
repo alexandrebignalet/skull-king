@@ -4,12 +4,13 @@ import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSagaHandler
 import org.skull.king.infrastructure.cqrs.saga.Saga
 import org.skull.king.infrastructure.cqrs.saga.SagaHandler
 import org.skull.king.infrastructure.event.ConcurrentEventsException
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 abstract class RetryableSagaHandler<TResult, TSaga : Saga<TResult>> : SagaHandler<TResult, TSaga> {
 
     companion object {
-        val LOGGER = LoggerFactory.getLogger(AnnounceWinningCardsFoldCountSagaHandler::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(AnnounceWinningCardsFoldCountSagaHandler::class.java)
         private const val timeout: Long = 10
         private const val maxRetries: Long = 10
     }

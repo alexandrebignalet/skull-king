@@ -122,8 +122,8 @@ class ConcurrencyTest : LocalBus() {
         try {
             block()
         } catch (e: Exception) {
-            if (retry > 5) throw e
-            Thread.sleep(100)
+            if (retry > 10) throw e
+            Thread.sleep(50)
             retry(retry + 1, block)
         }
     }
