@@ -19,14 +19,14 @@ class SettleFoldHandler(private val repository: SkullkingEventSourcedRepository)
             is ReadySkullKing -> when {
                 game.isFoldComplete() -> {
                     val (winner, potentialBonus) = settleFoldWinner(game.currentFold)
-                    val events = sequenceOf(FoldWinnerSettled(game.getId(), winner, potentialBonus))
+                    val events = sequenceOf(FoldWinnerSettled(game.getId(), winner, potentialBonus, game.version))
 
                     when {
                         game.isNextFoldLastFoldOfRound() -> {
                             val nextRoundNb = game.roundNb + 1
 
                             when {
-                                game.isOver() -> Pair(game.getId(), events + GameFinished(game.getId()))
+                                game.isOver() -> Pair(game.getId(), events + GameFinished(game.getId(), game.version))
                                 else -> Pair(
                                     game.getId(),
                                     events + NewRoundStarted(
@@ -35,7 +35,8 @@ class SettleFoldHandler(private val repository: SkullkingEventSourcedRepository)
                                         game.distributeCards(
                                             game.players.map { it.id },
                                             nextRoundNb
-                                        )
+                                        ),
+                                        game.version
                                     )
                                 )
                             }

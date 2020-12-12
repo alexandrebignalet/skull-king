@@ -36,7 +36,7 @@ sealed class SkullKing(private val id: String) : AggregateRoot<String, SkullKing
 
     override fun getId(): String = id
 
-    abstract override fun compose(e: SkullKingEvent): SkullKing
+    abstract override fun compose(e: SkullKingEvent, version: Int): SkullKing
 
     open fun nextFirstPlayerIndex() = 0
 
@@ -61,14 +61,14 @@ sealed class SkullKing(private val id: String) : AggregateRoot<String, SkullKing
 }
 
 object emptySkullKing : SkullKing("") {
-    override fun compose(e: SkullKingEvent) = when (e) {
-        is Started -> NewRound(e.gameId, e.players, FIRST_ROUND_NB)
+    override fun compose(e: SkullKingEvent, version: Int): SkullKing = when (e) {
+        is Started -> NewRound(e.gameId, e.players, FIRST_ROUND_NB, version)
         else -> this
     }
 }
 
 object skullKingOver : SkullKing("") {
-    override fun compose(e: SkullKingEvent) = this
+    override fun compose(e: SkullKingEvent, version: Int): SkullKing = this
 }
 
 data class ReadySkullKing(
@@ -77,26 +77,29 @@ data class ReadySkullKing(
     val roundNb: Int,
     val currentFold: Map<PlayerId, Card> = mapOf(),
     val foldPlayedNb: Int = 0,
-    val firstPlayerIndex: Int
+    val firstPlayerIndex: Int,
+    val version: Int
 ) : SkullKing(gameId) {
 
-    override fun compose(e: SkullKingEvent) = when (e) {
+    override fun compose(e: SkullKingEvent, version: Int): SkullKing = when (e) {
         is CardPlayed -> ReadySkullKing(
             gameId,
             removeCardFromPlayerHand(e),
             roundNb,
             addCardInFold(e),
             foldPlayedNb,
-            firstPlayerIndex
+            firstPlayerIndex,
+            version
         )
         is FoldWinnerSettled -> ReadySkullKing(
             gameId,
             setWinnerFirst(e.winner),
             roundNb,
             foldPlayedNb = foldPlayedNb + 1,
-            firstPlayerIndex = firstPlayerIndex
+            firstPlayerIndex = firstPlayerIndex,
+            version = version
         )
-        is NewRoundStarted -> NewRound(gameId, e.players, roundNb + 1)
+        is NewRoundStarted -> NewRound(gameId, e.players, roundNb + 1, version)
         is GameFinished -> skullKingOver
         else -> this
     }
@@ -147,11 +150,12 @@ data class ReadySkullKing(
 data class NewRound(
     val gameId: String,
     val players: List<Player>,
-    val roundNb: Int
+    val roundNb: Int,
+    val version: Int
 ) : SkullKing(gameId) {
 
     @Suppress("UNCHECKED_CAST")
-    override fun compose(e: SkullKingEvent) = when (e) {
+    override fun compose(e: SkullKingEvent, version: Int): SkullKing = when (e) {
         is PlayerAnnounced -> {
             val updatedPlayers = players.map {
                 if (it.id == e.playerId) ReadyPlayer(it.id, gameId, (it as NewPlayer).cards, e.count)
@@ -163,9 +167,10 @@ data class NewRound(
                 gameId,
                 updatedPlayers as List<ReadyPlayer>,
                 roundNb,
-                firstPlayerIndex = 0
+                firstPlayerIndex = 0,
+                version = version
             )
-            else NewRound(gameId, updatedPlayers, roundNb)
+            else NewRound(gameId, updatedPlayers, roundNb, version)
         }
         else -> this
     }

@@ -4,22 +4,22 @@
 -- version is here used as optimistic locker
 CREATE TABLE IF NOT EXISTS STREAMS
 (
-    stream_id uuid NOT NULL,
+    uuid VARCHAR(50) NOT NULL,
     version int NOT NULL,
-    PRIMARY KEY (stream_id)
+    PRIMARY KEY (uuid)
 );
 
 CREATE TABLE IF NOT EXISTS EVENTS
 (
     sequence_num BIGSERIAL NOT NULL,
-    stream_id UUID NOT NULL,
+    stream_id VARCHAR(50) NOT NULL,
     version INT NOT NULL,
-    data JSONB NOT NULL,
+    data JSON NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (sequence_num),
     UNIQUE (stream_id, version),
     FOREIGN KEY (stream_id)
-        REFERENCES STREAMS (stream_id)
+        REFERENCES STREAMS (uuid)
 );
 
 --rollback DROP TABLE EVENTS;

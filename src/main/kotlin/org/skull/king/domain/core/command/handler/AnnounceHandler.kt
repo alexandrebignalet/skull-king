@@ -33,7 +33,8 @@ class AnnounceHandler(private val repository: SkullkingEventSourcedRepository) :
                             command.playerId,
                             command.count,
                             game.roundNb,
-                            game.isMissingOneLastAnnounce()
+                            game.isMissingOneLastAnnounce(),
+                            game.version
                         )
                     )
                 )

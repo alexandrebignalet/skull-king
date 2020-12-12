@@ -38,7 +38,6 @@ import org.skull.king.infrastructure.cqrs.query.QueryMiddleware
 import org.skull.king.infrastructure.cqrs.saga.Saga
 import org.skull.king.infrastructure.cqrs.saga.SagaHandler
 import org.skull.king.infrastructure.cqrs.saga.SagaMiddleware
-import org.skull.king.infrastructure.event.FirebaseEventStore
 import org.skull.king.infrastructure.event.PostgresEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 import org.skull.king.infrastructure.repository.FirebaseQueryRepository
@@ -54,8 +53,8 @@ class CoreModule {
 
     @Singleton
     @Provides
-    fun provideEventStore(database: FirebaseDatabase, objectMapper: ObjectMapper): EventStore =
-        FirebaseEventStore(database, objectMapper)
+    fun provideEventStore(config: PostgresConfig, objectMapper: ObjectMapper): EventStore =
+        PostgresEventStore(config.resolveConnection(), objectMapper)
 
     @Singleton
     @Provides
@@ -73,9 +72,7 @@ class CoreModule {
 
     @Provides
     @Singleton
-    fun provideSagaHandler(repository: SkullkingEventSourcedRepository): Set<SagaHandler<*, *>> = setOf(
-        PlayCardSagaHandler(repository)
-    )
+    fun provideSagaHandler(): Set<SagaHandler<*, *>> = setOf(PlayCardSagaHandler())
 
     @Singleton
     @Provides
@@ -85,9 +82,9 @@ class CoreModule {
         eventBus: EventBus,
         sagaHandlers: Set<@JvmSuppressWildcards SagaHandler<*, *>>
     ): Set<CommandMiddleware> = setOf(
+        SagaMiddleware(sagaHandlers as Set<SagaHandler<*, Saga<*>>>),
         EventStoreMiddleware(eventStore),
         EventDispatcherMiddleware(eventBus),
-        SagaMiddleware(sagaHandlers as Set<SagaHandler<*, Saga<*>>>)
     )
 
     @Singleton

@@ -26,7 +26,7 @@ import java.time.Instant
 open class SkullKingEvent(
     override val aggregateId: String,
     override val type: String,
-    override val version: Int = 1,
+    override val version: Int = 0,
     override val aggregateType: String = SKULLKING_AGGREGATE_TYPE,
     override val timestamp: Long = Instant.now().toEpochMilli()
 ) : Event {
@@ -72,7 +72,8 @@ data class PlayerAnnounced(
     val playerId: String,
     val count: Int,
     val roundNb: Int,
-    val isLast: Boolean
+    val isLast: Boolean,
+    override val version: Int = 1
 ) : SkullKingEvent(gameId, EVENT_TYPE) {
     companion object {
         const val EVENT_TYPE = "player_announced"
@@ -83,7 +84,8 @@ data class CardPlayed(
     val gameId: String,
     val playerId: String,
     val card: Card,
-    val isLastFoldPlay: Boolean = false
+    val isLastFoldPlay: Boolean = false,
+    override val version: Int
 ) : SkullKingEvent(gameId, EVENT_TYPE) {
     companion object {
         const val EVENT_TYPE = "card_played"
@@ -93,7 +95,8 @@ data class CardPlayed(
 data class FoldWinnerSettled(
     val gameId: String,
     val winner: PlayerId,
-    val potentialBonus: Int
+    val potentialBonus: Int,
+    override val version: Int
 ) :
     SkullKingEvent(gameId, EVENT_TYPE) {
     companion object {
@@ -104,7 +107,8 @@ data class FoldWinnerSettled(
 data class NewRoundStarted(
     val gameId: String,
     val nextRoundNb: Int,
-    val players: List<NewPlayer>
+    val players: List<NewPlayer>,
+    override val version: Int
 ) :
     SkullKingEvent(gameId, EVENT_TYPE) {
     companion object {
@@ -112,7 +116,7 @@ data class NewRoundStarted(
     }
 }
 
-data class GameFinished(val gameId: String) : SkullKingEvent(gameId, EVENT_TYPE) {
+data class GameFinished(val gameId: String, override val version: Int) : SkullKingEvent(gameId, EVENT_TYPE) {
     companion object {
         const val EVENT_TYPE = "game_finished"
     }
