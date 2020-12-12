@@ -10,8 +10,8 @@ abstract class RetryableSagaHandler<TResult, TSaga : Saga<TResult>> : SagaHandle
 
     companion object {
         val LOGGER = LoggerFactory.getLogger(AnnounceWinningCardsFoldCountSagaHandler::class.java)
-        private const val timeout: Long = 100
-        private const val maxRetries: Long = 5
+        private const val timeout: Long = 10
+        private const val maxRetries: Long = 10
     }
 
     protected fun <T> exponentialBackoff(retry: Int = 1, block: () -> T): T {

@@ -15,9 +15,11 @@ import org.skull.king.domain.core.command.domain.PirateName
 import org.skull.king.domain.core.command.domain.Player
 import org.skull.king.domain.core.command.domain.SkullKingCard
 import org.skull.king.domain.core.event.Started
+import org.skull.king.domain.core.query.Score
 import org.skull.king.domain.core.query.SkullKingPhase
 import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSaga
+import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
 import kotlin.concurrent.thread
 
@@ -45,6 +47,7 @@ class ConcurrencyTest : LocalBus() {
     private lateinit var forthPlayer: Player
     private lateinit var fifthPlayer: Player
     private lateinit var sixthPlayer: Player
+    private lateinit var orderedPlayers: List<Player>
 
     @BeforeEach
     fun setUp() {
@@ -65,7 +68,6 @@ class ConcurrencyTest : LocalBus() {
         fifthPlayer = startedEvent.players[4]
         sixthPlayer = startedEvent.players.last()
 
-
         val announceCommands = players.map {
             AnnounceWinningCardsFoldCountSaga(gameId, it, 1)
         }
@@ -80,4 +82,49 @@ class ConcurrencyTest : LocalBus() {
         Assertions.assertThat(game.phase).isEqualTo(SkullKingPhase.CARDS)
     }
 
+    @RepeatedTest(10)
+    fun `Should handle correctly concurrent card play as sequential announcement`() {
+        val gameId = "gameId"
+        val start = StartSkullKing(gameId, players)
+        val startedEvent = commandBus.send(start).second.single() as Started
+
+        firstPlayer = startedEvent.players.first()
+        secondPlayer = startedEvent.players[1]
+        thirdPlayer = startedEvent.players[2]
+        forthPlayer = startedEvent.players[3]
+        fifthPlayer = startedEvent.players[4]
+        sixthPlayer = startedEvent.players.last()
+
+        startedEvent.players.forEach {
+            commandBus.send(AnnounceWinningCardsFoldCountSaga(gameId, it.id, 1))
+        }
+
+        val commands = players.mapIndexed { index, playerId ->
+            PlayCardSaga(gameId, playerId, mockedCard[index])
+        }
+
+        val threads = commands.map { command ->
+            thread {
+                retry {
+                    commandBus.send(command)
+                }
+            }
+        }
+
+        threads.forEach { it.join() }
+
+        val game = queryBus.send(GetGame(gameId))
+        val winnerScore = game.scoreBoard.find { it.playerId == firstPlayer.id && it.roundNb == 1 }
+        Assertions.assertThat(winnerScore?.score).isEqualTo(Score(1, 1, 50))
+    }
+
+    private fun <T> retry(retry: Int = 1, block: () -> T) {
+        try {
+            block()
+        } catch (e: Exception) {
+            if (retry > 5) throw e
+            Thread.sleep(100)
+            retry(retry + 1, block)
+        }
+    }
 }
