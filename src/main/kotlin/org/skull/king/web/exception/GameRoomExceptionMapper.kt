@@ -10,7 +10,7 @@ import javax.ws.rs.ext.Provider
 class GameRoomExceptionMapper : ExceptionMapper<BaseGameRoomException> {
     override fun toResponse(exception: BaseGameRoomException): Response {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(BaseErrorMessage(exception.message, Response.Status.BAD_REQUEST.statusCode))
+            .entity(BaseErrorMessage(exception.message))
             .type(MediaType.APPLICATION_JSON)
             .build()
     }
