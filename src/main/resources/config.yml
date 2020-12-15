@@ -4,6 +4,14 @@ server:
   applicationConnectors:
     - type: http
       port: 8080
+  requestLog:
+    type: classic
+    timeZone: UTC
+    appenders:
+      - type: console
+
+logging:
+  level: INFO
 
 firebase:
   database_url: "${DATABASE_URL}"

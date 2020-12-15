@@ -1,7 +1,7 @@
 package org.skull.king.web.controller;
 
-import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
 import org.skull.king.domain.core.command.StartSkullKing
+import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSaga
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.infrastructure.cqrs.command.CommandBus
 import org.skull.king.web.controller.dto.AnnounceWinningCardsFoldCountRequest
@@ -49,7 +49,7 @@ class SkullKingResource @Inject constructor(private val commandBus: CommandBus) 
         @Valid request: AnnounceWinningCardsFoldCountRequest
     ): Response {
 
-        val command = AnnounceWinningCardsFoldCount(gameId, playerId, request.count)
+        val command = AnnounceWinningCardsFoldCountSaga(gameId, playerId, request.count)
 
         commandBus.send(command)
 

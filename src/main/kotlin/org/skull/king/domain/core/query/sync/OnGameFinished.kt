@@ -7,8 +7,6 @@ import org.skull.king.infrastructure.cqrs.ddd.event.EventCaptor
 class OnGameFinished(private val repository: QueryRepository) : EventCaptor<GameFinished> {
 
     override fun execute(event: GameFinished) {
-        repository.getGame(event.gameId)?.let {
-            repository.addGame(it.copy(isEnded = true))
-        }
+        repository.endGame(event.gameId)
     }
 }

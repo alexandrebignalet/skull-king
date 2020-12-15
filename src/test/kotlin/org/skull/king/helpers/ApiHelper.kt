@@ -13,17 +13,18 @@ class ApiHelper(private val EXTENSION: DropwizardAppExtension<SkullKingConfig>) 
     val gameRoom = GameRoomHelper()
 
     inner class SkullKingApiHelper {
-        fun start(playerIds: Set<String>): Response = EXTENSION.client()
+        fun start(playerIds: Set<String>, idToken: String = "token"): Response = EXTENSION.client()
             .target("http://localhost:${EXTENSION.localPort}/skullking/games/start")
             .request()
-            .header("Authorization", "Bearer token")
+            .header("Authorization", "Bearer $idToken")
             .post(Entity.json(StartRequest(playerIds)))
 
-        fun announce(gameId: String, playerId: String, count: Int): Response = EXTENSION.client()
-            .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/$playerId/announce")
-            .request()
-            .header("Authorization", "Bearer token")
-            .post(Entity.json(AnnounceWinningCardsFoldCountRequest(count)))
+        fun announce(gameId: String, playerId: String, count: Int, idToken: String = "token"): Response =
+            EXTENSION.client()
+                .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/$playerId/announce")
+                .request()
+                .header("Authorization", "Bearer $idToken")
+                .post(Entity.json(AnnounceWinningCardsFoldCountRequest(count)))
     }
 
     inner class GameRoomHelper {

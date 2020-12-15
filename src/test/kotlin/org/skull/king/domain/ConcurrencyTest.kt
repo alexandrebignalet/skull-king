@@ -80,6 +80,7 @@ class ConcurrencyTest : LocalBus() {
 
         val game = queryBus.send(GetGame(gameId))
         Assertions.assertThat(game.phase).isEqualTo(SkullKingPhase.CARDS)
+        Assertions.assertThat(game.scoreBoard).hasSize(players.size)
     }
 
     @RepeatedTest(10)
@@ -99,8 +100,8 @@ class ConcurrencyTest : LocalBus() {
             commandBus.send(AnnounceWinningCardsFoldCountSaga(gameId, it.id, 1))
         }
 
-        val commands = players.mapIndexed { index, playerId ->
-            PlayCardSaga(gameId, playerId, mockedCard[index])
+        val commands = startedEvent.players.mapIndexed { index, player ->
+            PlayCardSaga(gameId, player.id, mockedCard[index])
         }
 
         val threads = commands.map { command ->

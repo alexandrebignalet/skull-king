@@ -15,15 +15,9 @@ class OnFoldWinnerSettled(private val repository: QueryRepository) : EventCaptor
             }
 
             roundScore?.score?.let { (announced, done, potentialBonus) ->
-                val index = game.scoreBoard.indexOf(roundScore)
-                game.scoreBoard[index] = PlayerRoundScore(
-                    event.winner,
-                    game.roundNb,
-                    Score(announced, done + 1, potentialBonus + event.potentialBonus)
-                )
+                val newScore = Score(announced, done + 1, potentialBonus + event.potentialBonus)
+                repository.updateWinnerScoreAndClearFold(event.gameId, event.winner, game.roundNb, newScore)
             }
-
-            repository.addGame(game.copy(currentPlayerId = event.winner, fold = listOf()))
         }
     }
 }

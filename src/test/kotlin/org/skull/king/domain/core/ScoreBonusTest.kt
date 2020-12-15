@@ -87,18 +87,15 @@ class ScoreBonusTest : LocalBus() {
                 .isEqualTo(firstFoldWinnerAnnounce)
             Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.done).isEqualTo(1)
             Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.potentialBonus).isEqualTo(50)
-            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, firstRoundNb)?.bonus).isEqualTo(50)
 
             Assertions.assertThat(game.scoreBoard.from(thirdPlayer.id, firstRoundNb)?.announced)
                 .isEqualTo(firstFoldLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(thirdPlayer.id, firstRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(thirdPlayer.id, firstRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(thirdPlayer.id, firstRoundNb)?.bonus).isEqualTo(0)
 
             Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.announced)
                 .isEqualTo(firstFoldLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.done).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.bonus).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, firstRoundNb)?.potentialBonus).isEqualTo(0)
         }
     }
@@ -137,19 +134,16 @@ class ScoreBonusTest : LocalBus() {
                 .isEqualTo(futureWinnerAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(1)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.potentialBonus).isEqualTo(60)
-            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.bonus).isEqualTo(0)
         }
 
         // On next fold the previous winner wins again respecting his announcement
@@ -167,19 +161,16 @@ class ScoreBonusTest : LocalBus() {
                 .isEqualTo(futureWinnerAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(2)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.potentialBonus).isEqualTo(60)
-            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.bonus).isEqualTo(60)
 
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.bonus).isEqualTo(0)
         }
     }
 
@@ -210,19 +201,16 @@ class ScoreBonusTest : LocalBus() {
                 .isEqualTo(futureWinnerAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(1)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.potentialBonus).isEqualTo(60)
-            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.bonus).isEqualTo(0)
         }
 
         // On next fold the previous winner wins again respecting his announcement
@@ -238,19 +226,16 @@ class ScoreBonusTest : LocalBus() {
                 .isEqualTo(futureWinnerAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.done).isEqualTo(2)
             Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.potentialBonus).isEqualTo(60)
-            Assertions.assertThat(game.scoreBoard.from(newThirdPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(newFirstPlayer, secondRoundNb)?.bonus).isEqualTo(0)
 
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.announced)
                 .isEqualTo(futureLoserAnnounce)
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.done).isEqualTo(0)
             Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.potentialBonus).isEqualTo(0)
-            Assertions.assertThat(game.scoreBoard.from(newSecondPlayer, secondRoundNb)?.bonus).isEqualTo(0)
         }
     }
 }
