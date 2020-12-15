@@ -22,8 +22,8 @@ sealed class SkullKing(private val id: String) : AggregateRoot<String, SkullKing
             *(1..13).map { ColoredCard(it, CardColor.RED) }.toTypedArray(),
             *(1..13).map { ColoredCard(it, CardColor.BLUE) }.toTypedArray(),
             *(1..13).map { ColoredCard(it, CardColor.BLACK) }.toTypedArray(),
-            *(0..5).map { Escape() }.toTypedArray(),
-            *(0..2).map { Mermaid() }.toTypedArray(),
+            *(0..4).map { Escape() }.toTypedArray(),
+            *(0..1).map { Mermaid() }.toTypedArray(),
             Pirate(PirateName.EVIL_EMMY),
             Pirate(PirateName.HARRY_THE_GIANT),
             Pirate(PirateName.TORTUGA_JACK),
@@ -38,7 +38,7 @@ sealed class SkullKing(private val id: String) : AggregateRoot<String, SkullKing
 
     abstract override fun compose(e: SkullKingEvent, version: Int): SkullKing
 
-    open fun nextFirstPlayerIndex() = 0
+    open fun nextFirstPlayerIndex(): Int = 0
 
     fun distributeCards(players: List<String>, foldCount: Int, gameId: String = id): List<NewPlayer> {
         val nextFirstPlayerIndex = nextFirstPlayerIndex()
@@ -77,7 +77,7 @@ data class ReadySkullKing(
     val roundNb: Int,
     val currentFold: Map<PlayerId, Card> = mapOf(),
     val foldPlayedNb: Int = 0,
-    val firstPlayerIndex: Int,
+    val firstPlayerId: String,
     val version: Int
 ) : SkullKing(gameId) {
 
@@ -88,7 +88,7 @@ data class ReadySkullKing(
             roundNb,
             addCardInFold(e),
             foldPlayedNb,
-            firstPlayerIndex,
+            firstPlayerId,
             version
         )
         is FoldWinnerSettled -> ReadySkullKing(
@@ -96,7 +96,7 @@ data class ReadySkullKing(
             setWinnerFirst(e.winner),
             roundNb,
             foldPlayedNb = foldPlayedNb + 1,
-            firstPlayerIndex = firstPlayerIndex,
+            firstPlayerId = firstPlayerId,
             version = version
         )
         is NewRoundStarted -> NewRound(gameId, e.players, roundNb + 1, version)
@@ -125,7 +125,9 @@ data class ReadySkullKing(
         return firstDidNotPlay?.let { it == playerId } ?: false
     }
 
-    override fun nextFirstPlayerIndex(): Int = (firstPlayerIndex + 1).let { if (it > players.size) 0 else it }
+    override fun nextFirstPlayerIndex(): Int = players.map { it.id }
+        .indexOf(firstPlayerId)
+        .let { if (it == players.size - 1) 0 else it + 1 }
 
     private fun removeCardFromPlayerHand(event: CardPlayed) = players.map {
         if (it.id == event.playerId) {
@@ -167,7 +169,7 @@ data class NewRound(
                 gameId,
                 updatedPlayers as List<ReadyPlayer>,
                 roundNb,
-                firstPlayerIndex = 0,
+                firstPlayerId = players.first().id,
                 version = version
             )
             else NewRound(gameId, updatedPlayers, roundNb, version)

@@ -160,10 +160,9 @@ class MultiFoldPlayCardTest : LocalBus() {
         commandBus.send(loserPlayCard)
 
         val getGame = GetGame(gameId)
-        await atMost Duration.ofSeconds(5) untilAsserted {
-            val game = queryBus.send(getGame)
-            Assertions.assertThat(game.fold.size).isEqualTo(0)
-        }
+        var game = queryBus.send(getGame)
+        Assertions.assertThat(game.fold.size).isEqualTo(0)
+
 
         newFirstPlayer = firstPlayer.id
         newSecondPlayer = secondPlayer.id
@@ -176,10 +175,8 @@ class MultiFoldPlayCardTest : LocalBus() {
         val ok = commandBus.send(okPlayCard)
         Assertions.assertThat(ok).isInstanceOf(Pair::class.java)
 
-        await atMost Duration.ofSeconds(5) untilAsserted {
-            val game = queryBus.send(getGame)
-            Assertions.assertThat(game.currentPlayerId).isEqualTo(newSecondPlayer)
-        }
+        game = queryBus.send(getGame)
+        Assertions.assertThat(game.currentPlayerId).isEqualTo(newSecondPlayer)
     }
 
     @Test

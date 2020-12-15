@@ -18,6 +18,7 @@ import org.skull.king.domain.core.query.sync.OnGameFinished
 import org.skull.king.domain.core.query.sync.OnGameStarted
 import org.skull.king.domain.core.query.sync.OnNewRoundStarted
 import org.skull.king.domain.core.query.sync.OnPlayerAnnounced
+import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSagaHandler
 import org.skull.king.domain.core.saga.PlayCardSagaHandler
 import org.skull.king.infrastructure.cqrs.command.CommandBus
 import org.skull.king.infrastructure.cqrs.command.CommandHandler
@@ -72,7 +73,8 @@ class CoreModule {
 
     @Provides
     @Singleton
-    fun provideSagaHandler(): Set<SagaHandler<*, *>> = setOf(PlayCardSagaHandler())
+    fun provideSagaHandler(): Set<SagaHandler<*, *>> =
+        setOf(PlayCardSagaHandler(), AnnounceWinningCardsFoldCountSagaHandler())
 
     @Singleton
     @Provides
@@ -83,8 +85,8 @@ class CoreModule {
         sagaHandlers: Set<@JvmSuppressWildcards SagaHandler<*, *>>
     ): Set<CommandMiddleware> = setOf(
         SagaMiddleware(sagaHandlers as Set<SagaHandler<*, Saga<*>>>),
-        EventStoreMiddleware(eventStore),
         EventDispatcherMiddleware(eventBus),
+        EventStoreMiddleware(eventStore)
     )
 
     @Singleton

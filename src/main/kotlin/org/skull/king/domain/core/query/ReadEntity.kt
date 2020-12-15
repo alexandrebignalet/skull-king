@@ -1,11 +1,14 @@
 package org.skull.king.domain.core.query
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Escape
 import org.skull.king.domain.core.command.domain.Pirate
 import org.skull.king.domain.core.command.domain.ScaryMary
+import org.skull.king.utils.CardsDeserializer
+import org.skull.king.utils.FoldDeserializer
+import org.skull.king.utils.ScoreBoardDeserializer
 
 sealed class ReadEntity {
     abstract fun fireMap(): Map<String, Any?>
@@ -15,10 +18,12 @@ data class ReadSkullKing(
     val id: String,
     val players: List<String>,
     val roundNb: RoundNb,
+    @JsonDeserialize(using = FoldDeserializer::class)
     val fold: List<Play> = listOf(),
     val isEnded: Boolean = false,
     val phase: SkullKingPhase,
     val currentPlayerId: String,
+    @JsonDeserialize(using = ScoreBoardDeserializer::class)
     val scoreBoard: ScoreBoard = mutableListOf()
 ) : ReadEntity() {
 
@@ -62,15 +67,11 @@ data class Score(
     val done: Int = 0,
     val potentialBonus: Int = 0
 ) : ReadEntity() {
-    @get:JsonIgnore
-    val bonus
-        get() = if (announced == done) potentialBonus else 0
 
     override fun fireMap() = mapOf(
         "announced" to announced,
         "done" to done,
-        "potential_bonus" to potentialBonus,
-        "bonus" to bonus
+        "potential_bonus" to potentialBonus
     )
 }
 
@@ -81,13 +82,16 @@ enum class SkullKingPhase {
 data class ReadPlayer(
     val id: String,
     val gameId: String,
+    @JsonDeserialize(using = CardsDeserializer::class)
     val cards: List<ReadCard> = listOf()
 ) : ReadEntity() {
 
     override fun fireMap() = mapOf(
         "id" to id,
         "game_id" to gameId,
-        "cards" to cards
+        "cards" to cards.associate {
+            it.id to it.fireMap()
+        }
     )
 }
 

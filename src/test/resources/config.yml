@@ -1,11 +1,17 @@
 app_name: "SkullAppTest"
 
 server:
+  requestLog:
+    type: classic
+    timeZone: UTC
+    appenders:
+      - type: console
   applicationConnectors:
     - type: http
       port: 8080
+
 logging:
-  level: INFO
+  level: WARN
 
 firebase:
   database_url: http://localhost:9000/?ns=skullking

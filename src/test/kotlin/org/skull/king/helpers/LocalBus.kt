@@ -80,15 +80,15 @@ open class LocalBus : DockerIntegrationTestUtils() {
         @Suppress("UNCHECKED_CAST")
         val commandBus: CommandBus = CommandBusSynchronous(
             setOf(
-                EventStoreMiddleware(eventStore),
-                EventDispatcherMiddleware(eventBus),
                 BusContextLoggerMiddleware(),
                 SagaMiddleware(
                     setOf(
                         PlayCardSagaHandler(),
                         AnnounceWinningCardsFoldCountSagaHandler()
                     ) as Set<SagaHandler<*, Saga<*>>>
-                )
+                ),
+                EventDispatcherMiddleware(eventBus),
+                EventStoreMiddleware(eventStore),
             ),
             setOf(
                 AnnounceHandler(eventSourcedRepository),

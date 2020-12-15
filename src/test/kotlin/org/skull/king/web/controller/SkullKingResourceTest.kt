@@ -18,8 +18,9 @@ import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
 import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.helpers.ApiHelper
-import org.skull.king.helpers.DockerIntegrationTestUtils
+import org.skull.king.helpers.LocalBus
 import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
 import org.skull.king.infrastructure.authentication.User
 import org.skull.king.web.controller.dto.start.StartResponse
@@ -28,7 +29,7 @@ import java.util.UUID
 import javax.ws.rs.client.Entity
 
 @ExtendWith(DropwizardExtensionsSupport::class)
-class SkullKingResourceTest : DockerIntegrationTestUtils() {
+class SkullKingResourceTest : LocalBus() {
 
     companion object {
 
@@ -148,6 +149,8 @@ class SkullKingResourceTest : DockerIntegrationTestUtils() {
         val playerIds = setOf("1", "2", "3")
         val (gameId) = api.skullKing.start(playerIds).readEntity(StartResponse::class.java)
         playerIds.forEach { api.skullKing.announce(gameId, it, 1) }
+        val game = queryBus.send(GetGame(gameId))
+        val currentPlayerId = game.currentPlayerId
 
         // When
         val request = """{
@@ -157,7 +160,7 @@ class SkullKingResourceTest : DockerIntegrationTestUtils() {
             }    
         }""".trimIndent()
         val commandResponse = EXTENSION.client()
-            .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/1/play")
+            .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/$currentPlayerId/play")
             .request()
             .header("Authorization", "Bearer token")
             .post(Entity.json(request))

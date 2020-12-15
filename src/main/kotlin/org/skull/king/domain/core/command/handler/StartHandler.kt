@@ -22,7 +22,11 @@ class StartHandler(private val repository: SkullkingEventSourcedRepository) :
 
         val game = repository[command.gameId]
         return if (game == emptySkullKing) {
-            val playersOrdered = game.distributeCards(command.players, SkullKing.FIRST_ROUND_NB, command.gameId)
+            val playersOrdered = game.distributeCards(
+                command.players.shuffled(),
+                SkullKing.FIRST_ROUND_NB,
+                command.gameId
+            )
 
             Pair(game.getId(), sequenceOf(Started(command.gameId, playersOrdered)))
         } else throw SkullKingError("SkullKing game already existing! $game", game)

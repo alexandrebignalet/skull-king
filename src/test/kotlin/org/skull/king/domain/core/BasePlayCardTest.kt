@@ -133,13 +133,8 @@ class BasePlayCardTest : LocalBus() {
 
             Assertions.assertThatThrownBy { commandBus.send(playCard) }.isInstanceOf(NotYourTurnError::class.java)
 
-            await atMost Duration.ofSeconds(5) untilAsserted {
-                val getGame = GetGame(startedEvent.gameId)
-
-                val game = queryBus.send(getGame)
-
-                Assertions.assertThat(game.currentPlayerId).isEqualTo(currentPlayer.id)
-            }
+            val game = queryBus.send(GetGame(startedEvent.gameId))
+            Assertions.assertThat(game.currentPlayerId).isEqualTo(currentPlayer.id)
 
             // First two times in a row
             val secondCardPlay = (currentPlayer as NewPlayer).cards.first()
@@ -288,21 +283,17 @@ class BasePlayCardTest : LocalBus() {
             commandBus.send(secondPlayCard)
 
             // Then
-            await atMost Duration.ofSeconds(5) untilAsserted {
-                val game = queryBus.send(GetGame(gameId))
+            val game = queryBus.send(GetGame(gameId))
 
-                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.announced)
-                    .isEqualTo(futureWinnerAnnounce)
-                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.done).isEqualTo(1)
-                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.bonus).isEqualTo(50)
-                Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.potentialBonus).isEqualTo(50)
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.announced)
+                .isEqualTo(futureWinnerAnnounce)
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.done).isEqualTo(1)
+            Assertions.assertThat(game.scoreBoard.from(firstPlayer.id, roundNb)?.potentialBonus).isEqualTo(50)
 
-                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.announced)
-                    .isEqualTo(futureLoserAnnounce)
-                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.done).isEqualTo(0)
-                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.bonus).isEqualTo(0)
-                Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.potentialBonus).isEqualTo(0)
-            }
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.announced)
+                .isEqualTo(futureLoserAnnounce)
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.done).isEqualTo(0)
+            Assertions.assertThat(game.scoreBoard.from(secondPlayer.id, roundNb)?.potentialBonus).isEqualTo(0)
         }
     }
 }

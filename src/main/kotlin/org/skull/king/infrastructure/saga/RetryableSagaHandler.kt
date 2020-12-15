@@ -21,7 +21,7 @@ abstract class RetryableSagaHandler<TResult, TSaga : Saga<TResult>> : SagaHandle
         } catch (exception: ConcurrentEventsException) {
             if (retry > maxRetries) throw exception
 
-            LOGGER.warn("retrying $retry/$maxRetries; $timeout")
+            LOGGER.error("retrying $retry/$maxRetries; $timeout")
             Thread.sleep(timeout)
             exponentialBackoff(retry + 1, block)
         }
