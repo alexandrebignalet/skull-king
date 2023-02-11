@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.skull.king.domain.core.command.domain.Pirate
 import org.skull.king.domain.core.command.domain.PirateName
-import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.command.domain.SkullkingCard
 import org.skull.king.domain.core.query.ReadCard
 import org.skull.king.domain.core.query.ReadPlayer
 import org.skull.king.domain.core.query.ReadSkullKing
@@ -26,7 +26,7 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
         val gameTwoId = "2"
 
         val playerOne =
-            ReadPlayer("1", gameOneId, listOf(ReadCard.of(SkullKingCard())))
+            ReadPlayer("1", gameOneId, listOf(ReadCard.of(SkullkingCard())))
         val playerTwo =
             ReadPlayer("2", gameOneId, listOf(ReadCard.of(Pirate(PirateName.TORTUGA_JACK))))
         val playerThree =
@@ -52,8 +52,8 @@ class FirebaseQueryRepositoryTest : LocalFirebase() {
         val gameOnePlayers = repository.getGamePlayers(gameOneId)
 
         // Then
-        Assertions.assertThat(gameOnePlayers.isNotEmpty()).isTrue()
-        Assertions.assertThat(gameOnePlayers.all { it.gameId == gameOneId }).isTrue()
-        Assertions.assertThat(gameOnePlayers.all { gameOne.players.contains(it.id) }).isTrue()
+        Assertions.assertThat(gameOnePlayers.isNotEmpty()).isTrue
+        Assertions.assertThat(gameOnePlayers.all { it.gameId == gameOneId }).isTrue
+        Assertions.assertThat(gameOnePlayers.all { gameOne.players.contains(it.id) }).isTrue
     }
 }

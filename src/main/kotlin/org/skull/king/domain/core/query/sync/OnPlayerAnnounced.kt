@@ -4,7 +4,7 @@ import org.skull.king.domain.core.event.PlayerAnnounced
 import org.skull.king.domain.core.query.PlayerRoundScore
 import org.skull.king.domain.core.query.QueryRepository
 import org.skull.king.domain.core.query.Score
-import org.skull.king.infrastructure.cqrs.ddd.event.EventCaptor
+import org.skull.king.infrastructure.framework.ddd.event.EventCaptor
 
 class OnPlayerAnnounced(private val repository: QueryRepository) : EventCaptor<PlayerAnnounced> {
 

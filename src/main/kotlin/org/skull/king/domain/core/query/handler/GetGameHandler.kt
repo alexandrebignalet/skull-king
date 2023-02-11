@@ -2,8 +2,8 @@ package org.skull.king.domain.core.query.handler
 
 import org.skull.king.domain.core.query.QueryRepository
 import org.skull.king.domain.core.query.ReadSkullKing
-import org.skull.king.infrastructure.cqrs.query.Query
-import org.skull.king.infrastructure.cqrs.query.QueryHandler
+import org.skull.king.infrastructure.framework.query.Query
+import org.skull.king.infrastructure.framework.query.QueryHandler
 
 data class GetGame(val gameId: String) : Query<ReadSkullKing>
 

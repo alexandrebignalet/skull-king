@@ -20,7 +20,7 @@ class PlayCardAllowedTest {
                 listOf(),
                 ColoredCard(1, CardColor.RED)
             )
-        ).isFalse()
+        ).isFalse
     }
 
     @Test
@@ -30,7 +30,7 @@ class PlayCardAllowedTest {
             listOf(ColoredCard(4, CardColor.RED), ColoredCard(1, CardColor.BLUE)),
             ColoredCard(1, CardColor.BLUE)
         )
-        Assertions.assertThat(cardAllowed).isFalse()
+        Assertions.assertThat(cardAllowed).isFalse
     }
 
     @Test
@@ -40,7 +40,7 @@ class PlayCardAllowedTest {
             listOf(Pirate(PirateName.BETTY_BRAVE), ColoredCard(1, CardColor.BLUE)),
             Pirate(PirateName.BETTY_BRAVE)
         )
-        Assertions.assertThat(cardAllowed).isTrue()
+        Assertions.assertThat(cardAllowed).isTrue
     }
 }
 

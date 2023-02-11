@@ -1,5 +1,6 @@
 package org.skull.king.helpers
 
+import java.util.function.Supplier
 import org.skull.king.domain.core.command.handler.AnnounceHandler
 import org.skull.king.domain.core.command.handler.PlayCardHandler
 import org.skull.king.domain.core.command.handler.SettleFoldHandler
@@ -8,35 +9,34 @@ import org.skull.king.domain.core.query.QueryRepository
 import org.skull.king.domain.core.query.handler.GetGameHandler
 import org.skull.king.domain.core.query.handler.GetPlayerHandler
 import org.skull.king.domain.core.query.sync.OnCardPlayed
-import org.skull.king.domain.core.query.sync.OnFoldWinnerSettled
 import org.skull.king.domain.core.query.sync.OnGameFinished
 import org.skull.king.domain.core.query.sync.OnGameStarted
 import org.skull.king.domain.core.query.sync.OnNewRoundStarted
 import org.skull.king.domain.core.query.sync.OnPlayerAnnounced
+import org.skull.king.domain.core.query.sync.ProjectOnFoldSettled
 import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSagaHandler
 import org.skull.king.domain.core.saga.PlayCardSagaHandler
-import org.skull.king.infrastructure.cqrs.command.Command
-import org.skull.king.infrastructure.cqrs.command.CommandBus
-import org.skull.king.infrastructure.cqrs.command.CommandMiddleware
-import org.skull.king.infrastructure.cqrs.ddd.event.Event
-import org.skull.king.infrastructure.cqrs.ddd.event.EventBus
-import org.skull.king.infrastructure.cqrs.ddd.event.EventCaptor
-import org.skull.king.infrastructure.cqrs.ddd.event.EventStore
-import org.skull.king.infrastructure.cqrs.infrastructure.bus.command.CommandBusSynchronous
-import org.skull.king.infrastructure.cqrs.infrastructure.bus.event.EventBusSynchronous
-import org.skull.king.infrastructure.cqrs.infrastructure.bus.event.EventDispatcherMiddleware
-import org.skull.king.infrastructure.cqrs.infrastructure.bus.query.QueryBusSynchronous
-import org.skull.king.infrastructure.cqrs.infrastructure.persistence.EventStoreMiddleware
-import org.skull.king.infrastructure.cqrs.query.QueryBus
-import org.skull.king.infrastructure.cqrs.saga.Saga
-import org.skull.king.infrastructure.cqrs.saga.SagaHandler
-import org.skull.king.infrastructure.cqrs.saga.SagaMiddleware
 import org.skull.king.infrastructure.event.PostgresEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
+import org.skull.king.infrastructure.framework.command.Command
+import org.skull.king.infrastructure.framework.command.CommandBus
+import org.skull.king.infrastructure.framework.command.CommandMiddleware
+import org.skull.king.infrastructure.framework.ddd.event.Event
+import org.skull.king.infrastructure.framework.ddd.event.EventBus
+import org.skull.king.infrastructure.framework.ddd.event.EventCaptor
+import org.skull.king.infrastructure.framework.ddd.event.EventStore
+import org.skull.king.infrastructure.framework.infrastructure.bus.command.CommandBusSynchronous
+import org.skull.king.infrastructure.framework.infrastructure.bus.event.EventBusSynchronous
+import org.skull.king.infrastructure.framework.infrastructure.bus.event.EventDispatcherMiddleware
+import org.skull.king.infrastructure.framework.infrastructure.bus.query.QueryBusSynchronous
+import org.skull.king.infrastructure.framework.infrastructure.persistence.EventStoreMiddleware
+import org.skull.king.infrastructure.framework.query.QueryBus
+import org.skull.king.infrastructure.framework.saga.Saga
+import org.skull.king.infrastructure.framework.saga.SagaHandler
+import org.skull.king.infrastructure.framework.saga.SagaMiddleware
 import org.skull.king.infrastructure.repository.FirebaseQueryRepository
 import org.skull.king.utils.JsonObjectMapper
 import org.slf4j.LoggerFactory
-import java.util.function.Supplier
 
 open class LocalBus : DockerIntegrationTestUtils() {
 
@@ -69,7 +69,7 @@ open class LocalBus : DockerIntegrationTestUtils() {
             setOf(),
             setOf(
                 OnCardPlayed(queryRepository),
-                OnFoldWinnerSettled(queryRepository),
+                ProjectOnFoldSettled(queryRepository),
                 OnGameFinished(queryRepository),
                 OnGameStarted(queryRepository),
                 OnNewRoundStarted(queryRepository),

@@ -2,34 +2,34 @@ package org.skull.king.domain.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
+import java.time.Duration
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
-import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
 import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.Player
-import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.command.domain.SkullkingCard
 import org.skull.king.domain.core.command.error.CardNotAllowedError
 import org.skull.king.domain.core.command.error.NotYourTurnError
+import org.skull.king.domain.core.command.handler.AnnounceWinningCardsFoldCount
+import org.skull.king.domain.core.command.handler.StartSkullKing
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.from
 import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
-import java.time.Duration
 
 class MultiFoldPlayCardTest : LocalBus() {
 
     private val mockedCard = listOf(
         Mermaid(),
-        SkullKingCard(),
+        SkullkingCard(),
 
         ColoredCard(3, CardColor.BLUE),
         ColoredCard(8, CardColor.BLUE),
@@ -183,26 +183,26 @@ class MultiFoldPlayCardTest : LocalBus() {
     fun `Should mark current player id on new round and after card played`() {
         val getGame = { queryBus.send(GetGame(gameId)) }
 
-        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isTrue()
-        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isFalse()
+        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isTrue
+        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isFalse
 
         val anAnnounce = AnnounceWinningCardsFoldCount(gameId, secondPlayer.id, 0)
         val anotherAnnounce = AnnounceWinningCardsFoldCount(gameId, firstPlayer.id, 0)
 
-        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isTrue()
-        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isFalse()
+        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isTrue
+        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isFalse
 
         commandBus.send(anAnnounce)
         commandBus.send(anotherAnnounce)
 
         commandBus.send(PlayCardSaga(gameId, secondPlayer.id, mockedCard[2]))
 
-        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isFalse()
-        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isTrue()
+        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isFalse
+        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isTrue
 
         commandBus.send(PlayCardSaga(gameId, firstPlayer.id, mockedCard[3]))
 
-        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isTrue()
-        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isFalse()
+        Assertions.assertThat(getGame().currentPlayerId == firstPlayer.id).isTrue
+        Assertions.assertThat(getGame().currentPlayerId == secondPlayer.id).isFalse
     }
 }

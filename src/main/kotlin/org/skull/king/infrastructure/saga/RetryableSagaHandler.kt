@@ -1,9 +1,9 @@
 package org.skull.king.infrastructure.saga
 
 import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSagaHandler
-import org.skull.king.infrastructure.cqrs.saga.Saga
-import org.skull.king.infrastructure.cqrs.saga.SagaHandler
 import org.skull.king.infrastructure.event.ConcurrentEventsException
+import org.skull.king.infrastructure.framework.saga.Saga
+import org.skull.king.infrastructure.framework.saga.SagaHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

@@ -3,9 +3,15 @@ package org.skull.king.domain.supporting.room
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.util.*
+import javax.ws.rs.ForbiddenException
+import javax.ws.rs.NotFoundException
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.skull.king.domain.core.GameLauncher
+import org.skull.king.domain.core.command.domain.ClassicConfiguration
+import org.skull.king.domain.core.command.domain.GameConfiguration
+import org.skull.king.domain.supporting.room.domain.Configuration
 import org.skull.king.domain.supporting.room.exception.AlreadyInGameRoomException
 import org.skull.king.domain.supporting.room.exception.GameRoomFullException
 import org.skull.king.domain.supporting.user.UserService
@@ -13,9 +19,6 @@ import org.skull.king.domain.supporting.user.domain.GameUser
 import org.skull.king.helpers.LocalFirebase
 import org.skull.king.infrastructure.repository.FirebaseGameRoomRepository
 import org.skull.king.infrastructure.repository.FirebaseUserRepository
-import java.util.UUID
-import javax.ws.rs.ForbiddenException
-import javax.ws.rs.NotFoundException
 
 class GameRoomServiceTest : LocalFirebase() {
 
@@ -157,14 +160,14 @@ class GameRoomServiceTest : LocalFirebase() {
         service.join(gameRoomId, GameUser("2", "2"))
         service.join(gameRoomId, GameUser("3", "3"))
         val expectedGameId = UUID.randomUUID().toString()
-        every { gameLauncher.startFrom(setOf(creator.id, "2", "3")) } returns expectedGameId
+        every { gameLauncher.startFrom(any(), any()) } returns expectedGameId
 
         val gameId = service.startGame(gameRoomId, creator.id)
 
         Assertions.assertThat(gameId).isEqualTo(expectedGameId)
         val gameRoom = service.findOne(gameRoomId)
         Assertions.assertThat(gameRoom.gameId).isEqualTo(gameId)
-        verify { gameLauncher.startFrom(setOf(creator.id, "2", "3")) }
+        verify { gameLauncher.startFrom(setOf(creator.id, "2", "3"), ClassicConfiguration) }
     }
 
     @Test
@@ -183,15 +186,43 @@ class GameRoomServiceTest : LocalFirebase() {
 
     @Test
     fun `Should return an error if game failed to start`() {
-        every { gameLauncher.startFrom(any()) } throws Error("game failed to start")
+        every { gameLauncher.startFrom(any(), any()) } throws Error("game failed to start")
         val creator = GameUser("user_id", "toto")
         val gameRoomId = service.create(creator)
         service.join(gameRoomId, GameUser("2", "2"))
         service.join(gameRoomId, GameUser("3", "3"))
 
-        Assertions.assertThatThrownBy { service.startGame(gameRoomId, creator.id) }.isInstanceOf(Error::class.java)
+        Assertions.assertThatThrownBy { service.startGame(gameRoomId, creator.id) }
+            .isInstanceOf(Error::class.java)
 
         val gameRoom = service.findOne(gameRoomId)
         Assertions.assertThat(gameRoom.gameId).isNull()
+    }
+
+    @Test
+    fun `should allow creator choose a variant`() {
+        val creator = GameUser("user_id", "toto")
+
+        val configuration = Configuration(false, false)
+        val gameRoomId = service.create(creator, configuration)
+
+        val gameRoom = service.findOne(gameRoomId)
+        Assertions.assertThat(gameRoom.configuration).isEqualTo(configuration)
+    }
+
+    @Test
+    fun `Should start a game with the variant chosen`() {
+        val creator = GameUser("user_id", "toto")
+
+        val configuration = Configuration(true, true)
+        val gameRoomId = service.create(creator, configuration)
+        service.join(gameRoomId, GameUser("2", "2"))
+        service.join(gameRoomId, GameUser("3", "3"))
+        val expectedGameId = UUID.randomUUID().toString()
+        every { gameLauncher.startFrom(any(), any()) } returns expectedGameId
+
+        service.startGame(gameRoomId, creator.id)
+
+        verify { gameLauncher.startFrom(setOf(creator.id, "2", "3"), GameConfiguration.from(configuration)) }
     }
 }

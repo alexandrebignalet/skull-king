@@ -7,7 +7,7 @@ import org.skull.king.domain.core.query.ReadCard
 import org.skull.king.domain.core.query.ReadPlayer
 import org.skull.king.domain.core.query.ReadSkullKing
 import org.skull.king.domain.core.query.SkullKingPhase
-import org.skull.king.infrastructure.cqrs.ddd.event.EventCaptor
+import org.skull.king.infrastructure.framework.ddd.event.EventCaptor
 
 class OnGameStarted(private val repository: QueryRepository) : EventCaptor<Started> {
 

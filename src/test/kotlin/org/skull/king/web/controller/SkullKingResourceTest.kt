@@ -7,51 +7,65 @@ import io.mockk.every
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import java.util.*
+import javax.ws.rs.client.Entity
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.skull.king.SkullKingApplication
+import org.skull.king.SkullkingApplication
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
 import org.skull.king.domain.core.command.domain.Mermaid
-import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.command.domain.SkullkingCard
 import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.helpers.ApiHelper
 import org.skull.king.helpers.LocalBus
 import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
 import org.skull.king.infrastructure.authentication.User
 import org.skull.king.web.controller.dto.start.StartResponse
-import java.util.Optional
-import java.util.UUID
-import javax.ws.rs.client.Entity
 
 @ExtendWith(DropwizardExtensionsSupport::class)
 class SkullKingResourceTest : LocalBus() {
 
     companion object {
 
-        private val defaultUser = User("uid", "johnny", "uid@example.com")
+        private val userOne = User("1", "johnny", "uid@example.com")
+        private val userTwo = User("2", "johnny", "uid@example.com")
+        private val userThree = User("3", "johnny", "uid@example.com")
+        private val userFour = User("4", "johnny", "uid@example.com")
+        private val userFive = User("5", "johnny", "uid@example.com")
+        private val userSix = User("6", "johnny", "uid@example.com")
+        private val users = listOf(
+            userOne,
+            userTwo,
+            userThree,
+            userFour,
+            userFive,
+            userSix
+        )
 
         @JvmStatic
         @BeforeAll
         fun mockAuthentication() {
             mockkConstructor(FirebaseAuthenticator::class)
-            every { anyConstructed<FirebaseAuthenticator>().authenticate(any()) } returns Optional.of(defaultUser)
+            users.forEach {
+                every { anyConstructed<FirebaseAuthenticator>().authenticate(it.id) } returns Optional.of(it)
+            }
         }
     }
 
     private val EXTENSION = DropwizardAppExtension(
-        SkullKingApplication::class.java,
+        SkullkingApplication::class.java,
         ResourceHelpers.resourceFilePath("config.yml"),
         *configOverride()
     )
 
     private val mockedCard = listOf(
         Mermaid(),
-        SkullKingCard(),
+        SkullkingCard(),
         ColoredCard(1, CardColor.BLUE)
     )
 
@@ -70,15 +84,7 @@ class SkullKingResourceTest : LocalBus() {
         mockkStatic(UUID::class)
         every { UUID.randomUUID() } returns uuid
 
-        val startRequest = """{
-            "player_ids": ["1", "2", "3"]  
-        }""".trimIndent()
-
-        val commandResponse = EXTENSION.client()
-            .target("http://localhost:${EXTENSION.localPort}/skullking/games/start")
-            .request()
-            .header("Authorization", "Bearer token")
-            .post(Entity.json(startRequest))
+        val commandResponse = api.skullKing.start(users)
             .readEntity(StartResponse::class.java)
 
 
@@ -90,7 +96,7 @@ class SkullKingResourceTest : LocalBus() {
     @Test
     fun `Should return a bad request if less than 2 players to start`() {
         // Given + When
-        val response = api.skullKing.start(setOf("1"))
+        val response = api.skullKing.start(listOf(userOne))
         // Then
         Assertions.assertThat(response.status).isEqualTo(400)
     }
@@ -99,17 +105,11 @@ class SkullKingResourceTest : LocalBus() {
     fun `Should let player bet on its fold count`() {
 
         // Given
-        val playerId = "1"
-        val playerIds = setOf(playerId, "2", "3")
-        val (gameId) = api.skullKing.start(playerIds).readEntity(StartResponse::class.java)
+        val (gameId) = api.skullKing.start(users).readEntity(StartResponse::class.java)
 
         // When
-        val announceRequest = """{ "count": 0 }"""
-        val commandResponse = EXTENSION.client()
-            .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/$playerId/announce")
-            .request()
-            .header("Authorization", "Bearer token")
-            .post(Entity.json(announceRequest))
+        val commandResponse = api.skullKing.announce(gameId, userOne.id, 0, userOne.id)
+
 
         // Then
         Assertions.assertThat(commandResponse.status).isEqualTo(204)
@@ -118,12 +118,10 @@ class SkullKingResourceTest : LocalBus() {
     @Test
     fun `Should return an error if count below 0`() {
         // Given
-        val playerId = "1"
-        val playerIds = setOf(playerId, "2", "3")
-        val (gameId) = api.skullKing.start(playerIds).readEntity(StartResponse::class.java)
+        val (gameId) = api.skullKing.start(users).readEntity(StartResponse::class.java)
 
         // When
-        val commandResponse = api.skullKing.announce(gameId, playerId, -5)
+        val commandResponse = api.skullKing.announce(gameId, userOne.id, -5, userOne.id)
 
         // Then
         Assertions.assertThat(commandResponse.status).isEqualTo(422)
@@ -132,12 +130,10 @@ class SkullKingResourceTest : LocalBus() {
     @Test
     fun `Should return an error if count above 10`() {
         // Given
-        val playerId = "1"
-        val playerIds = setOf(playerId, "2", "3")
-        val (gameId) = api.skullKing.start(playerIds).readEntity(StartResponse::class.java)
+        val (gameId) = api.skullKing.start(users).readEntity(StartResponse::class.java)
 
         // When
-        val commandResponse = api.skullKing.announce(gameId, playerId, 15)
+        val commandResponse = api.skullKing.announce(gameId, userOne.id, 15, userOne.id)
 
         // Then
         Assertions.assertThat(commandResponse.status).isEqualTo(422)
@@ -146,9 +142,8 @@ class SkullKingResourceTest : LocalBus() {
     @Test
     fun `Should allow card play`() {
         // Given
-        val playerIds = setOf("1", "2", "3")
-        val (gameId) = api.skullKing.start(playerIds).readEntity(StartResponse::class.java)
-        playerIds.forEach { api.skullKing.announce(gameId, it, 1) }
+        val (gameId) = api.skullKing.start(users).readEntity(StartResponse::class.java)
+        users.forEach { api.skullKing.announce(gameId, it.id, 1, it.id) }
         val game = queryBus.send(GetGame(gameId))
         val currentPlayerId = game.currentPlayerId
 
@@ -162,7 +157,7 @@ class SkullKingResourceTest : LocalBus() {
         val commandResponse = EXTENSION.client()
             .target("http://localhost:${EXTENSION.localPort}/skullking/games/$gameId/players/$currentPlayerId/play")
             .request()
-            .header("Authorization", "Bearer token")
+            .header("Authorization", "Bearer $currentPlayerId")
             .post(Entity.json(request))
 
         // Then

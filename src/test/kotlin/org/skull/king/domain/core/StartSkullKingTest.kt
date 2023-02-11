@@ -6,16 +6,17 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.StartSkullKing
+import org.skull.king.domain.core.command.domain.ClassicConfiguration
 import org.skull.king.domain.core.command.domain.Deck
 import org.skull.king.domain.core.command.domain.NewPlayer
 import org.skull.king.domain.core.command.domain.Player
-import org.skull.king.domain.core.command.domain.SkullKing
+import org.skull.king.domain.core.command.domain.state.Skullking
 import org.skull.king.domain.core.command.error.SkullKingConfigurationError
+import org.skull.king.domain.core.command.handler.StartSkullKing
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.helpers.LocalBus
-import org.skull.king.infrastructure.cqrs.ddd.event.Event
+import org.skull.king.infrastructure.framework.ddd.event.Event
 
 class StartSkullKingTest : LocalBus() {
 
@@ -24,7 +25,7 @@ class StartSkullKingTest : LocalBus() {
         val gameId = "101"
         val players = listOf("1")
 
-        Assertions.assertThatThrownBy { commandBus.send(StartSkullKing(gameId, players)) }
+        Assertions.assertThatThrownBy { commandBus.send(StartSkullKing(gameId, players, ClassicConfiguration)) }
             .isInstanceOf(SkullKingConfigurationError::class.java)
     }
 
@@ -33,7 +34,7 @@ class StartSkullKingTest : LocalBus() {
         val gameId = "101"
         val players = listOf("1", "2", "3", "4", "5", "6", "7")
 
-        Assertions.assertThatThrownBy { commandBus.send(StartSkullKing(gameId, players)) }
+        Assertions.assertThatThrownBy { commandBus.send(StartSkullKing(gameId, players, ClassicConfiguration)) }
             .isInstanceOf(SkullKingConfigurationError::class.java)
     }
 
@@ -42,20 +43,15 @@ class StartSkullKingTest : LocalBus() {
         private val gameId = "101"
         private val players = listOf("1", "2", "3", "4", "5")
         private lateinit var response: Pair<String, Sequence<Event>>
-        private val mockedCards = listOf(
-            SkullKing.CARDS[0],
-            SkullKing.CARDS[1],
-            SkullKing.CARDS[2],
-            SkullKing.CARDS[3],
-            SkullKing.CARDS[4]
-        )
+        private val cards = Skullking.CARDS(ClassicConfiguration)
+        private val mockedCards = cards.subList(0, 5)
 
         @BeforeEach
         fun setUp() {
             mockkConstructor(Deck::class)
             every { anyConstructed<Deck>().pop() }.returnsMany(mockedCards)
 
-            response = commandBus.send(StartSkullKing(gameId, players))
+            response = commandBus.send(StartSkullKing(gameId, players, ClassicConfiguration))
         }
 
         @Test

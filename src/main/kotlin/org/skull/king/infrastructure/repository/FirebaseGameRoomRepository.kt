@@ -6,11 +6,11 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.runBlocking
 import org.skull.king.domain.supporting.room.domain.GameRoom
 import org.skull.king.domain.supporting.room.domain.GameRoomRepository
 import org.slf4j.LoggerFactory
-import kotlin.coroutines.suspendCoroutine
 
 class FirebaseGameRoomRepository(private val database: FirebaseDatabase, private val objectMapper: ObjectMapper) :
     GameRoomRepository {
@@ -36,16 +36,17 @@ class FirebaseGameRoomRepository(private val database: FirebaseDatabase, private
         runBlocking { kickUserFromGameRoom(gameRoom, kicked) }
     }
 
-    private suspend fun saveGameRoomAndUsers(gameRoom: GameRoom) = suspendCoroutine<Unit> { cont ->
+    private suspend fun saveGameRoomAndUsers(gameRoom: GameRoom) = suspendCoroutine { cont ->
         val ref = database.reference
         val gameRoomPayload = gameRoom.fireMap()
         val userUpdate = gameRoom.users.fold(mapOf<String, Any?>()) { acc, user ->
             acc + mapOf(
                 "$USER_PATH/${user.id}/rooms/${gameRoom.id}" to gameRoomPayload,
                 "$USER_PATH/${user.id}/id" to user.id,
-                "$USER_PATH/${user.id}/name" to user.name
+                "$USER_PATH/${user.id}/name" to user.name,
             )
         }
+
         val update = mapOf("$PATH/${gameRoom.id}" to gameRoomPayload) + userUpdate
 
         ref.updateChildren(update) { databaseError, _ ->
@@ -62,9 +63,12 @@ class FirebaseGameRoomRepository(private val database: FirebaseDatabase, private
         gameRoomRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 snapshot?.value?.let {
-                    val json = objectMapper.writeValueAsString(snapshot.value)
-                    val gameRoom = objectMapper.readValue<GameRoom>(json)
-                    cont.resumeWith(Result.success(gameRoom))
+                    runCatching {
+                        val json = objectMapper.writeValueAsString(snapshot.value)
+                        objectMapper.readValue<GameRoom>(json)
+                    }
+                        .onSuccess { cont.resumeWith(Result.success(it)) }
+                        .onFailure { cont.resumeWith(Result.failure(it)) }
                 } ?: cont.resumeWith(Result.success(null))
             }
 

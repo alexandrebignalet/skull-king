@@ -2,6 +2,7 @@ package org.skull.king.domain.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
+import java.time.Duration
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.atMost
@@ -10,22 +11,22 @@ import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
-import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.CardColor
+import org.skull.king.domain.core.command.domain.ClassicConfiguration
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
 import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.NewPlayer
 import org.skull.king.domain.core.command.domain.Player
-import org.skull.king.domain.core.command.domain.SkullKing
-import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.command.domain.state.Skullking
 import org.skull.king.domain.core.command.error.NotYourTurnError
 import org.skull.king.domain.core.command.error.PlayerDoNotHaveCardError
 import org.skull.king.domain.core.command.error.PlayerNotInGameError
 import org.skull.king.domain.core.command.error.SkullKingNotReadyError
 import org.skull.king.domain.core.command.error.SkullKingNotStartedError
+import org.skull.king.domain.core.command.handler.AnnounceWinningCardsFoldCount
+import org.skull.king.domain.core.command.handler.StartSkullKing
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.Play
 import org.skull.king.domain.core.query.ReadCard
@@ -34,7 +35,6 @@ import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.query.handler.GetPlayer
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
-import java.time.Duration
 
 class BasePlayCardTest : LocalBus() {
 
@@ -43,7 +43,7 @@ class BasePlayCardTest : LocalBus() {
         val gameId = "101"
         val playerId = "1"
 
-        val playCard = PlayCardSaga(gameId, playerId, SkullKing.CARDS.first())
+        val playCard = PlayCardSaga(gameId, playerId, Skullking.CARDS(ClassicConfiguration).first())
 
         Assertions.assertThatThrownBy { commandBus.send(playCard) }.isInstanceOf(SkullKingNotStartedError::class.java)
     }
@@ -56,7 +56,7 @@ class BasePlayCardTest : LocalBus() {
 
         val start = StartSkullKing(gameId, players)
         val announce = AnnounceWinningCardsFoldCount(gameId, playerId, 5)
-        val playCard = PlayCardSaga(gameId, playerId, SkullKing.CARDS.first())
+        val playCard = PlayCardSaga(gameId, playerId, Skullking.CARDS(ClassicConfiguration).first())
 
         commandBus.send(start)
         commandBus.send(announce)
@@ -68,7 +68,7 @@ class BasePlayCardTest : LocalBus() {
     inner class OnCardPlayed {
         private val mockedCard = listOf(
             Mermaid(),
-            SkullKingCard(),
+            org.skull.king.domain.core.command.domain.SkullkingCard(),
 
             ColoredCard(1, CardColor.RED),
             ColoredCard(1, CardColor.BLUE),
@@ -113,14 +113,12 @@ class BasePlayCardTest : LocalBus() {
         fun `Should return error if not player turn`() {
             // Second instead of first
             lateinit var startedEvent: Started
-            lateinit var currentPlayer: Player
-            lateinit var otherPlayer: Player
 
             val start = StartSkullKing(gameId, players)
             startedEvent = commandBus.send(start).second.first() as Started
 
-            currentPlayer = startedEvent.players.first()
-            otherPlayer = startedEvent.players.last()
+            val currentPlayer: Player = startedEvent.players.first()
+            val otherPlayer: Player = startedEvent.players.last()
 
             val firstAnnounce = AnnounceWinningCardsFoldCount(gameId, currentPlayer.id, 1)
             val secondAnnounce = AnnounceWinningCardsFoldCount(gameId, otherPlayer.id, 1)
@@ -224,7 +222,6 @@ class BasePlayCardTest : LocalBus() {
         @Test
         fun `Should remove card played from player hand and add it to game fold`() {
             lateinit var startedEvent: Started
-            lateinit var firstPlayer: Player
 
             val start = StartSkullKing(gameId, players)
             startedEvent = commandBus.send(start).second.first() as Started
@@ -235,7 +232,7 @@ class BasePlayCardTest : LocalBus() {
             commandBus.send(firstAnnounce)
             commandBus.send(secondAnnounce)
 
-            firstPlayer = startedEvent.players.first()
+            val firstPlayer: Player = startedEvent.players.first()
             val firstPlayCard = PlayCardSaga(gameId, firstPlayer.id, mockedCard.first())
             commandBus.send(firstPlayCard)
 

@@ -6,11 +6,11 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
-import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.domain.Deck
 import org.skull.king.domain.core.command.domain.Mermaid
-import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.command.domain.SkullkingCard
+import org.skull.king.domain.core.command.handler.AnnounceWinningCardsFoldCount
+import org.skull.king.domain.core.command.handler.StartSkullKing
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSaga
@@ -20,7 +20,7 @@ import org.skull.king.helpers.LocalBus
 class QueryModelTest : LocalBus() {
     private val gameId = "azeohuzebfi"
     private val players = listOf("1", "2")
-    private val mockedCard = listOf(Mermaid(), SkullKingCard())
+    private val mockedCard = listOf(Mermaid(), SkullkingCard())
 
     @BeforeEach
     fun setUp() {

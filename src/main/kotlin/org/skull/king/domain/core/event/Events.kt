@@ -2,12 +2,13 @@ package org.skull.king.domain.core.event
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import java.time.Instant
 import org.skull.king.domain.core.command.domain.Card
+import org.skull.king.domain.core.command.domain.GameConfiguration
 import org.skull.king.domain.core.command.domain.NewPlayer
 import org.skull.king.domain.core.command.domain.Player
 import org.skull.king.domain.core.command.domain.PlayerId
-import org.skull.king.infrastructure.cqrs.ddd.event.Event
-import java.time.Instant
+import org.skull.king.infrastructure.framework.ddd.event.Event
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -19,7 +20,7 @@ import java.time.Instant
     JsonSubTypes.Type(value = Started::class, name = Started.EVENT_TYPE),
     JsonSubTypes.Type(value = PlayerAnnounced::class, name = PlayerAnnounced.EVENT_TYPE),
     JsonSubTypes.Type(value = CardPlayed::class, name = CardPlayed.EVENT_TYPE),
-    JsonSubTypes.Type(value = FoldWinnerSettled::class, name = FoldWinnerSettled.EVENT_TYPE),
+    JsonSubTypes.Type(value = FoldSettled::class, name = FoldSettled.EVENT_TYPE),
     JsonSubTypes.Type(value = NewRoundStarted::class, name = NewRoundStarted.EVENT_TYPE),
     JsonSubTypes.Type(value = GameFinished::class, name = GameFinished.EVENT_TYPE)
 )
@@ -61,7 +62,8 @@ open class SkullKingEvent(
 
 }
 
-data class Started(val gameId: String, val players: List<Player>) : SkullKingEvent(gameId, EVENT_TYPE) {
+data class Started(val gameId: String, val players: List<Player>, val configuration: GameConfiguration) :
+    SkullKingEvent(gameId, EVENT_TYPE) {
     companion object {
         const val EVENT_TYPE = "game_started"
     }
@@ -92,15 +94,16 @@ data class CardPlayed(
     }
 }
 
-data class FoldWinnerSettled(
+data class FoldSettled(
     val gameId: String,
-    val winner: PlayerId,
-    val potentialBonus: Int,
+    val nextFoldFirstPlayerId: PlayerId,
+    val bonus: Int,
+    val won: Boolean,
     override val version: Int
 ) :
     SkullKingEvent(gameId, EVENT_TYPE) {
     companion object {
-        const val EVENT_TYPE = "fold_winner_settled"
+        const val EVENT_TYPE = "fold_settled"
     }
 }
 

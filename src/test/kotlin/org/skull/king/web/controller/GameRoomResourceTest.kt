@@ -6,11 +6,13 @@ import io.dropwizard.testing.junit5.DropwizardExtensionsSupport
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
+import java.util.*
+import javax.ws.rs.client.Entity
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.skull.king.SkullKingApplication
+import org.skull.king.SkullkingApplication
 import org.skull.king.domain.core.GameLauncher
 import org.skull.king.domain.supporting.room.GameRoomService
 import org.skull.king.domain.supporting.user.UserService
@@ -25,8 +27,6 @@ import org.skull.king.infrastructure.repository.FirebaseUserRepository
 import org.skull.king.utils.JsonObjectMapper
 import org.skull.king.web.controller.dto.CreateGameRoomResponse
 import org.skull.king.web.controller.dto.start.StartResponse
-import java.util.Optional
-import javax.ws.rs.client.Entity
 
 @ExtendWith(DropwizardExtensionsSupport::class)
 class GameRoomResourceTest : DockerIntegrationTestUtils() {
@@ -49,7 +49,7 @@ class GameRoomResourceTest : DockerIntegrationTestUtils() {
     private val gameRoomService =
         GameRoomService(FirebaseGameRoomRepository(LocalFirebase.database, objectMapper), mockGameLauncher)
     private val EXTENSION = DropwizardAppExtension(
-        SkullKingApplication::class.java,
+        SkullkingApplication::class.java,
         ResourceHelpers.resourceFilePath("config.yml"),
         *configOverride()
     )
@@ -194,14 +194,10 @@ class GameRoomResourceTest : DockerIntegrationTestUtils() {
         gameRoomService.join(gameRoomId, GameUser("2", "2"))
         gameRoomService.join(gameRoomId, GameUser("3", "3"))
 
-        val startResponse = EXTENSION.client()
-            .target("http://localhost:${EXTENSION.localPort}/skullking/game_rooms/$gameRoomId/launch")
-            .request()
-            .header("Authorization", "Bearer token")
-            .post(Entity.json(null))
+        val startResponse = api.gameRoom.launch(gameRoomId)
             .readEntity(StartResponse::class.java)
 
-        Assertions.assertThat(startResponse.gameId).isNotNull()
+        Assertions.assertThat(startResponse.gameId).isNotNull
         val gameRoom = gameRoomService.findOne(gameRoomId)
         Assertions.assertThat(gameRoom.gameId).isEqualTo(startResponse.gameId)
     }

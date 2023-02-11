@@ -2,18 +2,12 @@ package org.skull.king.domain
 
 import io.mockk.every
 import io.mockk.mockkConstructor
+import kotlin.concurrent.thread
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.RepeatedTest
-import org.skull.king.domain.core.command.StartSkullKing
-import org.skull.king.domain.core.command.domain.CardColor
-import org.skull.king.domain.core.command.domain.ColoredCard
-import org.skull.king.domain.core.command.domain.Deck
-import org.skull.king.domain.core.command.domain.Mermaid
-import org.skull.king.domain.core.command.domain.Pirate
-import org.skull.king.domain.core.command.domain.PirateName
-import org.skull.king.domain.core.command.domain.Player
-import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.command.domain.*
+import org.skull.king.domain.core.command.handler.StartSkullKing
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.Score
 import org.skull.king.domain.core.query.SkullKingPhase
@@ -21,12 +15,11 @@ import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSaga
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
-import kotlin.concurrent.thread
 
 class ConcurrencyTest : LocalBus() {
     private val mockedCard = listOf(
         Mermaid(),
-        SkullKingCard(),
+        SkullkingCard(),
         Pirate(PirateName.EVIL_EMMY),
         Pirate(PirateName.HARRY_THE_GIANT),
         Pirate(PirateName.TORTUGA_JACK),

@@ -7,6 +7,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.runBlocking
 import org.skull.king.domain.core.query.Play
 import org.skull.king.domain.core.query.PlayerRoundScore
@@ -17,8 +19,6 @@ import org.skull.king.domain.core.query.ReadSkullKing
 import org.skull.king.domain.core.query.RoundNb
 import org.skull.king.domain.core.query.Score
 import org.skull.king.domain.core.query.SkullKingPhase
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class FirebaseQueryRepository(
     private val database: FirebaseDatabase,
@@ -30,9 +30,7 @@ class FirebaseQueryRepository(
         private const val PLAYERS_PATH = "players"
     }
 
-    override fun getGame(gameId: String): ReadSkullKing? {
-        return runBlocking { retrieveItem("$GAME_PATH/$gameId") }
-    }
+    override fun getGame(gameId: String): ReadSkullKing? = runBlocking { retrieveItem("$GAME_PATH/$gameId") }
 
     override fun getGamePlayers(gameId: String): List<ReadPlayer> {
         return getGame(gameId)?.let {

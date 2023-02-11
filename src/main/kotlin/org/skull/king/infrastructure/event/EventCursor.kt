@@ -1,7 +1,7 @@
 package org.skull.king.infrastructure.event
 
-import org.skull.king.infrastructure.cqrs.ddd.event.Cursor
-import org.skull.king.infrastructure.cqrs.ddd.event.Event
+import org.skull.king.infrastructure.framework.ddd.event.Cursor
+import org.skull.king.infrastructure.framework.ddd.event.Event
 
 class EventCursor(private val values: List<Event>) : Cursor {
     override fun count(): Long = values.size.toLong()

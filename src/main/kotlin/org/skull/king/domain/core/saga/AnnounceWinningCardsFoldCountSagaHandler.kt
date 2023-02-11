@@ -1,8 +1,8 @@
 package org.skull.king.domain.core.saga
 
-import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
-import org.skull.king.infrastructure.cqrs.command.CommandBus
-import org.skull.king.infrastructure.cqrs.ddd.event.Event
+import org.skull.king.domain.core.command.handler.AnnounceWinningCardsFoldCount
+import org.skull.king.infrastructure.framework.command.CommandBus
+import org.skull.king.infrastructure.framework.ddd.event.Event
 import org.skull.king.infrastructure.saga.RetryableSagaHandler
 
 class AnnounceWinningCardsFoldCountSagaHandler : RetryableSagaHandler<String, AnnounceWinningCardsFoldCountSaga>() {

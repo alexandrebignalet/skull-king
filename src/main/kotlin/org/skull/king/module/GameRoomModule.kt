@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 import org.skull.king.domain.core.GameLauncher
 import org.skull.king.domain.supporting.room.GameRoomService
-import org.skull.king.infrastructure.cqrs.command.CommandBus
+import org.skull.king.infrastructure.framework.command.CommandBus
 import org.skull.king.infrastructure.game.StartGameFromGameRoom
 import org.skull.king.infrastructure.repository.FirebaseGameRoomRepository
-import javax.inject.Singleton
 
 @Module
 class GameRoomModule {

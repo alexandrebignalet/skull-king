@@ -2,16 +2,16 @@ package org.skull.king.infrastructure.event
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.postgresql.util.PGobject
-import org.skull.king.config.PostgresConfig
-import org.skull.king.domain.core.event.SkullKingEvent
-import org.skull.king.infrastructure.cqrs.ddd.event.Cursor
-import org.skull.king.infrastructure.cqrs.ddd.event.Event
-import org.skull.king.infrastructure.cqrs.ddd.event.EventStore
-import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
+import org.postgresql.util.PGobject
+import org.skull.king.config.PostgresConfig
+import org.skull.king.domain.core.event.SkullKingEvent
+import org.skull.king.infrastructure.framework.ddd.event.Cursor
+import org.skull.king.infrastructure.framework.ddd.event.Event
+import org.skull.king.infrastructure.framework.ddd.event.EventStore
+import org.slf4j.LoggerFactory
 
 
 class PostgresEventStore(
@@ -50,7 +50,7 @@ class PostgresEventStore(
     }
 
     override fun save(events: Sequence<Event>) {
-        if (events.count() == 0) return;
+        if (events.count() == 0) return
         val aggregateId = events.first().aggregateId
 
         DriverManager.getConnection(config.url, config.user, config.password).use { conn ->
@@ -148,6 +148,5 @@ class PostgresEventStore(
     data class Stream(val uuid: String, val version: Int)
 
     class OptimisticLockException(aggregateId: String, version: Int?, wrongVersions: List<Int>) :
-        RuntimeException("Aggregate $aggregateId is in version $version not in $wrongVersions") {
-    }
+        RuntimeException("Aggregate $aggregateId is in version $version not in $wrongVersions")
 }

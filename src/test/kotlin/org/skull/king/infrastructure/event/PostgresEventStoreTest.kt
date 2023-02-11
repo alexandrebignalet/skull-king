@@ -2,19 +2,13 @@ package org.skull.king.infrastructure.event
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.domain.CardColor
-import org.skull.king.domain.core.command.domain.ColoredCard
-import org.skull.king.domain.core.command.domain.Mermaid
-import org.skull.king.domain.core.command.domain.NewPlayer
-import org.skull.king.domain.core.command.domain.ScaryMary
-import org.skull.king.domain.core.command.domain.ScaryMaryUsage
-import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.command.domain.*
 import org.skull.king.domain.core.event.CardPlayed
 import org.skull.king.domain.core.event.PlayerAnnounced
 import org.skull.king.domain.core.event.SkullKingEvent
 import org.skull.king.domain.core.event.Started
 import org.skull.king.helpers.DockerIntegrationTestUtils
-import org.skull.king.infrastructure.cqrs.ddd.event.Event
+import org.skull.king.infrastructure.framework.ddd.event.Event
 import org.skull.king.utils.JsonObjectMapper
 
 class PostgresEventStoreTest : DockerIntegrationTestUtils() {
@@ -31,7 +25,7 @@ class PostgresEventStoreTest : DockerIntegrationTestUtils() {
         val playerThree = NewPlayer("3", firstGameId, cards = listOf(ColoredCard(1, CardColor.BLACK)))
 
         // When
-        val event = Started(firstGameId, listOf(playerOne, playerTwo, playerThree))
+        val event = Started(firstGameId, listOf(playerOne, playerTwo, playerThree), ClassicConfiguration)
 
         eventStore.save(sequenceOf(event))
 
@@ -52,7 +46,7 @@ class PostgresEventStoreTest : DockerIntegrationTestUtils() {
         val playerThree = NewPlayer("3", firstGameId, cards = listOf(ColoredCard(1, CardColor.BLACK)))
 
         // When
-        val firstEvent = Started(firstGameId, listOf(playerOne, playerTwo, playerThree))
+        val firstEvent = Started(firstGameId, listOf(playerOne, playerTwo, playerThree), ClassicConfiguration)
         val secondEvent = PlayerAnnounced(firstGameId, playerOne.id, 1, 1, false)
         val thirdEvent = PlayerAnnounced(firstGameId, playerTwo.id, 1, 1, false)
         val forthEvent = PlayerAnnounced(firstGameId, playerThree.id, 1, 1, true)
@@ -78,7 +72,7 @@ class PostgresEventStoreTest : DockerIntegrationTestUtils() {
         val playerThree = NewPlayer("3", firstGameId, cards = listOf(ColoredCard(1, CardColor.BLACK)))
 
         // When
-        val firstEvent = Started(firstGameId, listOf(playerOne, playerTwo, playerThree))
+        val firstEvent = Started(firstGameId, listOf(playerOne, playerTwo, playerThree), ClassicConfiguration)
         val secondEvent = PlayerAnnounced(firstGameId, playerOne.id, 1, 1, false, 0)
         val thirdEvent = PlayerAnnounced(firstGameId, playerTwo.id, 1, 1, false, 0)
         val forthEvent = PlayerAnnounced(firstGameId, playerThree.id, 1, 1, true, 0)
@@ -87,7 +81,7 @@ class PostgresEventStoreTest : DockerIntegrationTestUtils() {
 
         val seqTwo = (0..30)
             .map { i ->
-                val event = CardPlayed(firstGameId, playerOne.id, SkullKingCard(), false, 4 + i)
+                val event = CardPlayed(firstGameId, playerOne.id, SkullkingCard(), false, 4 + i)
                 eventStore.save(sequenceOf(event))
                 event
             }

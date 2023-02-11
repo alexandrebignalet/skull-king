@@ -2,6 +2,7 @@ package org.skull.king.domain.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
+import java.time.Duration
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.atMost
@@ -9,8 +10,6 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.AnnounceWinningCardsFoldCount
-import org.skull.king.domain.core.command.StartSkullKing
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Deck
@@ -18,24 +17,25 @@ import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.Pirate
 import org.skull.king.domain.core.command.domain.PirateName
 import org.skull.king.domain.core.command.domain.Player
-import org.skull.king.domain.core.command.domain.SkullKingCard
+import org.skull.king.domain.core.command.domain.SkullkingCard
+import org.skull.king.domain.core.command.handler.AnnounceWinningCardsFoldCount
+import org.skull.king.domain.core.command.handler.StartSkullKing
 import org.skull.king.domain.core.event.Started
 import org.skull.king.domain.core.query.from
 import org.skull.king.domain.core.query.handler.GetGame
 import org.skull.king.domain.core.saga.PlayCardSaga
 import org.skull.king.helpers.LocalBus
-import java.time.Duration
 
 class ScoreBonusTest : LocalBus() {
 
     private val mockedCard = listOf(
         Mermaid(),
-        SkullKingCard(),
+        SkullkingCard(),
         ColoredCard(1, CardColor.BLUE),
 
         Pirate(PirateName.HARRY_THE_GIANT),
         Pirate(PirateName.EVIL_EMMY),
-        SkullKingCard(),
+        SkullkingCard(),
         ColoredCard(1, CardColor.BLUE),
         ColoredCard(2, CardColor.BLUE),
         ColoredCard(3, CardColor.BLUE)

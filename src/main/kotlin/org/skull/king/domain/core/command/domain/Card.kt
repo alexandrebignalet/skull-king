@@ -2,8 +2,7 @@ package org.skull.king.domain.core.command.domain
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import java.util.Stack
-import java.util.UUID
+import java.util.*
 
 enum class CardType {
     ESCAPE,
@@ -11,7 +10,8 @@ enum class CardType {
     COLORED,
     PIRATE,
     SCARY_MARY,
-    SKULLKING
+    SKULLKING,
+    KRAKEN
 }
 
 @JsonTypeInfo(
@@ -22,7 +22,7 @@ enum class CardType {
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = ColoredCard::class, name = "COLORED"),
-    JsonSubTypes.Type(value = SkullKingCard::class, name = "SKULLKING"),
+    JsonSubTypes.Type(value = SkullkingCard::class, name = "SKULLKING"),
     JsonSubTypes.Type(value = ScaryMary::class, name = "SCARY_MARY"),
     JsonSubTypes.Type(value = Pirate::class, name = "PIRATE"),
     JsonSubTypes.Type(value = Escape::class, name = "ESCAPE"),
@@ -46,20 +46,27 @@ abstract class Card(val type: CardType, val id: String = UUID.randomUUID().toStr
 }
 
 data class ColoredCard(val value: Int, val color: CardColor) : Card(CardType.COLORED)
-enum class CardColor { RED, BLUE, YELLOW, BLACK }
+enum class CardColor { RED, BLUE, YELLOW, BLACK, GREEN, PURPLE }
 
 enum class PirateName {
     HARRY_THE_GIANT,
     TORTUGA_JACK,
     EVIL_EMMY,
     BADEYE_JOE,
-    BETTY_BRAVE
+    BETTY_BRAVE,
+
+    ROSIE_LA_DOUCE,
+    WILL_LE_BANDIT,
+    RASCAL_LE_FLAMBEUR,
+    JUANITA_JADE,
+    HARRY_LE_GEANT
 }
 
 data class Pirate(val name: PirateName) : Card(CardType.PIRATE)
-class SkullKingCard : Card(CardType.SKULLKING)
+class SkullkingCard : Card(CardType.SKULLKING)
 class Mermaid : Card(CardType.MERMAID)
 class Escape : Card(CardType.ESCAPE)
+class Kraken : Card(CardType.KRAKEN)
 
 enum class ScaryMaryUsage { ESCAPE, PIRATE, NOT_SET }
 class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card(CardType.SCARY_MARY) {
@@ -70,12 +77,15 @@ class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card(CardT
     }
 
     override fun hashCode(): Int {
-        return super.hashCode()
+        var result = super.hashCode()
+        result = 31 * result + usage.hashCode()
+        return result
     }
 }
 
-data class Deck(val cards: List<Card> = SkullKing.CARDS) {
+data class Deck(val cards: List<Card>) {
     private val deck = cards.shuffled().fold(Stack<Card>(), { acc, s -> acc.push(s); acc })
 
+    val size: Int get() = cards.size
     fun pop(): Card = deck.pop()
 }
