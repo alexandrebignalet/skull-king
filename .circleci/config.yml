@@ -6,8 +6,11 @@ jobs:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1"
     machine:
-      image: ubuntu-1604:202007-01
+      image: ubuntu-2004:current
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "0f:39:35:7b:97:f8:21:12:45:44:a7:96:a4:d8:e7:4d"
       - checkout
       - run:
           name: Install OpenJDK 11

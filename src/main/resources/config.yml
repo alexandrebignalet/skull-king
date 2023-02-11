@@ -28,5 +28,5 @@ firebase:
     client_x509_cert_url: "${CLIENT_CERT_URL}"
 
 postgres:
-  jdbcUrl: "${HEROKU_POSTGRESQL_OLIVE_URL}"
+  jdbcUrl: "${HEROKU_POSTGRESQL_GOLD_URL}"
   ssl: true

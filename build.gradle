@@ -20,7 +20,7 @@ buildscript {
         def connection = new HashMap<String, String>()
         if (System.getenv("ENVIRONMENT") != "production") return connection
 
-        def uri = URI.create(System.getenv("HEROKU_POSTGRESQL_OLIVE_URL"))
+        def uri = URI.create(System.getenv("HEROKU_POSTGRESQL_GOLD_URL"))
         connection.put("user", uri.userInfo.split(":")[0])
         connection.put("password", uri.userInfo.split(":")[1])
         connection.put("url", "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}") //?sslmode=require
@@ -64,7 +64,7 @@ kotlin {
         languageVersion.set(JavaLanguageVersion.of(11))
     }
 
-    mainClassName = 'org.skull.king.SkullKingApplication'
+    mainClassName = 'org.skull.king.SkullkingApplication'
 }
 
 dependencies {
