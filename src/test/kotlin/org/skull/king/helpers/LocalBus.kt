@@ -16,7 +16,7 @@ import org.skull.king.domain.core.query.sync.OnPlayerAnnounced
 import org.skull.king.domain.core.query.sync.ProjectOnFoldSettled
 import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSagaHandler
 import org.skull.king.domain.core.saga.PlayCardSagaHandler
-import org.skull.king.infrastructure.event.PostgresEventStore
+import org.skull.king.infrastructure.event.InMemoryEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 import org.skull.king.infrastructure.framework.command.Command
 import org.skull.king.infrastructure.framework.command.CommandBus
@@ -38,17 +38,17 @@ import org.skull.king.infrastructure.repository.FirebaseQueryRepository
 import org.skull.king.utils.JsonObjectMapper
 import org.slf4j.LoggerFactory
 
-open class LocalBus : DockerIntegrationTestUtils() {
+open class LocalBus : LocalFirebase() {
 
     companion object {
         private val mapper = JsonObjectMapper.getObjectMapper()
     }
 
-    val postgresEventStore = PostgresEventStore(localPostgres.connection, mapper)
+    val inMemoryEventStore = InMemoryEventStore()
     val firebaseBuses = Builder(
-        postgresEventStore,
-        SkullkingEventSourcedRepository(postgresEventStore),
-        FirebaseQueryRepository(LocalFirebase.database, mapper)
+        inMemoryEventStore,
+        SkullkingEventSourcedRepository(inMemoryEventStore),
+        FirebaseQueryRepository(database, mapper)
     )
 
     val queryBus = firebaseBuses.queryBus

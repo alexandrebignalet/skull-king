@@ -11,7 +11,9 @@ enum class CardType {
     PIRATE,
     SCARY_MARY,
     SKULLKING,
-    KRAKEN
+    KRAKEN,
+    WHITE_WHALE,
+    BUTIN
 }
 
 @JsonTypeInfo(
@@ -67,6 +69,8 @@ class SkullkingCard : Card(CardType.SKULLKING)
 class Mermaid : Card(CardType.MERMAID)
 class Escape : Card(CardType.ESCAPE)
 class Kraken : Card(CardType.KRAKEN)
+class WhiteWhale : Card(CardType.WHITE_WHALE)
+class Butin : Card(CardType.BUTIN)
 
 enum class ScaryMaryUsage { ESCAPE, PIRATE, NOT_SET }
 class ScaryMary(val usage: ScaryMaryUsage = ScaryMaryUsage.NOT_SET) : Card(CardType.SCARY_MARY) {

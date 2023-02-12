@@ -32,13 +32,18 @@ object ClassicConfiguration : GameConfiguration(CLASSIC) {
 
 }
 
-data class BlackRockConfiguration(val kraken: Boolean, val whale: Boolean) : GameConfiguration(BLACKROCK) {
+data class BlackRockConfiguration(
+    val kraken: Boolean,
+    val whale: Boolean,
+    val butins: Boolean
+) : GameConfiguration(BLACKROCK) {
 
     companion object {
 
         fun from(gameRoomConfiguration: Configuration) = BlackRockConfiguration(
             kraken = gameRoomConfiguration.withKraken,
             whale = gameRoomConfiguration.withWhale,
+            butins = gameRoomConfiguration.withButins,
         )
 
     }

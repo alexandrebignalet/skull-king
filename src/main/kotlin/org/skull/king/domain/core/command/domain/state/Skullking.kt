@@ -1,6 +1,7 @@
 package org.skull.king.domain.core.command.domain.state
 
 import org.skull.king.domain.core.command.domain.BlackRockConfiguration
+import org.skull.king.domain.core.command.domain.Butin
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ClassicConfiguration
@@ -16,6 +17,7 @@ import org.skull.king.domain.core.command.domain.PirateName
 import org.skull.king.domain.core.command.domain.ScaryMary
 import org.skull.king.domain.core.command.domain.ScaryMaryUsage
 import org.skull.king.domain.core.command.domain.SkullkingCard
+import org.skull.king.domain.core.command.domain.WhiteWhale
 import org.skull.king.domain.core.command.error.SkullKingError
 import org.skull.king.domain.core.command.error.SkullKingNotReadyError
 import org.skull.king.domain.core.event.CardPlayed
@@ -51,6 +53,8 @@ sealed class Skullking(private val id: String) : AggregateRoot<String, SkullKing
         private val BLACKROCK_CARDS = { configuration: BlackRockConfiguration ->
             listOf(
                 *(if (configuration.kraken) arrayOf(Kraken()) else arrayOf()),
+                *(if (configuration.whale) arrayOf(WhiteWhale()) else arrayOf()),
+                *(if (configuration.butins) arrayOf(Butin(), Butin()) else arrayOf()),
                 *(1..14).map { ColoredCard(it, CardColor.YELLOW) }.toTypedArray(),
                 *(1..14).map { ColoredCard(it, CardColor.GREEN) }.toTypedArray(),
                 *(1..14).map { ColoredCard(it, CardColor.PURPLE) }.toTypedArray(),

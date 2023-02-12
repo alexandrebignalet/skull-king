@@ -10,11 +10,12 @@ interface QueryRepository {
 
     fun registerPlayerAnnounce(gameId: String, playerScore: PlayerRoundScore, isLastAnnounce: Boolean): Result<Unit>
 
-    fun updateWinnerScoreAndClearFold(
+    fun projectFoldSettled(
         gameId: String,
         playerId: String,
         roundNb: RoundNb,
-        score: Score
+        score: Score,
+        butinAllies: List<Pair<String, Score>>
     ): Result<Unit>
 
     fun movePlayerCardToGameFold(gameId: String, playerId: String, card: ReadCard, nextPlayerId: String): Result<Unit>

@@ -48,8 +48,11 @@ data class RoundState(
             throw FoldNotComplete(this)
         }
 
-        val (nextFoldFirstPlayer, potentialBonus, won) = FoldSettlementService.settleFold(configuration, currentFold)
-        val events = sequenceOf(FoldSettled(gameId, nextFoldFirstPlayer, potentialBonus, won, version))
+        val (nextFoldFirstPlayer, potentialBonus, won, butinAllies) = FoldSettlementService.settleFold(
+            configuration,
+            currentFold
+        )
+        val events = sequenceOf(FoldSettled(gameId, nextFoldFirstPlayer, potentialBonus, won, butinAllies, version))
         if (!isNextFoldLastFoldOfRound()) {
             return events
         }

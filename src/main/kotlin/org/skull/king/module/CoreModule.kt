@@ -5,7 +5,6 @@ import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
-import org.skull.king.config.PostgresConfig
 import org.skull.king.domain.core.command.handler.AnnounceHandler
 import org.skull.king.domain.core.command.handler.PlayCardHandler
 import org.skull.king.domain.core.command.handler.SettleFoldHandler
@@ -21,7 +20,7 @@ import org.skull.king.domain.core.query.sync.OnPlayerAnnounced
 import org.skull.king.domain.core.query.sync.ProjectOnFoldSettled
 import org.skull.king.domain.core.saga.AnnounceWinningCardsFoldCountSagaHandler
 import org.skull.king.domain.core.saga.PlayCardSagaHandler
-import org.skull.king.infrastructure.event.PostgresEventStore
+import org.skull.king.infrastructure.event.InMemoryEventStore
 import org.skull.king.infrastructure.event.SkullkingEventSourcedRepository
 import org.skull.king.infrastructure.framework.command.CommandBus
 import org.skull.king.infrastructure.framework.command.CommandHandler
@@ -49,13 +48,7 @@ class CoreModule {
 
     @Singleton
     @Provides
-    fun providePostgresEventStore(config: PostgresConfig, objectMapper: ObjectMapper): PostgresEventStore =
-        PostgresEventStore(config.resolveConnection(), objectMapper)
-
-    @Singleton
-    @Provides
-    fun provideEventStore(config: PostgresConfig, objectMapper: ObjectMapper): EventStore =
-        PostgresEventStore(config.resolveConnection(), objectMapper)
+    fun provideEventStore(): EventStore = InMemoryEventStore()
 
     @Singleton
     @Provides

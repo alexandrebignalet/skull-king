@@ -55,11 +55,8 @@ class ConcurrencyIT : LocalBus() {
         }
     }
 
-    private val EXTENSION = DropwizardAppExtension(
-        SkullkingApplication::class.java,
-        ResourceHelpers.resourceFilePath("config.yml"),
-        *configOverride()
-    )
+    private val EXTENSION =
+        DropwizardAppExtension(SkullkingApplication::class.java, ResourceHelpers.resourceFilePath("config.yml"))
     private val mockedCard = listOf(
         Mermaid(),
         SkullkingCard(),

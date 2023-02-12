@@ -7,13 +7,11 @@ import org.skull.king.domain.core.event.CardPlayed
 import org.skull.king.domain.core.event.PlayerAnnounced
 import org.skull.king.domain.core.event.SkullKingEvent
 import org.skull.king.domain.core.event.Started
-import org.skull.king.helpers.DockerIntegrationTestUtils
 import org.skull.king.infrastructure.framework.ddd.event.Event
-import org.skull.king.utils.JsonObjectMapper
 
-class PostgresEventStoreTest : DockerIntegrationTestUtils() {
+class InMemoryEventStoreTest {
 
-    private val eventStore = PostgresEventStore(localPostgres.connection, JsonObjectMapper.getObjectMapper())
+    private val eventStore = InMemoryEventStore()
 
     @Test
     fun `Should store an event by gameId`() {

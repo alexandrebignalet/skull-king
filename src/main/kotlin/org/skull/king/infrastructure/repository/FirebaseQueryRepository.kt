@@ -61,18 +61,22 @@ class FirebaseQueryRepository(
     }
 
 
-    override fun updateWinnerScoreAndClearFold(
+    override fun projectFoldSettled(
         gameId: String,
         playerId: String,
         roundNb: RoundNb,
-        score: Score
+        score: Score,
+        butinAllies: List<Pair<String, Score>>
     ): Result<Unit> = runBlocking {
         multiPathUpdate(
             mapOf(
                 "$GAME_PATH/${gameId}/score_board/${playerId}_${roundNb}/score/done" to score.done,
                 "$GAME_PATH/${gameId}/score_board/${playerId}_${roundNb}/score/potential_bonus" to score.potentialBonus,
                 "$GAME_PATH/${gameId}/fold" to null,
-                "$GAME_PATH/${gameId}/current_player_id" to playerId
+                "$GAME_PATH/${gameId}/current_player_id" to playerId,
+                *(butinAllies.map {
+                    "$GAME_PATH/${gameId}/score_board/${it.first}_${roundNb}/score/potential_bonus" to it.second.potentialBonus
+                }.toTypedArray())
             )
         )
     }
@@ -141,9 +145,12 @@ class FirebaseQueryRepository(
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 snapshot?.value?.let {
-                    val json = objectMapper.writeValueAsString(snapshot.value)
-                    val data = objectMapper.readValue<T>(json)
-                    cont.resumeWith(Result.success(data))
+                    runCatching {
+                        val json = objectMapper.writeValueAsString(snapshot.value)
+                        objectMapper.readValue<T>(json)
+                    }
+                        .onSuccess { cont.resumeWith(Result.success(it)) }
+                        .onFailure { cont.resumeWith(Result.failure(it)) }
                 } ?: cont.resumeWith(Result.success(null))
             }
 

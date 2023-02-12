@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
 import org.skull.king.domain.core.command.domain.BlackRockConfiguration
+import org.skull.king.domain.core.command.domain.Butin
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.CardColor
 import org.skull.king.domain.core.command.domain.ClassicConfiguration
@@ -22,6 +23,7 @@ import org.skull.king.domain.core.command.domain.PlayerId
 import org.skull.king.domain.core.command.domain.ScaryMary
 import org.skull.king.domain.core.command.domain.ScaryMaryUsage
 import org.skull.king.domain.core.command.domain.SkullkingCard
+import org.skull.king.domain.core.command.domain.WhiteWhale
 import org.skull.king.domain.core.command.service.FoldSettlementService.FoldSettlement
 import org.skull.king.domain.core.command.service.FoldSettlementService.settleFold
 
@@ -48,7 +50,7 @@ class FoldSettlementServiceTest {
                 ), FoldSettlement("2")
             ),
             Arguments.of(
-                BlackRockConfiguration(kraken = false, whale = false),
+                BlackRockConfiguration(kraken = false, whale = false, butins = false),
                 mapOf(
                     "1" to ColoredCard(1, CardColor.PURPLE),
                     "2" to ColoredCard(7, CardColor.PURPLE),
@@ -86,7 +88,7 @@ class FoldSettlementServiceTest {
                 ), FoldSettlement("1")
             ),
             Arguments.of(
-                BlackRockConfiguration(kraken = false, whale = false),
+                BlackRockConfiguration(kraken = false, whale = false, butins = false),
                 mapOf(
                     "1" to ColoredCard(1, CardColor.RED),
                     "2" to ColoredCard(7, CardColor.RED),
@@ -94,7 +96,7 @@ class FoldSettlementServiceTest {
                 ), FoldSettlement("3")
             ),
             Arguments.of(
-                BlackRockConfiguration(kraken = false, whale = false),
+                BlackRockConfiguration(kraken = false, whale = false, butins = false),
                 mapOf(
                     "1" to ColoredCard(1, CardColor.PURPLE),
                     "2" to ColoredCard(7, CardColor.PURPLE),
@@ -161,7 +163,7 @@ class FoldSettlementServiceTest {
                     "2" to Escape(),
                     "3" to Escape(),
                     "4" to ScaryMary(ScaryMaryUsage.ESCAPE)
-                ), FoldSettlement("1")
+                ), FoldSettlement("1", 0, false, listOf())
             ),
             // PIRATE WINS AGAINST ANY COLORED
             Arguments.of(
@@ -227,7 +229,7 @@ class FoldSettlementServiceTest {
                 ), FoldSettlement("1")
             ),
             Arguments.of(
-                BlackRockConfiguration(kraken = false, whale = false),
+                BlackRockConfiguration(kraken = false, whale = false, butins = false),
                 mapOf(
                     "1" to Pirate(PirateName.BETTY_BRAVE),
                     "2" to ColoredCard(7, CardColor.BLACK),
@@ -235,7 +237,7 @@ class FoldSettlementServiceTest {
                 ), FoldSettlement("1", 20)
             ),
             Arguments.of(
-                BlackRockConfiguration(kraken = false, whale = false),
+                BlackRockConfiguration(kraken = false, whale = false, butins = false),
                 mapOf(
                     "1" to Mermaid(),
                     "2" to Pirate(PirateName.BETTY_BRAVE),
@@ -297,7 +299,7 @@ class FoldSettlementServiceTest {
                 ), FoldSettlement("4", 50)
             ),
             Arguments.of(
-                BlackRockConfiguration(kraken = false, whale = false),
+                BlackRockConfiguration(kraken = false, whale = false, butins = false),
                 mapOf(
                     "1" to SkullkingCard(),
                     "2" to ColoredCard(7, CardColor.BLACK),
@@ -333,12 +335,115 @@ class FoldSettlementServiceTest {
             ),
             // KRAKEN WIPE EVERYTHING
             Arguments.of(
-                BlackRockConfiguration(kraken = false, whale = false),
+                BlackRockConfiguration(kraken = true, whale = true, butins = false),
                 mapOf(
                     "1" to Kraken(),
                     "2" to SkullkingCard(),
                     "3" to ScaryMary(ScaryMaryUsage.PIRATE)
                 ), FoldSettlement("2", won = false)
+            ),
+
+            // WHITE WHALE make special useless
+            Arguments.of(
+                BlackRockConfiguration(kraken = true, whale = true, butins = false),
+                mapOf(
+                    "1" to WhiteWhale(),
+                    "2" to SkullkingCard(),
+                    "3" to ScaryMary(ScaryMaryUsage.PIRATE)
+                ), FoldSettlement("1", won = false)
+            ),
+
+            // WHITE WHALE highest value card wins
+            Arguments.of(
+                BlackRockConfiguration(kraken = true, whale = true, butins = false),
+                mapOf(
+                    "1" to WhiteWhale(),
+                    "2" to SkullkingCard(),
+                    "3" to ColoredCard(1, CardColor.PURPLE)
+                ), FoldSettlement("3", won = true)
+            ),
+            Arguments.of(
+                BlackRockConfiguration(kraken = false, whale = false, butins = false),
+                mapOf(
+                    "1" to WhiteWhale(),
+                    "2" to SkullkingCard(),
+                    "3" to ColoredCard(2, CardColor.PURPLE),
+                    "4" to ColoredCard(1, CardColor.BLACK)
+                ), FoldSettlement("3", won = true)
+            ),
+            // WHITE WHALE on card value equality - first wins
+            Arguments.of(
+                BlackRockConfiguration(kraken = true, whale = true, butins = false),
+                mapOf(
+                    "1" to WhiteWhale(),
+                    "2" to SkullkingCard(),
+                    "3" to ColoredCard(1, CardColor.PURPLE),
+                    "4" to ColoredCard(1, CardColor.YELLOW)
+                ), FoldSettlement("3", won = true)
+            ),
+
+            // WHITE WHALE apply effect when played after kraken
+            Arguments.of(
+                BlackRockConfiguration(kraken = true, whale = true, butins = false),
+                mapOf(
+                    "1" to Kraken(),
+                    "2" to WhiteWhale(),
+                    "3" to ColoredCard(1, CardColor.PURPLE),
+                    "4" to ColoredCard(2, CardColor.RED)
+                ), FoldSettlement("4", won = true)
+            ),
+            // KRAKEN apply effect when played after white whale
+            Arguments.of(
+                BlackRockConfiguration(kraken = false, whale = false, butins = false),
+                mapOf(
+                    "1" to WhiteWhale(),
+                    "2" to Kraken(),
+                    "3" to ColoredCard(2, CardColor.PURPLE),
+                    "4" to ColoredCard(1, CardColor.BLACK)
+                ), FoldSettlement("4", won = false)
+            ),
+            // BUTIN win against escapes or buttin
+            Arguments.of(
+                BlackRockConfiguration(kraken = false, whale = false, butins = true),
+                mapOf(
+                    "1" to Butin(),
+                    "2" to Escape(),
+                    "3" to Escape(),
+                ), FoldSettlement("1", won = true)
+            ),
+            Arguments.of(
+                BlackRockConfiguration(kraken = false, whale = false, butins = true),
+                mapOf(
+                    "1" to Butin(),
+                    "2" to Escape(),
+                    "3" to Butin(),
+                ), FoldSettlement("1", won = true)
+            ),
+            Arguments.of(
+                BlackRockConfiguration(kraken = false, whale = false, butins = true),
+                mapOf(
+                    "1" to Kraken(),
+                    "2" to Butin(),
+                    "3" to Escape(),
+                ), FoldSettlement("2", won = false, potentialBonus = 0)
+            ),
+            Arguments.of(
+                BlackRockConfiguration(kraken = false, whale = false, butins = true),
+                mapOf(
+                    "1" to WhiteWhale(),
+                    "2" to Butin(),
+                    "3" to Escape(),
+                ), FoldSettlement("1", won = false, potentialBonus = 0)
+            ),
+
+            // BUTIN loose against everything but mark 2 players with 20 butinPotentialBonus
+            Arguments.of(
+                BlackRockConfiguration(kraken = false, whale = false, butins = true),
+                mapOf(
+                    "1" to Butin(),
+                    "2" to SkullkingCard(),
+                    "3" to Escape(),
+                ), FoldSettlement("2", won = true, potentialBonus = 20, butinAllies = listOf("1"))
             )
         )
     }

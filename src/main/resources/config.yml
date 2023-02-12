@@ -26,7 +26,3 @@ firebase:
     token_uri: "${TOKEN_URI}"
     auth_provider_x509_cert_url: "${AUTH_PROVIDER_CERT_URL}"
     client_x509_cert_url: "${CLIENT_CERT_URL}"
-
-postgres:
-  jdbcUrl: "${HEROKU_POSTGRESQL_GOLD_URL}"
-  ssl: true

@@ -99,6 +99,7 @@ data class FoldSettled(
     val nextFoldFirstPlayerId: PlayerId,
     val bonus: Int,
     val won: Boolean,
+    val butinAllies: List<String>,
     override val version: Int
 ) :
     SkullKingEvent(gameId, EVENT_TYPE) {

@@ -203,7 +203,7 @@ class GameRoomServiceTest : LocalFirebase() {
     fun `should allow creator choose a variant`() {
         val creator = GameUser("user_id", "toto")
 
-        val configuration = Configuration(false, false)
+        val configuration = Configuration(false, false, false)
         val gameRoomId = service.create(creator, configuration)
 
         val gameRoom = service.findOne(gameRoomId)
@@ -214,7 +214,7 @@ class GameRoomServiceTest : LocalFirebase() {
     fun `Should start a game with the variant chosen`() {
         val creator = GameUser("user_id", "toto")
 
-        val configuration = Configuration(true, true)
+        val configuration = Configuration(true, true, true)
         val gameRoomId = service.create(creator, configuration)
         service.join(gameRoomId, GameUser("2", "2"))
         service.join(gameRoomId, GameUser("3", "3"))
