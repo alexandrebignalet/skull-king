@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.skull.king.domain.core.command.domain.Card
 import org.skull.king.domain.core.command.domain.ColoredCard
 import org.skull.king.domain.core.command.domain.Escape
+import org.skull.king.domain.core.command.domain.Mermaid
 import org.skull.king.domain.core.command.domain.Pirate
 import org.skull.king.domain.core.command.domain.ScaryMary
 import org.skull.king.utils.CardsDeserializer
@@ -122,9 +123,11 @@ data class ReadCard(
                 value = card.value,
                 color = card.color.name
             )
+
             is ScaryMary -> ReadCard(id = card.id, type = ReadCardType.SCARY_MARY.name, usage = card.usage.name)
             is Escape -> ReadCard(id = card.id, type = ReadCardType.ESCAPE.name)
             is Pirate -> ReadCard(id = card.id, type = ReadCardType.PIRATE.name, name = card.name.name)
+            is Mermaid -> ReadCard(id = card.id, type = ReadCardType.MERMAID.name, name = card.name.name)
             else -> ReadCard(id = card.id, type = card.type.name)
         }
     }
@@ -141,4 +144,4 @@ data class ReadCard(
     )
 }
 
-enum class ReadCardType { SKULLKING, ESCAPE, PIRATE, SCARY_MARY, COLORED }
+enum class ReadCardType { SKULLKING, ESCAPE, PIRATE, SCARY_MARY, COLORED, MERMAID }
