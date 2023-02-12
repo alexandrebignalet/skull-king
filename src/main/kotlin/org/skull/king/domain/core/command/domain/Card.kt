@@ -28,7 +28,10 @@ enum class CardType {
     JsonSubTypes.Type(value = ScaryMary::class, name = "SCARY_MARY"),
     JsonSubTypes.Type(value = Pirate::class, name = "PIRATE"),
     JsonSubTypes.Type(value = Escape::class, name = "ESCAPE"),
-    JsonSubTypes.Type(value = Mermaid::class, name = "MERMAID")
+    JsonSubTypes.Type(value = Mermaid::class, name = "MERMAID"),
+    JsonSubTypes.Type(value = Butin::class, name = "BUTIN"),
+    JsonSubTypes.Type(value = Kraken::class, name = "KRAKEN"),
+    JsonSubTypes.Type(value = WhiteWhale::class, name = "WHITE_WHALE"),
 )
 abstract class Card(val type: CardType, val id: String = UUID.randomUUID().toString()) {
     override fun equals(other: Any?): Boolean {
