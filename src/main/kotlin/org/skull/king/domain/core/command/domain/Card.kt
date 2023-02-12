@@ -64,9 +64,15 @@ enum class PirateName {
     HARRY_LE_GEANT
 }
 
+enum class MermaidName {
+    NONE,
+    CIRCE,
+    ALYRA
+}
+
 data class Pirate(val name: PirateName) : Card(CardType.PIRATE)
 class SkullkingCard : Card(CardType.SKULLKING)
-class Mermaid : Card(CardType.MERMAID)
+data class Mermaid(val name: MermaidName = MermaidName.NONE) : Card(CardType.MERMAID)
 class Escape : Card(CardType.ESCAPE)
 class Kraken : Card(CardType.KRAKEN)
 class WhiteWhale : Card(CardType.WHITE_WHALE)

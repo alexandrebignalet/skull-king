@@ -11,6 +11,7 @@ import org.skull.king.domain.core.command.domain.Escape
 import org.skull.king.domain.core.command.domain.GameConfiguration
 import org.skull.king.domain.core.command.domain.Kraken
 import org.skull.king.domain.core.command.domain.Mermaid
+import org.skull.king.domain.core.command.domain.MermaidName
 import org.skull.king.domain.core.command.domain.NewPlayer
 import org.skull.king.domain.core.command.domain.Pirate
 import org.skull.king.domain.core.command.domain.PirateName
@@ -60,7 +61,8 @@ sealed class Skullking(private val id: String) : AggregateRoot<String, SkullKing
                 *(1..14).map { ColoredCard(it, CardColor.PURPLE) }.toTypedArray(),
                 *(1..14).map { ColoredCard(it, CardColor.BLACK) }.toTypedArray(),
                 *(1..5).map { Escape() }.toTypedArray(),
-                *(1..2).map { Mermaid() }.toTypedArray(),
+                Mermaid(MermaidName.CIRCE),
+                Mermaid(MermaidName.ALYRA),
                 Pirate(PirateName.ROSIE_LA_DOUCE),
                 Pirate(PirateName.WILL_LE_BANDIT),
                 Pirate(PirateName.RASCAL_LE_FLAMBEUR),
