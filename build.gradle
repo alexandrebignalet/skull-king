@@ -86,9 +86,14 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-task startMockFirebase(type: Exec) {
+task startMockFirebase {
     doFirst {
-        executable "bin/start-firebase-emulator"
+        ext.process = new ProcessBuilder()
+                .directory(projectDir)
+                .inheritIO()
+                .command("bin/start-firebase-emulator")
+                .start()
+                .waitFor()
     }
 }
 
