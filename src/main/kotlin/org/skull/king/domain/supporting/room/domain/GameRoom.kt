@@ -11,7 +11,7 @@ data class GameRoom(
     val gameId: String? = null,
     val creationDate: Long = Instant.now().toEpochMilli(),
     val updateDate: Long = Instant.now().toEpochMilli(),
-    val configuration: Configuration?
+    val configuration: Configuration? = null
 ) {
 
     fun isFull() = users.count() == 6

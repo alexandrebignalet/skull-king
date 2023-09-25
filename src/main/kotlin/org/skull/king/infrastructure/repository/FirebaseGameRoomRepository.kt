@@ -44,6 +44,7 @@ class FirebaseGameRoomRepository(private val database: FirebaseDatabase, private
                 "$USER_PATH/${user.id}/rooms/${gameRoom.id}" to gameRoomPayload,
                 "$USER_PATH/${user.id}/id" to user.id,
                 "$USER_PATH/${user.id}/name" to user.name,
+                "$USER_PATH/${user.id}/type" to user.type.name,
             )
         }
 

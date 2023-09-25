@@ -12,8 +12,10 @@ import org.skull.king.domain.supporting.room.GameRoomService
 import org.skull.king.domain.supporting.room.domain.Configuration
 import org.skull.king.domain.supporting.user.domain.GameUser
 import org.skull.king.infrastructure.authentication.User
+import org.skull.king.web.controller.dto.AnnounceWinningCardsFoldCountRequest
 import org.skull.king.web.controller.dto.CreateGameRoomResponse
 import org.skull.king.web.controller.dto.start.StartResponse
+import javax.validation.Valid
 
 @PermitAll
 @Path("/skullking/game_rooms")
@@ -24,6 +26,16 @@ class GameRoomResource @Inject constructor(private val service: GameRoomService)
     fun createRoom(@Auth creator: User, @Nullable configuration: Configuration?): Response {
         val gameRoomId = service.create(GameUser.from(creator), configuration)
         return Response.ok(CreateGameRoomResponse(gameRoomId)).build()
+    }
+
+    @POST
+    @Path("/{game_room_id}/bots")
+    fun addBot(
+        @PathParam("game_room_id") gameRoomId: String,
+        @Auth user: User,
+    ): Response {
+        service.join(gameRoomId, GameUser.bot())
+        return Response.noContent().build()
     }
 
     @POST
