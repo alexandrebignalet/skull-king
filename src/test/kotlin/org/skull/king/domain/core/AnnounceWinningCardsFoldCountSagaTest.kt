@@ -3,15 +3,10 @@ package org.skull.king.domain.core
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.error.PlayerAlreadyAnnouncedError
-import org.skull.king.domain.core.command.error.PlayerNotInGameError
-import org.skull.king.domain.core.command.error.SkullKingNotStartedError
-import org.skull.king.domain.core.command.handler.AnnounceWinningCardsFoldCount
-import org.skull.king.domain.core.command.handler.StartSkullKing
-import org.skull.king.domain.core.event.PlayerAnnounced
-import org.skull.king.domain.core.event.Started
-import org.skull.king.domain.core.query.from
-import org.skull.king.domain.core.query.handler.GetGame
+import org.skull.king.core.domain.*
+import org.skull.king.core.usecases.AnnounceWinningCardsFoldCount
+import org.skull.king.core.usecases.GetGame
+import org.skull.king.core.usecases.StartSkullKing
 import org.skull.king.helpers.LocalBus
 
 class AnnounceWinningCardsFoldCountSagaTest : LocalBus() {

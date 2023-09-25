@@ -2,7 +2,6 @@ package org.skull.king.domain.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
-import java.time.Duration
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.atMost
@@ -11,30 +10,10 @@ import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.domain.Card
-import org.skull.king.domain.core.command.domain.CardColor
-import org.skull.king.domain.core.command.domain.ClassicConfiguration
-import org.skull.king.domain.core.command.domain.ColoredCard
-import org.skull.king.domain.core.command.domain.Deck
-import org.skull.king.domain.core.command.domain.Mermaid
-import org.skull.king.domain.core.command.domain.NewPlayer
-import org.skull.king.domain.core.command.domain.Player
-import org.skull.king.domain.core.command.domain.state.Skullking
-import org.skull.king.domain.core.command.error.NotYourTurnError
-import org.skull.king.domain.core.command.error.PlayerDoNotHaveCardError
-import org.skull.king.domain.core.command.error.PlayerNotInGameError
-import org.skull.king.domain.core.command.error.SkullKingNotReadyError
-import org.skull.king.domain.core.command.error.SkullKingNotStartedError
-import org.skull.king.domain.core.command.handler.AnnounceWinningCardsFoldCount
-import org.skull.king.domain.core.command.handler.StartSkullKing
-import org.skull.king.domain.core.event.Started
-import org.skull.king.domain.core.query.Play
-import org.skull.king.domain.core.query.ReadCard
-import org.skull.king.domain.core.query.from
-import org.skull.king.domain.core.query.handler.GetGame
-import org.skull.king.domain.core.query.handler.GetPlayer
-import org.skull.king.domain.core.saga.PlayCardSaga
+import org.skull.king.core.domain.*
+import org.skull.king.core.usecases.*
 import org.skull.king.helpers.LocalBus
+import java.time.Duration
 
 class BasePlayCardTest : LocalBus() {
 
@@ -68,7 +47,7 @@ class BasePlayCardTest : LocalBus() {
     inner class OnCardPlayed {
         private val mockedCard = listOf(
             Mermaid(),
-            org.skull.king.domain.core.command.domain.SkullkingCard(),
+            SkullkingCard(),
 
             ColoredCard(1, CardColor.RED),
             ColoredCard(1, CardColor.BLUE),

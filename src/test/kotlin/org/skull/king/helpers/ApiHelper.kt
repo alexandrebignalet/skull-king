@@ -1,14 +1,14 @@
 package org.skull.king.helpers
 
 import io.dropwizard.testing.junit5.DropwizardAppExtension
+import org.skull.king.application.config.SkullKingConfig
+import org.skull.king.application.infrastructure.authentication.User
+import org.skull.king.core.infrastructure.web.AnnounceWinningCardsFoldCountRequest
+import org.skull.king.core.infrastructure.web.StartRequest
+import org.skull.king.game_room.domain.Configuration
+import org.skull.king.game_room.infrastructure.web.CreateGameRoomResponse
 import javax.ws.rs.client.Entity
 import javax.ws.rs.core.Response
-import org.skull.king.config.SkullKingConfig
-import org.skull.king.domain.supporting.room.domain.Configuration
-import org.skull.king.infrastructure.authentication.User
-import org.skull.king.web.controller.dto.AnnounceWinningCardsFoldCountRequest
-import org.skull.king.web.controller.dto.CreateGameRoomResponse
-import org.skull.king.web.controller.dto.start.StartRequest
 
 class ApiHelper(private val EXTENSION: DropwizardAppExtension<SkullKingConfig>) {
 

@@ -6,26 +6,26 @@ import io.dropwizard.testing.junit5.DropwizardExtensionsSupport
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
-import java.util.*
-import javax.ws.rs.client.Entity
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.skull.king.SkullkingApplication
-import org.skull.king.domain.core.GameLauncher
-import org.skull.king.domain.supporting.room.GameRoomService
-import org.skull.king.domain.supporting.user.UserService
-import org.skull.king.domain.supporting.user.domain.GameUser
+import org.skull.king.application.infrastructure.authentication.FirebaseAuthenticator
+import org.skull.king.application.infrastructure.authentication.User
+import org.skull.king.application.utils.JsonObjectMapper
+import org.skull.king.core.domain.GameLauncher
+import org.skull.king.core.infrastructure.web.StartResponse
+import org.skull.king.game_room.domain.GameUser
+import org.skull.king.game_room.infrastructure.GameRoomService
+import org.skull.king.game_room.infrastructure.UserService
+import org.skull.king.game_room.infrastructure.repository.FirebaseGameRoomRepository
+import org.skull.king.game_room.infrastructure.repository.FirebaseUserRepository
+import org.skull.king.game_room.infrastructure.web.CreateGameRoomResponse
 import org.skull.king.helpers.ApiHelper
 import org.skull.king.helpers.LocalFirebase
-import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
-import org.skull.king.infrastructure.authentication.User
-import org.skull.king.infrastructure.repository.FirebaseGameRoomRepository
-import org.skull.king.infrastructure.repository.FirebaseUserRepository
-import org.skull.king.utils.JsonObjectMapper
-import org.skull.king.web.controller.dto.CreateGameRoomResponse
-import org.skull.king.web.controller.dto.start.StartResponse
+import java.util.*
+import javax.ws.rs.client.Entity
 
 @ExtendWith(DropwizardExtensionsSupport::class)
 class GameRoomResourceTest : LocalFirebase() {

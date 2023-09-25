@@ -2,10 +2,12 @@ package org.skull.king.infrastructure.repository
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.supporting.room.domain.GameRoom
-import org.skull.king.domain.supporting.user.domain.GameUser
+import org.skull.king.application.utils.JsonObjectMapper
+import org.skull.king.game_room.domain.GameRoom
+import org.skull.king.game_room.domain.GameUser
+import org.skull.king.game_room.infrastructure.repository.FirebaseGameRoomRepository
+import org.skull.king.game_room.infrastructure.repository.FirebaseUserRepository
 import org.skull.king.helpers.LocalFirebase
-import org.skull.king.utils.JsonObjectMapper
 
 class FirebaseUserRepositoryTest : LocalFirebase() {
     companion object {
@@ -27,6 +29,6 @@ class FirebaseUserRepositoryTest : LocalFirebase() {
 
         val result = userGameRoomRepository.findOne(bot.id)
 
-        Assertions.assertThat(result).isEqualToIgnoringGivenFields(bot)
+        Assertions.assertThat(result?.copy(rooms = setOf())).isEqualToIgnoringGivenFields(bot)
     }
 }

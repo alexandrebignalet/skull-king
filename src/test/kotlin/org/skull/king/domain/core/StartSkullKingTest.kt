@@ -6,17 +6,11 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.domain.ClassicConfiguration
-import org.skull.king.domain.core.command.domain.Deck
-import org.skull.king.domain.core.command.domain.NewPlayer
-import org.skull.king.domain.core.command.domain.Player
-import org.skull.king.domain.core.command.domain.state.Skullking
-import org.skull.king.domain.core.command.error.SkullKingConfigurationError
-import org.skull.king.domain.core.command.handler.StartSkullKing
-import org.skull.king.domain.core.event.Started
-import org.skull.king.domain.core.query.handler.GetGame
+import org.skull.king.application.infrastructure.framework.ddd.event.Event
+import org.skull.king.core.domain.*
+import org.skull.king.core.usecases.GetGame
+import org.skull.king.core.usecases.StartSkullKing
 import org.skull.king.helpers.LocalBus
-import org.skull.king.infrastructure.framework.ddd.event.Event
 
 class StartSkullKingTest : LocalBus() {
 
@@ -39,7 +33,7 @@ class StartSkullKingTest : LocalBus() {
     }
 
     @Nested
-    inner class StartSkullKing {
+    inner class StartSkullKingTest {
         private val gameId = "101"
         private val players = listOf("1", "2", "3", "4", "5")
         private lateinit var response: Pair<String, Sequence<Event>>

@@ -3,22 +3,23 @@ package org.skull.king.domain.supporting.room
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Test
+import org.skull.king.core.domain.ClassicConfiguration
+import org.skull.king.core.domain.GameConfiguration
+import org.skull.king.core.domain.GameLauncher
+import org.skull.king.game_room.domain.AlreadyInGameRoomException
+import org.skull.king.game_room.domain.Configuration
+import org.skull.king.game_room.domain.GameRoomFullException
+import org.skull.king.game_room.domain.GameUser
+import org.skull.king.game_room.infrastructure.GameRoomService
+import org.skull.king.game_room.infrastructure.UserService
+import org.skull.king.game_room.infrastructure.repository.FirebaseGameRoomRepository
+import org.skull.king.game_room.infrastructure.repository.FirebaseUserRepository
+import org.skull.king.helpers.LocalFirebase
 import java.util.*
 import javax.ws.rs.ForbiddenException
 import javax.ws.rs.NotFoundException
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.GameLauncher
-import org.skull.king.domain.core.command.domain.ClassicConfiguration
-import org.skull.king.domain.core.command.domain.GameConfiguration
-import org.skull.king.domain.supporting.room.domain.Configuration
-import org.skull.king.domain.supporting.room.exception.AlreadyInGameRoomException
-import org.skull.king.domain.supporting.room.exception.GameRoomFullException
-import org.skull.king.domain.supporting.user.UserService
-import org.skull.king.domain.supporting.user.domain.GameUser
-import org.skull.king.helpers.LocalFirebase
-import org.skull.king.infrastructure.repository.FirebaseGameRoomRepository
-import org.skull.king.infrastructure.repository.FirebaseUserRepository
 
 class GameRoomServiceTest : LocalFirebase() {
 

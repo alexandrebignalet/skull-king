@@ -2,22 +2,22 @@ package org.skull.king.domain.core
 
 import io.mockk.every
 import io.mockk.mockkConstructor
-import java.time.Duration
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.domain.Deck
-import org.skull.king.domain.core.command.domain.Mermaid
-import org.skull.king.domain.core.command.domain.SkullkingCard
-import org.skull.king.domain.core.command.handler.AnnounceWinningCardsFoldCount
-import org.skull.king.domain.core.command.handler.StartSkullKing
-import org.skull.king.domain.core.event.Started
-import org.skull.king.domain.core.query.handler.GetGame
-import org.skull.king.domain.core.saga.PlayCardSaga
+import org.skull.king.core.domain.Deck
+import org.skull.king.core.domain.Mermaid
+import org.skull.king.core.domain.SkullkingCard
+import org.skull.king.core.domain.Started
+import org.skull.king.core.usecases.AnnounceWinningCardsFoldCount
+import org.skull.king.core.usecases.GetGame
+import org.skull.king.core.usecases.PlayCardSaga
+import org.skull.king.core.usecases.StartSkullKing
 import org.skull.king.helpers.LocalBus
+import java.time.Duration
 
 class ReadySkullKingTest : LocalBus() {
 

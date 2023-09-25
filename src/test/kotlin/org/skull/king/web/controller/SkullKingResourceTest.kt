@@ -7,25 +7,21 @@ import io.mockk.every
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
-import java.util.*
-import javax.ws.rs.client.Entity
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.skull.king.SkullkingApplication
-import org.skull.king.domain.core.command.domain.CardColor
-import org.skull.king.domain.core.command.domain.ColoredCard
-import org.skull.king.domain.core.command.domain.Deck
-import org.skull.king.domain.core.command.domain.Mermaid
-import org.skull.king.domain.core.command.domain.SkullkingCard
-import org.skull.king.domain.core.query.handler.GetGame
+import org.skull.king.application.infrastructure.authentication.FirebaseAuthenticator
+import org.skull.king.application.infrastructure.authentication.User
+import org.skull.king.core.domain.*
+import org.skull.king.core.infrastructure.web.StartResponse
+import org.skull.king.core.usecases.GetGame
 import org.skull.king.helpers.ApiHelper
 import org.skull.king.helpers.LocalBus
-import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
-import org.skull.king.infrastructure.authentication.User
-import org.skull.king.web.controller.dto.start.StartResponse
+import java.util.*
+import javax.ws.rs.client.Entity
 
 @ExtendWith(DropwizardExtensionsSupport::class)
 class SkullKingResourceTest : LocalBus() {

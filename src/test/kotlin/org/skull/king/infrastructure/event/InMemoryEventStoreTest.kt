@@ -2,12 +2,9 @@ package org.skull.king.infrastructure.event
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.domain.*
-import org.skull.king.domain.core.event.CardPlayed
-import org.skull.king.domain.core.event.PlayerAnnounced
-import org.skull.king.domain.core.event.SkullKingEvent
-import org.skull.king.domain.core.event.Started
-import org.skull.king.infrastructure.framework.ddd.event.Event
+import org.skull.king.application.infrastructure.framework.ddd.event.Event
+import org.skull.king.core.domain.*
+import org.skull.king.core.infrastructure.InMemoryEventStore
 
 class InMemoryEventStoreTest {
 

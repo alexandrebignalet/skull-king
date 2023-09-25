@@ -2,15 +2,10 @@ package org.skull.king.infrastructure.repository
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.command.domain.Pirate
-import org.skull.king.domain.core.command.domain.PirateName
-import org.skull.king.domain.core.command.domain.SkullkingCard
-import org.skull.king.domain.core.query.ReadCard
-import org.skull.king.domain.core.query.ReadPlayer
-import org.skull.king.domain.core.query.ReadSkullKing
-import org.skull.king.domain.core.query.SkullKingPhase
+import org.skull.king.application.utils.JsonObjectMapper
+import org.skull.king.core.domain.*
+import org.skull.king.game_room.infrastructure.repository.FirebaseQueryRepository
 import org.skull.king.helpers.LocalFirebase
-import org.skull.king.utils.JsonObjectMapper
 
 class FirebaseQueryRepositoryTest : LocalFirebase() {
     companion object {

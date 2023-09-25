@@ -6,8 +6,8 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
-import org.skull.king.config.FirebaseConfig
-import org.skull.king.utils.JsonObjectMapper
+import org.skull.king.application.config.FirebaseConfig
+import org.skull.king.application.utils.JsonObjectMapper
 import kotlin.coroutines.suspendCoroutine
 
 open class LocalFirebase {

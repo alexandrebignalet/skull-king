@@ -1,16 +1,12 @@
 package org.skull.king.domain.core.query.sync
 
-import java.util.*
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skull.king.domain.core.event.FoldSettled
-import org.skull.king.domain.core.query.PlayerRoundScore
-import org.skull.king.domain.core.query.ReadPlayer
-import org.skull.king.domain.core.query.ReadSkullKing
-import org.skull.king.domain.core.query.Score
-import org.skull.king.domain.core.query.SkullKingPhase
+import org.skull.king.core.domain.*
+import org.skull.king.core.usecases.captor.ProjectOnFoldSettled
+import org.skull.king.game_room.infrastructure.repository.FirebaseQueryRepository
 import org.skull.king.helpers.LocalFirebase
-import org.skull.king.infrastructure.repository.FirebaseQueryRepository
+import java.util.*
 
 class ProjectOnFoldSettledTest : LocalFirebase() {
 

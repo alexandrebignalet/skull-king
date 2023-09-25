@@ -1,31 +1,15 @@
 package org.skull.king.domain.core
 
-import java.util.stream.Stream
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
-import org.skull.king.domain.core.command.domain.BlackRockConfiguration
-import org.skull.king.domain.core.command.domain.Butin
-import org.skull.king.domain.core.command.domain.Card
-import org.skull.king.domain.core.command.domain.CardColor
-import org.skull.king.domain.core.command.domain.ClassicConfiguration
-import org.skull.king.domain.core.command.domain.ColoredCard
-import org.skull.king.domain.core.command.domain.Escape
-import org.skull.king.domain.core.command.domain.GameConfiguration
-import org.skull.king.domain.core.command.domain.Kraken
-import org.skull.king.domain.core.command.domain.Mermaid
-import org.skull.king.domain.core.command.domain.Pirate
-import org.skull.king.domain.core.command.domain.PirateName
-import org.skull.king.domain.core.command.domain.PlayerId
-import org.skull.king.domain.core.command.domain.ScaryMary
-import org.skull.king.domain.core.command.domain.ScaryMaryUsage
-import org.skull.king.domain.core.command.domain.SkullkingCard
-import org.skull.king.domain.core.command.domain.WhiteWhale
-import org.skull.king.domain.core.command.service.FoldSettlementService.FoldSettlement
-import org.skull.king.domain.core.command.service.FoldSettlementService.settleFold
+import org.skull.king.core.domain.*
+import org.skull.king.core.infrastructure.FoldSettlementService.FoldSettlement
+import org.skull.king.core.infrastructure.FoldSettlementService.settleFold
+import java.util.stream.Stream
 
 class FoldSettlementServiceTest {
 

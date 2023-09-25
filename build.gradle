@@ -97,6 +97,7 @@ task startMockFirebase {
     }
 }
 
+
 task stopMockFirebase(type: Exec) {
     executable "bin/stop-firebase-emulator"
 }

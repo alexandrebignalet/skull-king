@@ -9,16 +9,16 @@ import io.dropwizard.configuration.EnvironmentVariableSubstitutor
 import io.dropwizard.configuration.SubstitutingSourceProvider
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
-import org.skull.king.component.DaggerSkullKingComponent
-import org.skull.king.component.SkullKingComponent
-import org.skull.king.config.SkullKingConfig
-import org.skull.king.infrastructure.authentication.FirebaseAuthenticator
-import org.skull.king.infrastructure.authentication.User
-import org.skull.king.module.ConfigurationModule
-import org.skull.king.utils.JsonObjectMapper
-import org.skull.king.web.controller.healthcheck.BaseHealthCheck
-import org.skull.king.web.exception.DomainErrorExceptionMapper
-import org.skull.king.web.exception.GameRoomExceptionMapper
+import org.skull.king.application.component.DaggerSkullKingComponent
+import org.skull.king.application.component.SkullKingComponent
+import org.skull.king.application.config.SkullKingConfig
+import org.skull.king.application.infrastructure.authentication.FirebaseAuthenticator
+import org.skull.king.application.infrastructure.authentication.User
+import org.skull.king.application.module.ConfigurationModule
+import org.skull.king.application.utils.JsonObjectMapper
+import org.skull.king.application.web.controller.healthcheck.BaseHealthCheck
+import org.skull.king.application.web.exception.DomainErrorExceptionMapper
+import org.skull.king.game_room.infrastructure.web.GameRoomExceptionMapper
 import org.slf4j.LoggerFactory
 
 
